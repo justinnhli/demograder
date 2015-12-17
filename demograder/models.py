@@ -13,15 +13,15 @@ class Student(models.Model):
     email = models.EmailField(primary_key=True)
     @property
     def courses(self):
-        return ','.join(sorted(e.course.catalog_id for e in Enrollment.objects.filter(student__email=self.email)))
+        return ','.join(sorted(e.course.catalog_id for e in self.enrollment_set.all()))
     def __str__(self):
         return self.name
 
-def current_year():
+def _current_year():
     return datetime.today().year
 
 class Year(models.Model):
-    value = models.IntegerField(default=current_year, unique=True)
+    value = models.IntegerField(default=_current_year, unique=True)
     def __str__(self):
         return str(self.value)
 
@@ -60,7 +60,7 @@ class Course(models.Model):
         return '{} {}'.format(self.department.catalog_code, self.course_number)
     @property
     def students(self):
-        return ','.join(sorted(e.student.name for e in Enrollment.objects.filter(course=self)))
+        return ','.join(sorted(e.student.name for e in self.enrollment_set.all()))
     def __str__(self):
         return '[{}] ({}) {}'.format(self.semester, self.catalog_id, self.title)
 
@@ -75,7 +75,7 @@ def _project_path(instance, filename):
 class Project(models.Model):
     course = models.ForeignKey(Course)
     name = models.CharField(max_length=200)
-    script = models.FileField(upload_to=_project_path)
+    script = models.FileField(upload_to=_project_path, blank=True)
     @property
     def directory(self):
         context = (
@@ -91,8 +91,8 @@ class Project(models.Model):
         return self.name
 
 class Dependency(models.Model):
-    consumer = models.ForeignKey(Project, related_name='consumers')
-    producer = models.ForeignKey(Project, related_name='producers')
+    consumer = models.ForeignKey(Project, related_name='upstream_deps')
+    producer = models.ForeignKey(Project, related_name='downstream_deps')
 
 class Match(models.Model):
     dependency = models.ForeignKey(Dependency)
@@ -113,7 +113,7 @@ class Submission(models.Model):
         return join_path(*context)
     @property
     def uploads(self):
-        return '\n'.join(sorted(u.file.url for u in Upload.objects.filter(submission=self)))
+        return '\n'.join(sorted(u.file.url for u in self.upload_set.all()))
 
 def _upload_path(instance, filename):
     return join_path(instance.submission.directory,
