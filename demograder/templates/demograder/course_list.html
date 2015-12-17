@@ -1,0 +1,14 @@
+<h1>All Courses</h1>
+{% if object_list %}
+	<ul>
+		{% for course in course_list %}
+		<li>
+			<a href="/demograder/{{ course.department.catalog_code }}/{{ course.year }}/{{ course.get_season_display }}/{{ course.id }}">
+				{{ course }}
+			</a>
+		</li>
+		{% endfor %}
+	</ul>
+{% else %}
+	There are currently no courses.
+{% endif %}

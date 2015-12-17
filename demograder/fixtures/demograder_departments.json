@@ -1,0 +1,58 @@
+[
+  {
+    "model": "demograder.department",
+    "pk": 1,
+    "fields": {
+      "name": "Mathematics",
+      "catalog_code": "MATH"
+    }
+  },
+  {
+    "model": "demograder.department",
+    "pk": 2,
+    "fields": {
+      "name": "Computer Science",
+      "catalog_code": "COMP"
+    }
+  },
+  {
+    "model": "demograder.department",
+    "pk": 3,
+    "fields": {
+      "name": "Physics",
+      "catalog_code": "PHYS"
+    }
+  },
+  {
+    "model": "demograder.department",
+    "pk": 4,
+    "fields": {
+      "name": "Chemistry",
+      "catalog_code": "CHEM"
+    }
+  },
+  {
+    "model": "demograder.department",
+    "pk": 5,
+    "fields": {
+      "name": "Biology",
+      "catalog_code": "BIO"
+    }
+  },
+  {
+    "model": "demograder.department",
+    "pk": 6,
+    "fields": {
+      "name": "Cognitive Science",
+      "catalog_code": "COGS"
+    }
+  },
+  {
+    "model": "demograder.department",
+    "pk": 7,
+    "fields": {
+      "name": "Economics",
+      "catalog_code": "ECON"
+    }
+  }
+]
