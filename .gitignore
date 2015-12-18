@@ -1,3 +1,10 @@
+# Python environment
 venv*
+
+# backend files
 db.sqlite3
 dump.rdb
+demograder/migrations
+
+# uploads
+uploads
