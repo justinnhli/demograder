@@ -38,7 +38,7 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'demograder',
-    #'django_rq',
+    'django_rq',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -80,7 +80,6 @@ RQ_QUEUES = {
         'HOST': 'localhost',
         'PORT': 6379,
         'DB': 0,
-        'PASSWORD': 'password',
         'DEFAULT_TIMEOUT': 360,
     },
 }

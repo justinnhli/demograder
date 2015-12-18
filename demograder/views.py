@@ -6,6 +6,7 @@ from django.views import generic
 
 from .forms import FileUploadForm
 from .models import Course, Project, Submission, Student, Upload
+from .dispatcher import dispatch_submission
 
 # Create your views here.
 
@@ -34,17 +35,17 @@ def submit_project(request, **kwargs):
     course = project.course
     # FIXME authenticate somehow
     student = Student.objects.get(email='justinnhli@oxy.edu')
-    # TODO check student is in course
+    # FIXME check student is in course
     # Handle file upload
     if request.method == 'POST':
         form = FileUploadForm(request.POST, request.FILES)
         if form.is_valid():
-            # TODO check that student is in course
             submission = Submission(
                     project=project,
                     student=student,
             )
             submission.save()
+            # TODO handle multiple files per submission
             upload = Upload(
                     submission=submission,
                     file=request.FILES['file'],
@@ -52,6 +53,7 @@ def submit_project(request, **kwargs):
             upload.save()
             # TODO submit process to rq
             # find combination of all dependent files and submission
+            dispatch_submission(student, project, submission)
             return HttpResponseRedirect(reverse('Project Status View', kwargs=kwargs))
     else:
         form = FileUploadForm()

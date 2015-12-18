@@ -3,7 +3,6 @@ from os.path import join as join_path
 
 from django.db import models
 
-PROJECT_PATH = 'projects'
 UPLOAD_PATH = 'uploads'
 
 # Create your models here.
@@ -79,7 +78,7 @@ class Project(models.Model):
     @property
     def directory(self):
         context = (
-            PROJECT_PATH, # root
+            UPLOAD_PATH, # root
             str(self.course.year), # year
             self.course.get_season_display(), # season
             self.course.department.catalog_code, # department
