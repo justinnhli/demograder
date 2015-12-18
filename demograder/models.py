@@ -80,21 +80,28 @@ class Project(models.Model):
     def directory(self):
         context = (
             PROJECT_PATH, # root
-            str(self.project.course.year), # year
-            self.project.course.get_season_display(), # season
-            self.project.course.department.catalog_code, # department
-            str(self.project.course.course_number), # number
-            str(self.project.id), # project
+            str(self.course.year), # year
+            self.course.get_season_display(), # season
+            self.course.department.catalog_code, # department
+            str(self.course.course_number), # number
+            str(self.id), # project
         )
         return join_path(*context)
     def __str__(self):
         return self.name
 
 class Dependency(models.Model):
+    class Meta:
+        verbose_name_plural = 'Dependencies'
     consumer = models.ForeignKey(Project, related_name='upstream_deps')
     producer = models.ForeignKey(Project, related_name='downstream_deps')
+    keyword = models.CharField(max_length=20)
+    def __str__(self):
+        return '{} -> {}'.format(self.producer, self.consumer)
 
 class Match(models.Model):
+    class Meta:
+        verbose_name_plural = 'Matches'
     dependency = models.ForeignKey(Dependency)
     consumer = models.ForeignKey(Student, related_name='consumers')
     producer = models.ForeignKey(Student, related_name='producers')
@@ -103,6 +110,9 @@ class Submission(models.Model):
     project = models.ForeignKey(Project)
     student = models.ForeignKey(Student)
     timestamp = models.DateTimeField(auto_now_add=True)
+    stdout = models.TextField(blank=True)
+    stderr = models.TextField(blank=True)
+    return_code = models.IntegerField(null=True, blank=True)
     @property
     def directory(self):
         return join_path(
@@ -114,6 +124,8 @@ class Submission(models.Model):
     @property
     def uploads(self):
         return '\n'.join(sorted(u.file.url for u in self.upload_set.all()))
+    def __str__(self):
+        return self.timestamp.strftime("%Y-%m-%d %H:%M:%S") + self.student.email
 
 def _upload_path(instance, filename):
     return join_path(instance.submission.directory,
@@ -123,3 +135,5 @@ def _upload_path(instance, filename):
 class Upload(models.Model):
     submission = models.ForeignKey(Submission)
     file = models.FileField(upload_to=_upload_path)
+    def __str__(self):
+        return self.file
