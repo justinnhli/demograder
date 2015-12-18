@@ -3,7 +3,7 @@
 	<ul>
 		{% for course in course_list %}
 		<li>
-			<a href="/demograder/{{ course.department.catalog_code }}/{{ course.year }}/{{ course.get_season_display }}/{{ course.id }}">
+			<a href="/demograder/courses/{{ course.id }}">
 				{{ course }}
 			</a>
 		</li>

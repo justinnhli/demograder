@@ -30,8 +30,8 @@ class ProjectListView(ParameterListView):
         return Project.objects.filter(course=self.kwargs['course_id'])
 
 def submit_project(request, **kwargs):
-    course = Course.objects.get(id=kwargs['course_id'])
     project = Project.objects.get(id=kwargs['project_id'])
+    course = project.course
     # FIXME authenticate somehow
     student = Student.objects.get(email='justinnhli@oxy.edu')
     # TODO check student is in course

@@ -1,9 +1,13 @@
-<h1>[{{ year }} {{ season }}] ({{ course.department.catalog_code }} {{ course.course_number }}) {{ course.title }}</h1>
+<h1>
+	<a href="/demograder">All Courses</a>
+	&gt;
+	[{{ course.year }} {{ course.get_season_display }}] ({{ course.department.catalog_code }} {{ course.course_number }}) {{ course.title }}
+</h1>
 {% if object_list %}
 	<ul>
 		{% for project in object_list %}
 		<li>
-			<a href="{{ project.id }}">
+			<a href="/demograder/projects/{{ project.id }}">
 				{{ project.name }}
 			</a>
 		</li>
