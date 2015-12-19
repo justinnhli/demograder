@@ -29,8 +29,12 @@ def course_view(request, **kwargs):
 def project_view(request, **kwargs):
     context = get_student_context(**kwargs)
     context['project'] = Project.objects.get(id=kwargs['project_id'])
-    context['submissions'] = Submission.objects.filter(student=context['student']).order_by('-timestamp')
-    context['submission'] = Submission.objects.filter(student=context['student']).order_by('timestamp').latest('timestamp')
+    if Submission.objects.filter(project=context['project'],student=context['student']).exists():
+        context['submissions'] = Submission.objects.filter(project=context['project'],student=context['student']).order_by('-timestamp')
+        context['submission'] = Submission.objects.filter(project=context['project'],student=context['student']).order_by('timestamp').latest('timestamp')
+    else:
+        context['submissions'] = []
+        context['submission'] = None
     context['most_recent'] = True
     return render(request, 'demograder/project.html', context)
 
