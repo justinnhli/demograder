@@ -12,6 +12,7 @@ Demograder uses an all-Python stack:
 * [Django](https://www.djangoproject.com/) as the web framework
 * [RQ](http://python-rq.org/) as the job queue
 * [Honcho](https://github.com/nickstenning/honcho/) as the process manager
+* [pytz](http://pytz.sourceforge.net/) for timezone data
 
 ## Running ##
 
@@ -28,3 +29,8 @@ Demograder uses an all-Python stack:
 2. Start the services
 
 		honcho start
+
+## Known Issues
+
+* Project dependencies cannot be concurrent - no new submissions are expected from the dependent project
+* A number of settings (datetime format, timezones, etc.) are not yet configurable in settings.py

@@ -16,7 +16,7 @@
 
 <h3>Test Results</h3>
 <p>From 2015-12-14 12:45 (most recent submit)</p>
-<p><a href="{% url 'submit' project.id %}">Submit New Version</a></p>
+<p><a href="{% url 'project_upload' project.id %}">Upload New Version</a></p>
 <div id="scoreboard">
 	<a class="score good" href="">Pass</a>
 	<a class="score good" href="">Pass</a>
@@ -69,33 +69,24 @@
 
 <h3 id="history-heading">Submission History</h3>
 <div id="history">
-	<table id="history-table">
-		<tr>
-			<th>Date/Time</th>
-			<th>File(s)</th>
-			<th>Tests Passed</th>
-		</tr>
-		<tr>
-			<td>2015-12-18 21:13</td>
-			<td><a href="">hello.py</a></td>
-			<td>6/7</td>
-		</tr>
-		<tr>
-			<td>2015-12-18 21:13</td>
-			<td><a href="">hello.py</a></td>
-			<td>6/7</td>
-		</tr>
-		<tr>
-			<td>2015-12-18 21:13</td>
-			<td><a href="">hello.py</a></td>
-			<td>6/7</td>
-		</tr>
-		<tr>
-			<td>2015-12-18 21:13</td>
-			<td><a href="">hello.py</a></td>
-			<td>6/7</td>
-		</tr>
-	</table>
+	{% if submissions %}
+		<table id="history-table">
+			<tr>
+				<th>Date/Time</th>
+				<th>File(s)</th>
+				<th>Tests Passed</th>
+			</tr>
+			{% for submission in submissions %}
+			<tr>
+				<td>{{ submission.us_format }}</td>
+				<td><a href="">hello.py</a></td>
+				<td>6/7</td>
+			</tr>
+			{% endfor %}
+		</table>
+	{% else %}
+		You have not submitted to this project.
+	{% endif %}
 </div>
 
 <!-- end project.html:content -->

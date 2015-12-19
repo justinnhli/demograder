@@ -7,6 +7,10 @@ from .forms import FileUploadForm
 from .models import Course, Project, Submission, Student, Upload
 from .dispatcher import dispatch_submission
 
+# FIXME this should become a hierarchy of views
+# Student > Course > Project
+# so they can call each other's get_context_data()
+
 def get_student_context(**kwargs):
     # FIXME get logged in student
     context = {}
@@ -25,46 +29,52 @@ def course_view(request, **kwargs):
 def project_view(request, **kwargs):
     context = get_student_context(**kwargs)
     context['project'] = Project.objects.get(id=kwargs['project_id'])
+    context['submissions'] = Submission.objects.filter(student=context['student']).order_by('timestamp')
     return render(request, 'demograder/project.html', context)
 
-def project_submit_view(request, **kwargs):
+def project_upload_view(request, **kwargs):
+    project = Project.objects.get(id=kwargs['project_id'])
+    course = project.course
+    # FIXME authenticate somehow
+    student = Student.objects.get(email='justinnhli@oxy.edu')
+    # FIXME check student is in course
+    # Collect context
+    context = get_student_context(**kwargs)
+    context.update(kwargs)
+    context['form'] = FileUploadForm()
+    # TODO load student's previous test results
+    context['course'] = course
+    context['project'] = project
+    # Render list page with the documents and the form
+    return render_to_response(
+        'demograder/project_upload.html',
+        context,
+        context_instance=RequestContext(request)
+    )
+
+def project_submit_handler(request, **kwargs):
+    if request.method != 'POST':
+        return HttpResponseRedirect(reverse('project', kwargs=kwargs))
     project = Project.objects.get(id=kwargs['project_id'])
     course = project.course
     # FIXME authenticate somehow
     student = Student.objects.get(email='justinnhli@oxy.edu')
     # FIXME check student is in course
     # Handle file upload
-    if request.method == 'POST':
-        form = FileUploadForm(request.POST, request.FILES)
-        if form.is_valid():
-            submission = Submission(
-                    project=project,
-                    student=student,
-            )
-            submission.save()
-            # TODO handle multiple files per submission
-            upload = Upload(
-                    submission=submission,
-                    file=request.FILES['file'],
-            )
-            upload.save()
-            # TODO submit process to rq
-            # find combination of all dependent files and submission
-            dispatch_submission(student, project, submission)
-            return HttpResponseRedirect(reverse('course', kwargs=kwargs))
-    else:
-        form = FileUploadForm()
-    # Collect context
-    context = {}
-    context.update(kwargs)
-    context['form'] = form
-    # TODO load student's previous test results
-    context['course'] = course
-    context['project'] = project
-    context['student'] = student
-    # Render list page with the documents and the form
-    return render_to_response(
-        'demograder/project_submit.html',
-        context,
-        context_instance=RequestContext(request)
-    )
+    form = FileUploadForm(request.POST, request.FILES)
+    if form.is_valid():
+        submission = Submission(
+                project=project,
+                student=student,
+        )
+        submission.save()
+        # TODO handle multiple files per submission
+        upload = Upload(
+                submission=submission,
+                file=request.FILES['file'],
+        )
+        upload.save()
+        # find combination of all dependent files and submission and submit to RQ
+        dispatch_submission(student, project, submission)
+        return HttpResponseRedirect(reverse('project', kwargs=kwargs))
+    return HttpResponseRedirect(reverse('project', kwargs=kwargs))

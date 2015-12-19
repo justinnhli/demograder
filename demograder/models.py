@@ -2,6 +2,7 @@ from datetime import datetime
 from os.path import join as join_path
 
 from django.db import models
+from pytz import timezone
 
 UPLOAD_PATH = 'uploads'
 
@@ -15,7 +16,7 @@ class Student(models.Model):
         return Course.objects.filter(enrollment__student=self)
     @property
     def courses(self):
-        return ','.join(self.course_set.values_list('catalog_id', flat=True).order_by('catalog_id'))
+        return ','.join(sorted(course.catalog_id for course in self.course_set.all()))
     def __str__(self):
         return self.name
 
@@ -129,6 +130,12 @@ class Submission(models.Model):
     @property
     def uploads(self):
         return '\n'.join(sorted(u.file.url for u in self.upload_set.all()))
+    @property
+    def isoformat(self):
+        return self.timestamp.strftime('%Y-%m-%d %H:%M:%S')
+    @property
+    def us_format(self):
+        return self.timestamp.astimezone(timezone('US/Pacific')).strftime('%b %d, %Y %I:%M:%S %p')
     def __str__(self):
         return self.timestamp.strftime("%Y-%m-%d %H:%M:%S") + self.student.email
 
