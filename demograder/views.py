@@ -29,7 +29,9 @@ def course_view(request, **kwargs):
 def project_view(request, **kwargs):
     context = get_student_context(**kwargs)
     context['project'] = Project.objects.get(id=kwargs['project_id'])
-    context['submissions'] = Submission.objects.filter(student=context['student']).order_by('timestamp')
+    context['submissions'] = Submission.objects.filter(student=context['student']).order_by('-timestamp')
+    context['submission'] = Submission.objects.filter(student=context['student']).order_by('timestamp').latest('timestamp')
+    context['most_recent'] = True
     return render(request, 'demograder/project.html', context)
 
 def project_upload_view(request, **kwargs):
@@ -78,3 +80,13 @@ def project_submit_handler(request, **kwargs):
         dispatch_submission(student, project, submission)
         return HttpResponseRedirect(reverse('project', kwargs=kwargs))
     return HttpResponseRedirect(reverse('project', kwargs=kwargs))
+
+def submission_view(request, **kwargs):
+    context = get_student_context(**kwargs)
+    context['submission'] = Submission.objects.get(id=kwargs['submission_id'])
+    context['project'] = context['submission'].project
+    if context['submission'] == Submission.objects.filter(student=context['student']).order_by('timestamp').latest('timestamp'):
+        return HttpResponseRedirect(reverse('project', kwargs={'project_id':context['project'].id}))
+    context['submissions'] = Submission.objects.filter(student=context['student']).order_by('-timestamp')
+    context['most_recent'] = False
+    return render(request, 'demograder/project.html', context)

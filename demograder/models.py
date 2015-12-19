@@ -1,5 +1,5 @@
 from datetime import datetime
-from os.path import join as join_path
+from os.path import basename, join as join_path
 
 from django.db import models
 from pytz import timezone
@@ -129,7 +129,7 @@ class Submission(models.Model):
         return join_path(*context)
     @property
     def uploads(self):
-        return '\n'.join(sorted(u.file.url for u in self.upload_set.all()))
+        return sorted(u.file.name for u in self.upload_set.all())
     @property
     def isoformat(self):
         return self.timestamp.strftime('%Y-%m-%d %H:%M:%S')
@@ -147,6 +147,9 @@ def _upload_path(instance, filename):
 class Upload(models.Model):
     submission = models.ForeignKey(Submission)
     file = models.FileField(upload_to=_upload_path)
+    @property
+    def basename(self):
+        return basename(self.file.name)
     def __str__(self):
         return self.file
 

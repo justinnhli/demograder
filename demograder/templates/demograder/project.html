@@ -15,7 +15,15 @@
 <h2>Project: {{ project.name }}</h2>
 
 <h3>Test Results</h3>
-<p>From 2015-12-14 12:45 (most recent submit)</p>
+<p>
+	From
+	{{ submission.us_format }}
+	{% if most_recent %}
+		(most recent submit)
+	{% else %}
+		(<a href="{% url 'project' project.id %}">see most recent submission</a>)
+	{% endif %}
+</p>
 <p><a href="{% url 'project_upload' project.id %}">Upload New Version</a></p>
 <div id="scoreboard">
 	<a class="score good" href="">Pass</a>
@@ -78,8 +86,12 @@
 			</tr>
 			{% for submission in submissions %}
 			<tr>
-				<td>{{ submission.us_format }}</td>
-				<td><a href="">hello.py</a></td>
+				<td><a href="{% url 'submission' submission.id %}">{{ submission.us_format }}</a></td>
+				<td>
+					{% for upload in submission.upload_set.all %}
+						<a href="">{{ upload.basename }}</a>,
+					{% endfor %}
+				</td>
 				<td>6/7</td>
 			</tr>
 			{% endfor %}
