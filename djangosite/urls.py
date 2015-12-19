@@ -16,9 +16,11 @@ Including another URLconf
 from django.conf.urls import include, url
 from django.contrib import admin
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
+from django.views.generic import RedirectView
 
 urlpatterns = [
-    url(r'^demograder/', include('demograder.urls')),
+    url(r'^$', RedirectView.as_view(url='demograder')),
+    url(r'^demograder/', include('demograder.urls'), name='demograder'),
     url(r'^django-rq/', include('django_rq.urls')),
     url(r'^admin/', include(admin.site.urls)),
 ]
