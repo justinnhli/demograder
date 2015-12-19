@@ -1,10 +1,10 @@
-# Demograder #
+# Demograder
 
 > The best answer to the question, "What is the most effective method of teaching?" is that it depends on the goal, the student, the content, and the teacher. But the next best answer is, "students teaching other students". - Wilbert J. McKeachie
 
 For a description of the general idea, read [this blog post](https://howtostartacsdept.wordpress.com/2015/12/02/step-29-design-an-autograder/).
 
-## Requirements ##
+## Requirements
 
 Demograder uses an all-Python stack:
 
@@ -14,7 +14,7 @@ Demograder uses an all-Python stack:
 * [Honcho](https://github.com/nickstenning/honcho/) as the process manager
 * [pytz](http://pytz.sourceforge.net/) for timezone data
 
-## Running ##
+## Running
 
 0. Go to the root of this repository
 
