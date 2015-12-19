@@ -99,22 +99,6 @@ class Project(models.Model):
     def __str__(self):
         return self.name
 
-class Dependency(models.Model):
-    class Meta:
-        verbose_name_plural = 'Dependencies'
-    consumer = models.ForeignKey(Project, related_name='upstream_deps')
-    producer = models.ForeignKey(Project, related_name='downstream_deps')
-    keyword = models.CharField(max_length=20)
-    def __str__(self):
-        return '{} -> {}'.format(self.producer, self.consumer)
-
-class Match(models.Model):
-    class Meta:
-        verbose_name_plural = 'Matches'
-    dependency = models.ForeignKey(Dependency)
-    consumer = models.ForeignKey(Student, related_name='consumers')
-    producer = models.ForeignKey(Student, related_name='producers')
-
 class Submission(models.Model):
     project = models.ForeignKey(Project)
     student = models.ForeignKey(Student)
@@ -151,11 +135,32 @@ class Upload(models.Model):
     def basename(self):
         return basename(self.file.name)
     def __str__(self):
-        return self.file
+        return self.file.name
 
 class Result(models.Model):
     submission = models.ForeignKey(Submission)
-    # FIXME also need to specify dependent submissions
     stdout = models.TextField(blank=True)
     stderr = models.TextField(blank=True)
     return_code = models.IntegerField(null=True, blank=True)
+
+class ProjectDependency(models.Model):
+    class Meta:
+        verbose_name_plural = 'ProjectDependencies'
+    project = models.ForeignKey(Project)
+    producer = models.ForeignKey(Project, related_name='downstream_set')
+    keyword = models.CharField(max_length=20)
+    def __str__(self):
+        return '{} -> {}'.format(self.producer, self.project)
+
+class StudentDependency(models.Model):
+    class Meta:
+        verbose_name_plural = 'StudentDependencies'
+    student = models.ForeignKey(Student)
+    dependency = models.ForeignKey(ProjectDependency)
+    producer = models.ForeignKey(Student, related_name='downstream_set')
+
+class ResultDependency(models.Model):
+    class Meta:
+        verbose_name_plural = 'ResultDependencies'
+    result = models.ForeignKey(Result)
+    producer = models.ForeignKey(Submission, related_name='downstream_set')

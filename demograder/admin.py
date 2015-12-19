@@ -7,8 +7,8 @@ from .models import Department, Course
 from .models import Student
 from .models import Enrollment
 from .models import Project
-from .models import Dependency, Match
-from .models import Submission, Upload
+from .models import Submission, Upload, Result
+from .models import ProjectDependency, StudentDependency, ResultDependency
 
 admin.site.register(Year)
 
@@ -26,12 +26,16 @@ admin.site.register(Enrollment)
 
 admin.site.register(Project)
 
-admin.site.register(Dependency)
-
-admin.site.register(Match)
-
 class SubmissionAdmin(admin.ModelAdmin):
     list_display = ('project', 'student', 'timestamp', 'uploads')
 admin.site.register(Submission, SubmissionAdmin)
 
 admin.site.register(Upload)
+
+admin.site.register(Result)
+
+admin.site.register(ProjectDependency)
+
+admin.site.register(StudentDependency)
+
+admin.site.register(ResultDependency)
