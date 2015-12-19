@@ -11,8 +11,11 @@ class Student(models.Model):
     name = models.CharField(max_length=50)
     email = models.EmailField(primary_key=True)
     @property
+    def course_set(self):
+        return Course.objects.filter(enrollment__student=self)
+    @property
     def courses(self):
-        return ','.join(sorted(e.course.catalog_id for e in self.enrollment_set.all()))
+        return ','.join(self.course_set.values_list('catalog_id', flat=True).order_by('catalog_id'))
     def __str__(self):
         return self.name
 
@@ -58,8 +61,14 @@ class Course(models.Model):
     def catalog_id(self):
         return '{} {}'.format(self.department.catalog_code, self.course_number)
     @property
+    def projects(self):
+        return ','.join(sorted(p.name for p in self.project_set.all()))
+    @property
+    def student_set(self):
+        return Student.objects.filter(enrollment__course=self)
+    @property
     def students(self):
-        return ','.join(sorted(e.student.name for e in self.enrollment_set.all()))
+        return ','.join(self.student_set.values_list('name', flat=True).order_by('name'))
     def __str__(self):
         return '[{}] ({}) {}'.format(self.semester, self.catalog_id, self.title)
 
@@ -109,9 +118,6 @@ class Submission(models.Model):
     project = models.ForeignKey(Project)
     student = models.ForeignKey(Student)
     timestamp = models.DateTimeField(auto_now_add=True)
-    stdout = models.TextField(blank=True)
-    stderr = models.TextField(blank=True)
-    return_code = models.IntegerField(null=True, blank=True)
     @property
     def directory(self):
         return join_path(
@@ -136,3 +142,10 @@ class Upload(models.Model):
     file = models.FileField(upload_to=_upload_path)
     def __str__(self):
         return self.file
+
+class Result(models.Model):
+    submission = models.ForeignKey(Submission)
+    # FIXME also need to specify dependent submissions
+    stdout = models.TextField(blank=True)
+    stderr = models.TextField(blank=True)
+    return_code = models.IntegerField(null=True, blank=True)

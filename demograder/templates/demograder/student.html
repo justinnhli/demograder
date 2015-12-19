@@ -1,0 +1,18 @@
+{% extends "demograder/base.html" %}
+
+{% block menu %}
+<!-- begin student.html:menu -->
+<h3>Courses</h3>
+{% if student.course_set.all %}
+	<ul>
+		{% for course in student.course_set.all %}
+			<li>
+				<a href="{% url 'course' course.id %}"><span class="catalog-code">{{ course.catalog_id }}</span>: {{ course.title }}</a>
+			</li>
+		{% endfor %}
+	</ul>
+{% else %}
+	You are not registered for any course that uses Demograder.
+{% endif %}
+<!-- end student.html:menu -->
+{% endblock %}

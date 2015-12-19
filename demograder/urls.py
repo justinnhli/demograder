@@ -3,7 +3,8 @@ from django.conf.urls import url
 from . import views
 
 urlpatterns = [
-    url(r'^$', views.CourseListView.as_view(), name='Course List View'),
-    url(r'^courses/(?P<course_id>[0-9]+)/$', views.ProjectListView.as_view(), name='Project List View'),
-    url(r'^projects/(?P<project_id>[0-9]+)/$', views.submit_project, name='Project Status View'),
+    url(r'^$', views.index_view, name='index'),
+    url(r'^courses/(?P<course_id>[0-9]+)/$', views.course_view, name='course'),
+    url(r'^projects/(?P<project_id>[0-9]+)/$', views.project_view, name='project'),
+    url(r'^projects/(?P<project_id>[0-9]+)/submit/$', views.project_submit_view, name='submit'),
 ]

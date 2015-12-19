@@ -1,36 +1,33 @@
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
-from django.shortcuts import render_to_response
+from django.shortcuts import render, render_to_response
 from django.template import RequestContext
-from django.views import generic
 
 from .forms import FileUploadForm
 from .models import Course, Project, Submission, Student, Upload
 from .dispatcher import dispatch_submission
 
-# Create your views here.
+def get_student_context(**kwargs):
+    # FIXME get logged in student
+    context = {}
+    context['student'] = Student.objects.get(email='justinnhli@oxy.edu')
+    return context
 
-class ParameterListView(generic.ListView):
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context.update(self.kwargs)
-        return context
+def index_view(request, **kwargs):
+    context = get_student_context(**kwargs)
+    return render(request, 'demograder/index.html', context)
 
-class CourseListView(ParameterListView):
-    model = Course
-    def get_queryset(self):
-        return Course.objects.all().order_by('-year', 'season', 'department__catalog_code', 'course_number')
+def course_view(request, **kwargs):
+    context = get_student_context(**kwargs)
+    context['course'] = Course.objects.get(id=kwargs['course_id'])
+    return render(request, 'demograder/course.html', context)
 
-class ProjectListView(ParameterListView):
-    model = Project
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['course'] = Course.objects.get(id=self.kwargs['course_id'])
-        return context
-    def get_queryset(self):
-        return Project.objects.filter(course=self.kwargs['course_id'])
+def project_view(request, **kwargs):
+    context = get_student_context(**kwargs)
+    context['project'] = Project.objects.get(id=kwargs['project_id'])
+    return render(request, 'demograder/project.html', context)
 
-def submit_project(request, **kwargs):
+def project_submit_view(request, **kwargs):
     project = Project.objects.get(id=kwargs['project_id'])
     course = project.course
     # FIXME authenticate somehow
@@ -54,7 +51,7 @@ def submit_project(request, **kwargs):
             # TODO submit process to rq
             # find combination of all dependent files and submission
             dispatch_submission(student, project, submission)
-            return HttpResponseRedirect(reverse('Project Status View', kwargs=kwargs))
+            return HttpResponseRedirect(reverse('course', kwargs=kwargs))
     else:
         form = FileUploadForm()
     # Collect context
@@ -67,7 +64,7 @@ def submit_project(request, **kwargs):
     context['student'] = student
     # Render list page with the documents and the form
     return render_to_response(
-        'demograder/submit_project.html',
+        'demograder/project_submit.html',
         context,
         context_instance=RequestContext(request)
     )

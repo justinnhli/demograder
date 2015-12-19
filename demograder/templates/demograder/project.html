@@ -1,0 +1,102 @@
+{% extends "demograder/student.html" %}
+
+{% block breadcrumb %}
+<!-- begin project.html:breadcrumb -->
+<a href="{% url 'index' %}">Home</a>
+&gt;
+<a href="{% url 'course' project.course.id %}">{{ project.course.catalog_id }}</a>
+&gt;
+<a href="{% url 'project' project.id %}">{{ project.name }}</a>
+<!-- end project.html:breadcrumb -->
+{% endblock %}
+
+{% block content %}
+<!-- begin project.html:content -->
+<h2>Project: {{ project.name }}</h2>
+
+<h3>Test Results</h3>
+<p>From 2015-12-14 12:45 (most recent submit)</p>
+<p><a href="{% url 'submit' project.id %}">Submit New Version</a></p>
+<div id="scoreboard">
+	<a class="score good" href="">Pass</a>
+	<a class="score good" href="">Pass</a>
+	<a class="score bad" href="">Fail</a>
+	<a class="score tbd" href="">TBD</a>
+	<a class="score bad" href="">Fail</a>
+	<a class="score good" href="">Pass</a>
+	<a class="score bad" href="">Fail</a>
+	<a class="score bad" href="">Fail</a>
+	<a class="score tbd" href="">TBD</a>
+	<a class="score tbd" href="">TBD</a>
+	<a class="score bad" href="">Fail</a>
+	<a class="score tbd" href="">TBD</a>
+	<a class="score good" href="">Pass</a>
+	<a class="score bad" href="">Fail</a>
+	<a class="score tbd" href="">TBD</a>
+	<a class="score good" href="">Pass</a>
+	<a class="score bad" href="">Fail</a>
+	<a class="score bad" href="">Fail</a>
+	<a class="score good" href="">Pass</a>
+	<a class="score bad" href="">Fail</a>
+	<a class="score good" href="">Pass</a>
+	<a class="score tbd" href="">TBD</a>
+	<a class="score bad" href="">Fail</a>
+	<a class="score tbd" href="">TBD</a>
+	<a class="score tbd" href="">TBD</a>
+	<a class="score good" href="">Pass</a>
+	<a class="score bad" href="">Fail</a>
+	<a class="score good" href="">Pass</a>
+	<a class="score tbd" href="">TBD</a>
+	<a class="score tbd" href="">TBD</a>
+	<a class="score good" href="">Pass</a>
+	<a class="score bad" href="">Fail</a>
+	<a class="score bad" href="">Fail</a>
+	<a class="score good" href="">Pass</a>
+	<a class="score bad" href="">Fail</a>
+	<a class="score good" href="">Pass</a>
+	<a class="score good" href="">Pass</a>
+	<a class="score good" href="">Pass</a>
+	<a class="score good" href="">Pass</a>
+	<a class="score good" href="">Pass</a>
+	<a class="score bad" href="">Fail</a>
+	<a class="score good" href="">Pass</a>
+	<a class="score tbd" href="">TBD</a>
+	<a class="score tbd" href="">TBD</a>
+	<a class="score bad" href="">Fail</a>
+	<a class="score bad" href="">Fail</a>
+	<a class="score good" href="">Pass</a>
+</div>
+
+<h3 id="history-heading">Submission History</h3>
+<div id="history">
+	<table id="history-table">
+		<tr>
+			<th>Date/Time</th>
+			<th>File(s)</th>
+			<th>Tests Passed</th>
+		</tr>
+		<tr>
+			<td>2015-12-18 21:13</td>
+			<td><a href="">hello.py</a></td>
+			<td>6/7</td>
+		</tr>
+		<tr>
+			<td>2015-12-18 21:13</td>
+			<td><a href="">hello.py</a></td>
+			<td>6/7</td>
+		</tr>
+		<tr>
+			<td>2015-12-18 21:13</td>
+			<td><a href="">hello.py</a></td>
+			<td>6/7</td>
+		</tr>
+		<tr>
+			<td>2015-12-18 21:13</td>
+			<td><a href="">hello.py</a></td>
+			<td>6/7</td>
+		</tr>
+	</table>
+</div>
+
+<!-- end project.html:content -->
+{% endblock %}
