@@ -76,6 +76,9 @@ class Course(models.Model):
 class Enrollment(models.Model):
     course = models.ForeignKey(Course)
     student = models.ForeignKey(Student)
+    @property
+    def semester(self):
+        return self.course.semester
 
 def _project_path(instance, filename):
     return join_path(instance.directory,
@@ -87,6 +90,7 @@ class Project(models.Model):
     script = models.FileField(upload_to=_project_path, blank=True)
     @property
     def directory(self):
+        # FIXME need to separate project scripts from submission uploads
         context = (
             UPLOAD_PATH, # root
             str(self.course.year), # year
@@ -109,11 +113,11 @@ class Submission(models.Model):
                 self.project.directory,
                 'submissions',
                 self.student.email[:self.student.email.find('@')],
+                datetime.today().strftime('%Y%m%d%H%M%S%f'),
         )
-        return join_path(*context)
     @property
-    def uploads(self):
-        return sorted(u.file.name for u in self.upload_set.all())
+    def uploads_str(self):
+        return ', '.join(sorted(u.file.name for u in self.upload_set.all()))
     @property
     def isoformat(self):
         return self.timestamp.strftime('%Y-%m-%d %H:%M:%S')
@@ -125,15 +129,29 @@ class Submission(models.Model):
 
 def _upload_path(instance, filename):
     return join_path(instance.submission.directory,
-            datetime.today().strftime('%Y%m%d%H%M%S%f'),
             filename)
 
 class Upload(models.Model):
     submission = models.ForeignKey(Submission)
     file = models.FileField(upload_to=_upload_path)
     @property
+    def dirname(self):
+        return dirname(self.file.name)
+    @property
     def basename(self):
         return basename(self.file.name)
+    @property
+    def filename(self):
+        return self.file.name
+    @property
+    def timestamp(self):
+        return self.submission.timestamp
+    @property
+    def project(self):
+        return self.submission.project
+    @property
+    def student(self):
+        return self.submission.student
     def __str__(self):
         return self.file.name
 
@@ -142,6 +160,15 @@ class Result(models.Model):
     stdout = models.TextField(blank=True)
     stderr = models.TextField(blank=True)
     return_code = models.IntegerField(null=True, blank=True)
+    @property
+    def submission_timestamp(self):
+        return self.submission.timestamp
+    @property
+    def project(self):
+        return self.submission.project
+    @property
+    def student(self):
+        return self.submission.student
 
 class ProjectDependency(models.Model):
     class Meta:
@@ -150,7 +177,7 @@ class ProjectDependency(models.Model):
     producer = models.ForeignKey(Project, related_name='downstream_set')
     keyword = models.CharField(max_length=20)
     def __str__(self):
-        return '{} -> {}'.format(self.producer, self.project)
+        return '{} <- {}'.format(self.project, self.producer)
 
 class StudentDependency(models.Model):
     class Meta:
@@ -158,6 +185,9 @@ class StudentDependency(models.Model):
     student = models.ForeignKey(Student)
     dependency = models.ForeignKey(ProjectDependency)
     producer = models.ForeignKey(Student, related_name='downstream_set')
+    @property
+    def project(self):
+        return self.dependency.project
 
 class ResultDependency(models.Model):
     class Meta:

@@ -12,7 +12,9 @@ from .models import ProjectDependency, StudentDependency, ResultDependency
 
 admin.site.register(Year)
 
-admin.site.register(Department)
+class DepartmentAdmin(admin.ModelAdmin):
+    list_display = ('name', 'catalog_code')
+admin.site.register(Department, DepartmentAdmin)
 
 class CourseAdmin(admin.ModelAdmin):
     list_display = ('semester', 'catalog_id', 'title', 'students')
@@ -22,7 +24,9 @@ class StudentAdmin(admin.ModelAdmin):
     list_display = ('name', 'email', 'courses')
 admin.site.register(Student, StudentAdmin)
 
-admin.site.register(Enrollment)
+class EnrollmentAdmin(admin.ModelAdmin):
+    list_display = ('semester', 'course', 'student')
+admin.site.register(Enrollment, EnrollmentAdmin)
 
 admin.site.register(Project)
 
@@ -30,12 +34,23 @@ class SubmissionAdmin(admin.ModelAdmin):
     list_display = ('project', 'student', 'timestamp', 'uploads')
 admin.site.register(Submission, SubmissionAdmin)
 
-admin.site.register(Upload)
+class UploadAdmin(admin.ModelAdmin):
+    list_display = ('timestamp', 'project', 'student', 'filename')
+admin.site.register(Upload, UploadAdmin)
 
-admin.site.register(Result)
+class ResultAdmin(admin.ModelAdmin):
+    list_display = (
+        'submission_timestamp',
+        'project',
+        'student',
+        'return_code',
+    )
+admin.site.register(Result, ResultAdmin)
 
 admin.site.register(ProjectDependency)
 
-admin.site.register(StudentDependency)
+class StudentDependencyAdmin(admin.ModelAdmin):
+    list_display = ('project', 'student', 'producer')
+admin.site.register(StudentDependency, StudentDependencyAdmin)
 
 admin.site.register(ResultDependency)
