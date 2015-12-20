@@ -1,61 +1,78 @@
 from collections import defaultdict
 from itertools import product
-from os.path import basename, join as join_path
+from os.path import basename, dirname, join as join_path
 from shutil import copyfile
 from tempfile import TemporaryDirectory
 from subprocess import run as run_process, PIPE, TimeoutExpired
 
-from redis import Redis
-from rq import Queue
 import django_rq
 
-SHELL_ADAPTOR = join_path(basename(__file__), 'shell-adaptor.py')
+from .models import Result, ResultDependency
 
-def evaluate_submission(submission, kwargs):
+SHELL_ADAPTOR = join_path(dirname(__file__), 'shell-adaptor.py')
+
+def evaluate_submission(script, uploads, result, kwargs):
     # create temporary directory
     with TemporaryDirectory() as temp_dir:
-        # copy all files
+        # copy shell adaptor
+        tmp_adaptor = copyfile(SHELL_ADAPTOR, join_path(temp_dir, basename(SHELL_ADAPTOR)))
+        # copy the submission
+        tmp_uploads = []
+        for upload in uploads:
+            tmp_uploads.append(copyfile(upload, join_path(temp_dir, basename(upload))))
+        # copy all dependency files
         tmp_args = defaultdict(list)
-        for key, files in kwargs.items():
-            for filepath in files:
-                tmp_args[key].append(copyfile(filepath, join_path(temp_dir, basename(filepath))))
+        for key, upstream_submissions in kwargs.items():
+            for submission in upstream_submissions:
+                for upload in submission.upload_set.all():
+                    filepath = upload.file.name
+                    tmp_args[key].append(copyfile(filepath, join_path(temp_dir, basename(filepath))))
         try:
-            args = []
+            args = ['--_script', script, '--_uploads', ','.join(tmp_uploads)]
             for key, files in tmp_args.items():
                 args.extend(('--{}'.format(key), ','.join(files)))
             # FIXME switch user
-            args = ['python3.5', SHELL_ADAPTOR] + args
+            args = ['python3.5', tmp_adaptor] + args
             # timeout is in seconds (300s == 5min)
             completed_process = run_process(args, timeout=10, stderr=PIPE, stdout=PIPE)
             stdout = completed_process.stdout.decode('utf-8')
             stderr = completed_process.stderr.decode('utf-8')
             return_code = completed_process.returncode
         except TimeoutExpired as e:
-            stdout = completed_process.stdout.decode('utf-8')
-            stderr = completed_process.stderr.decode('utf-8')
+            stdout = e.stdout.decode('utf-8')
+            stderr = e.stderr.decode('utf-8')
             return_code = e.returncode
-    # update db
-    submission.stdout = stdout
-    submission.stderr = stderr
-    submission.return_code = return_code
-    submission.save()
+    # update Result
+    result.stdout = stdout
+    result.stderr = stderr
+    result.return_code = return_code
+    result.save()
 
 def dispatch_submission(student, project, submission):
     if not project.script:
         return
-    # space is a dictionary of lists of (lists of files)
+    script = project.script.name
+    uploads = tuple(upload.file.name for upload in submission.upload_set.all())
+    # space is a dictionary of lists of Submissions
     space = defaultdict(list)
-    space['_script'].append((project.script.name,))
-    space['_submission'].append(tuple(upload.file.name for upload in submission.upload_set.all()))
     # for each project dependency
-    for dependency in project.upstream_deps.all():
+    for project_dependency in project.projectdependency_set.all():
         # for each pair of students matched
-        for match in dependency.match_set.filter(consumer=student):
-            # find the producer's submission(s) for the upstream project
-            for upstream_sub in dependency.producer.submission_set.filter(student=match.producer):
-                # add to dictionary of file arguments
-                space[dependency.keyword].append(tuple(upload.file.name for upload in upstream_sub.upload_set.all()))
+        for student_dependency in project_dependency.studentdependency_set.filter(student=student):
+            # add all submissions as arguments
+            space[project_dependency.keyword].append(tuple(student_dependency.producer.submission_set.filter(project=project_dependency.producer)))
     keys = sorted(space.keys())
-    redis_conn = django_rq.get_connection()
-    for files in product(*(space[key] for key in keys)):
-        django_rq.enqueue(evaluate_submission, submission, dict(zip(keys, files)))
+    for dependencies in product(*(space[key] for key in keys)):
+        kwargs = dict(zip(keys, dependencies))
+        result = Result(
+            submission=submission,
+        )
+        result.save()
+        for upstream_submissions in kwargs.values():
+            for upstream_submission in upstream_submissions:
+                ResultDependency(
+                    result=result,
+                    producer=upstream_submission,
+
+                ).save()
+        django_rq.enqueue(evaluate_submission, script, uploads, result, kwargs)

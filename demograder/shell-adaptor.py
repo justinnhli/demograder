@@ -11,7 +11,7 @@ def main():
     spec = spec_from_file_location(basename(script)[:-3], script)
     module = module_from_spec(spec)
     spec.loader.exec_module(module)
-    module.run(kwargs)
+    module.run(**kwargs)
 
 if __name__ == '__main__':
     main()
