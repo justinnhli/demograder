@@ -32,8 +32,7 @@ input[type=submit] {color:#000000;}
 #history-table th {text-align:center;}
 #history-table td {padding:0 0.5em 0 0.5em;}
 #history-table tr:first-child th {border-top-style:none;}
-#history-table th {border-bottom:#FFFFFF 2px solid;}
-#history-table th, #history-table td {border:#FFFFFF 1px solid;}
+#history-table th, #history-table td {border:#808080 1px solid;}
 #history-table th:first-child, #history-table td:first-child {border-left-style:none;}
 #history-table th:last-child, #history-table td:last-child {border-right-style:none;}
 #history-table tr:last-child td {border-bottom-style:none;}
