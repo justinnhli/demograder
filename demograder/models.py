@@ -116,8 +116,11 @@ class Submission(models.Model):
                 datetime.today().strftime('%Y%m%d%H%M%S%f'),
         )
     @property
-    def score_str(self):
-        return "{}/{}".format(len(self.result_set.filter(return_code=0)), len(self.result_set.all()))
+    def score(self):
+        return len(self.result_set.filter(return_code=0))
+    @property
+    def max_score(self):
+        return len(self.result_set.all())
     @property
     def uploads_str(self):
         return ', '.join(sorted(u.file.name for u in self.upload_set.all()))
