@@ -31,7 +31,7 @@ admin.site.register(Enrollment, EnrollmentAdmin)
 admin.site.register(Project)
 
 class SubmissionAdmin(admin.ModelAdmin):
-    list_display = ('project', 'student', 'timestamp', 'uploads')
+    list_display = ('project', 'student', 'timestamp', 'uploads_str')
 admin.site.register(Submission, SubmissionAdmin)
 
 class UploadAdmin(admin.ModelAdmin):
