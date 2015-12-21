@@ -1,5 +1,5 @@
 from datetime import datetime
-from os.path import basename, join as join_path
+from os.path import basename, dirname, join as join_path
 
 from django.db import models
 from pytz import timezone
