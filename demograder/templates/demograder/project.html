@@ -59,7 +59,7 @@
 				<td>
 					{% for upload in submission.upload_set.all %}
 						{% if not forloop.first %},{% endif %}
-						<a href="">{{ upload.basename }}</a>
+						<a href="{% url 'download' upload.id %}">{{ upload.basename }}</a>
 					{% endfor %}
 				</td>
 				<td>

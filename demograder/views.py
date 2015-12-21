@@ -1,5 +1,8 @@
+from mimetypes import guess_type
+from os.path import basename, getsize
+
 from django.core.urlresolvers import reverse
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render, render_to_response, get_object_or_404
 from django.template import RequestContext
 
@@ -11,7 +14,11 @@ def get_context(**kwargs):
     context = {}
     # FIXME get logged in student or redirect to log in
     context['student'] = Student.objects.get(email='justinnhli@oxy.edu')
-    if 'submission_id' in kwargs:
+    if 'upload_id' in kwargs:
+        context['upload'] = get_object_or_404(Upload, id=kwargs['upload_id'])
+    if 'upload' in context:
+        context['submission'] = context['upload'].submission
+    elif 'submission_id' in kwargs:
         context['submission'] = get_object_or_404(Submission, id=kwargs['submission_id'])
     if 'submission' in context:
         context['project'] = context['submission'].project
@@ -81,3 +88,13 @@ def project_submit_handler(request, **kwargs):
         # find combination of all dependent files and submission and submit to RQ
         dispatch_submission(context['student'], context['project'], submission)
     return HttpResponseRedirect(reverse('project', kwargs=kwargs))
+
+def download_view(request, **kwargs):
+    context = get_context(**kwargs)
+    file_full_path = context['upload'].file.name
+    with open(file_full_path) as fd:
+        data = fd.read()
+    response = HttpResponse(data, content_type=guess_type(file_full_path)[0])
+    response['Content-Disposition'] = "attachment; filename={0}".format(basename(file_full_path))
+    response['Content-Length'] = getsize(file_full_path)
+    return response
