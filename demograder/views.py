@@ -44,7 +44,6 @@ def project_view(request, **kwargs):
     return render(request, 'demograder/project.html', context)
 
 def project_upload_view(request, **kwargs):
-    # Collect context
     context = get_context(**kwargs)
     context.update(kwargs)
     context['form'] = FileUploadForm()
@@ -57,6 +56,7 @@ def project_upload_view(request, **kwargs):
     )
 
 def project_submit_handler(request, **kwargs):
+    context = get_context(**kwargs)
     if request.method != 'POST':
         return HttpResponseRedirect(reverse('project', kwargs=kwargs))
     # Handle file upload
@@ -78,6 +78,7 @@ def project_submit_handler(request, **kwargs):
     return HttpResponseRedirect(reverse('project', kwargs=kwargs))
 
 def submission_view(request, **kwargs):
+    context = get_context(**kwargs)
     if context['submission'] == Submission.objects.filter(student=context['student']).latest('timestamp'):
         return HttpResponseRedirect(reverse('project', kwargs={'project_id':context['project'].id}))
     context['submissions'] = Submission.objects.filter(student=context['student']).order_by('-timestamp')
