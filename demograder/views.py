@@ -7,7 +7,7 @@ from django.shortcuts import render, render_to_response, get_object_or_404
 from django.template import RequestContext
 
 from .forms import FileUploadForm
-from .models import Course, Project, Submission, Student, Upload
+from .models import Course, Project, Result, Student, Submission, Upload
 from .dispatcher import dispatch_submission
 
 def get_context(**kwargs):
@@ -16,8 +16,12 @@ def get_context(**kwargs):
     context['student'] = Student.objects.get(email='justinnhli@oxy.edu')
     if 'upload_id' in kwargs:
         context['upload'] = get_object_or_404(Upload, id=kwargs['upload_id'])
+    if 'result_id' in kwargs:
+        context['result'] = get_object_or_404(Result, id=kwargs['result_id'])
     if 'upload' in context:
         context['submission'] = context['upload'].submission
+    elif 'result' in context:
+        context['submission'] = context['result'].submission
     elif 'submission_id' in kwargs:
         context['submission'] = get_object_or_404(Submission, id=kwargs['submission_id'])
     if 'submission' in context:
@@ -88,6 +92,14 @@ def project_submit_handler(request, **kwargs):
         # find combination of all dependent files and submission and submit to RQ
         dispatch_submission(context['student'], context['project'], submission)
     return HttpResponseRedirect(reverse('project', kwargs=kwargs))
+
+def result_view(request, **kwargs):
+    context = get_context(**kwargs)
+    print(context['result'].resultdependency_set.all())
+    for dependency in context['result'].resultdependency_set.all():
+        for upload in dependency.producer.upload_set.all():
+            print(upload.id, upload.basename)
+    return render(request, 'demograder/result.html', context)
 
 def download_view(request, **kwargs):
     context = get_context(**kwargs)

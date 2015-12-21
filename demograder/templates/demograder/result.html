@@ -1,0 +1,55 @@
+{% extends "demograder/student.html" %}
+
+{% block breadcrumb %}
+<!-- begin result.html:breadcrumb -->
+<a href="{% url 'index' %}">Home</a>
+&gt;
+<a href="{% url 'course' project.course.id %}">{{ project.course.catalog_id }}</a>
+&gt;
+<a href="{% url 'project' project.id %}">{{ project.name }}</a>
+&gt;
+<a href="{% url 'result' result.id %}">{{ result.submission.us_format }} Submission</a>
+<!-- end result.html:breadcrumb -->
+{% endblock %}
+
+{% block content %}
+<!-- begin result.html:content -->
+<h2>Results for {{ result.submission.us_format }} Submission</h2>
+
+<h3>Files Submitted</h3>
+	<ul>
+		{% for upload in result.submission.upload_set.all %}
+			<li><a href="{% url 'download' upload.id %}">{{ upload.basename }}</a></li>
+		{% endfor %}
+	</ul>
+
+<h3>Other Files Used in Test</h3>
+	<ul>
+		{% for dependency in result.resultdependency_set.all %}
+			{% for upload in dependency.producer.upload_set.all %}
+				<li><a href="{% url 'download' upload.id %}">{{ upload.basename }}</a></li>
+			{% endfor %}
+		{% endfor %}
+	</ul>
+
+{% if result.return_code == None%}
+	<h3>Result to be determined</h3>
+{% else %}
+	<h3>
+		Result: 
+		{% if result.return_code == 0 %}
+			Pass
+		{% else %}
+			Fail
+		{% endif %}
+	</h3>
+	Output:
+	<pre>
+{{ result.stdout}}
+{{ result.stderr}}
+	</pre>
+{% endif %}
+
+
+<!-- end result.html:content -->
+{% endblock %}

@@ -10,4 +10,5 @@ urlpatterns = [
     url(r'^projects/(?P<project_id>[0-9]+)/submit/$', views.project_submit_handler, name='project_submit'),
     url(r'^submissions/(?P<submission_id>[0-9]+)/$', views.project_view, name='submission'),
     url(r'^download/(?P<upload_id>[0-9]+)/$', views.download_view, name='download'),
+    url(r'^results/(?P<result_id>[0-9]+)/$', views.result_view, name='result'),
 ]
