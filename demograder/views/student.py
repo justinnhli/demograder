@@ -22,7 +22,7 @@ def course_view(request, **kwargs):
 
 def project_view(request, **kwargs):
     context = get_context(**kwargs)
-    submissions = Submission.objects.filter(project=context['project'], student=context['student'])
+    submissions = Submission.objects.filter(project=context['project'], student=context['user'])
     submissions_exist = bool(submissions)
     if submissions_exist:
         context['submissions'] = submissions.order_by('-timestamp')
@@ -55,7 +55,7 @@ def project_submit_handler(request, **kwargs):
     if form.is_valid():
         submission = Submission(
                 project=context['project'],
-                student=context['student'],
+                student=context['user'],
         )
         submission.save()
         # TODO handle multiple files per submission
@@ -65,7 +65,7 @@ def project_submit_handler(request, **kwargs):
         )
         upload.save()
         # find combination of all dependent files and submission and submit to RQ
-        dispatch_submission(context['student'], context['project'], submission)
+        dispatch_submission(context['user'], context['project'], submission)
     return HttpResponseRedirect(reverse('project', kwargs=kwargs))
 
 def result_view(request, **kwargs):

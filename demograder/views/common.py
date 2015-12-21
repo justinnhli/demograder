@@ -1,11 +1,11 @@
 from django.shortcuts import render, render_to_response, get_object_or_404
 
-from ..models import Course, Project, Result, Student, Submission, Upload
+from ..models import Course, Project, Result, Person, Submission, Upload
 
 def get_context(**kwargs):
     context = {}
-    # FIXME get logged in student or redirect to log in
-    context['student'] = get_object_or_404(Student, email='justinnhli@oxy.edu')
+    # FIXME get logged in user or redirect to log in
+    context['user'] = get_object_or_404(Person, email='justinnhli@oxy.edu')
     if 'upload_id' in kwargs:
         context['upload'] = get_object_or_404(Upload, id=kwargs['upload_id'])
     if 'result_id' in kwargs:

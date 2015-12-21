@@ -1,6 +1,6 @@
 from django.conf.urls import url
 
-from .views import student
+from .views import common, student, instructor
 
 urlpatterns = [
     url(r'^$', student.index_view, name='index'),

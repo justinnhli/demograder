@@ -8,7 +8,9 @@ UPLOAD_PATH = 'uploads'
 
 # Create your models here.
 
-class Student(models.Model):
+class Person(models.Model):
+    class Meta:
+        verbose_name_plural = 'People'
     name = models.CharField(max_length=50)
     email = models.EmailField(primary_key=True)
     @property
@@ -66,7 +68,7 @@ class Course(models.Model):
         return ','.join(sorted(p.name for p in self.project_set.all()))
     @property
     def student_set(self):
-        return Student.objects.filter(enrollment__course=self)
+        return Person.objects.filter(enrollment__course=self)
     @property
     def students(self):
         return ','.join(self.student_set.values_list('name', flat=True).order_by('name'))
@@ -75,14 +77,23 @@ class Course(models.Model):
 
 class Enrollment(models.Model):
     course = models.ForeignKey(Course)
-    student = models.ForeignKey(Student)
+    student = models.ForeignKey(Person)
+    @property
+    def semester(self):
+        return self.course.semester
+
+class Offering(models.Model):
+    course = models.ForeignKey(Course)
+    instructor = models.ForeignKey(Person)
     @property
     def semester(self):
         return self.course.semester
 
 def _project_path(instance, filename):
     return join_path(instance.directory,
-            filename)
+            'script',
+            filename,
+    )
 
 class Project(models.Model):
     course = models.ForeignKey(Course)
@@ -105,7 +116,7 @@ class Project(models.Model):
 
 class Submission(models.Model):
     project = models.ForeignKey(Project)
-    student = models.ForeignKey(Student)
+    student = models.ForeignKey(Person)
     timestamp = models.DateTimeField(auto_now_add=True)
     @property
     def directory(self):
@@ -187,10 +198,10 @@ class ProjectDependency(models.Model):
 
 class StudentDependency(models.Model):
     class Meta:
-        verbose_name_plural = 'StudentDependencies'
-    student = models.ForeignKey(Student)
+        verbose_name_plural = 'PersonDependencies'
+    student = models.ForeignKey(Person)
     dependency = models.ForeignKey(ProjectDependency)
-    producer = models.ForeignKey(Student, related_name='downstream_set')
+    producer = models.ForeignKey(Person, related_name='downstream_set')
     @property
     def project(self):
         return self.dependency.project

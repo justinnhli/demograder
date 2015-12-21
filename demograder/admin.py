@@ -4,8 +4,8 @@ from django.contrib import admin
 
 from .models import Year
 from .models import Department, Course
-from .models import Student
-from .models import Enrollment
+from .models import Person
+from .models import Enrollment, Offering
 from .models import Project
 from .models import Submission, Upload, Result
 from .models import ProjectDependency, StudentDependency, ResultDependency
@@ -20,13 +20,17 @@ class CourseAdmin(admin.ModelAdmin):
     list_display = ('semester', 'catalog_id', 'title', 'students')
 admin.site.register(Course, CourseAdmin)
 
-class StudentAdmin(admin.ModelAdmin):
-    list_display = ('name', 'email', 'courses')
-admin.site.register(Student, StudentAdmin)
+class PersonAdmin(admin.ModelAdmin):
+    list_display = ('name', 'email')
+admin.site.register(Person, PersonAdmin)
 
 class EnrollmentAdmin(admin.ModelAdmin):
     list_display = ('semester', 'course', 'student')
 admin.site.register(Enrollment, EnrollmentAdmin)
+
+class OfferingAdmin(admin.ModelAdmin):
+    list_display = ('semester', 'course', 'instructor')
+admin.site.register(Offering, OfferingAdmin)
 
 admin.site.register(Project)
 
