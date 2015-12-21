@@ -10,18 +10,28 @@ from ..forms import FileUploadForm
 from ..models import Submission, Upload
 from ..dispatcher import dispatch_submission
 
-from .common import get_context
+from .common import get_context, logged_in
 
+def get_student_context(**kwargs):
+    context = get_context(**kwargs)
+    # FIXME check permissions for course or redirect to home page
+    # FIXME check permissions for project or redirect to home page
+    # FIXME check permissions for submission or redirect to home page
+    return context
+
+@logged_in
 def index_view(request, **kwargs):
-    context = get_context(**kwargs)
-    return render(request, 'demograder/index.html', context)
+    context = get_student_context(**kwargs)
+    return render(request, 'demograder/student/index.html', context)
 
+@logged_in
 def course_view(request, **kwargs):
-    context = get_context(**kwargs)
-    return render(request, 'demograder/course.html', context)
+    context = get_student_context(**kwargs)
+    return render(request, 'demograder/student/course.html', context)
 
+@logged_in
 def project_view(request, **kwargs):
-    context = get_context(**kwargs)
+    context = get_student_context(**kwargs)
     submissions = Submission.objects.filter(project=context['project'], student=context['user'])
     submissions_exist = bool(submissions)
     if submissions_exist:
@@ -32,22 +42,24 @@ def project_view(request, **kwargs):
         else:
             context['most_recent'] = (context['submission'] == context['submissions'][0])
         context['results'] = context['submission'].result_set.all()
-    return render(request, 'demograder/project.html', context)
+    return render(request, 'demograder/student/project.html', context)
 
+@logged_in
 def project_upload_view(request, **kwargs):
-    context = get_context(**kwargs)
+    context = get_student_context(**kwargs)
     context.update(kwargs)
     context['form'] = FileUploadForm()
     # TODO load student's previous test results
     # Render list page with the documents and the form
     return render_to_response(
-        'demograder/project_upload.html',
+        'demograder/student/project_upload.html',
         context,
         context_instance=RequestContext(request)
     )
 
+@logged_in
 def project_submit_handler(request, **kwargs):
-    context = get_context(**kwargs)
+    context = get_student_context(**kwargs)
     if request.method != 'POST':
         return HttpResponseRedirect(reverse('project', kwargs=kwargs))
     # Handle file upload
@@ -68,16 +80,18 @@ def project_submit_handler(request, **kwargs):
         dispatch_submission(context['user'], context['project'], submission)
     return HttpResponseRedirect(reverse('project', kwargs=kwargs))
 
+@logged_in
 def result_view(request, **kwargs):
-    context = get_context(**kwargs)
+    context = get_student_context(**kwargs)
     print(context['result'].resultdependency_set.all())
     for dependency in context['result'].resultdependency_set.all():
         for upload in dependency.producer.upload_set.all():
             print(upload.id, upload.basename)
-    return render(request, 'demograder/result.html', context)
+    return render(request, 'demograder/student/result.html', context)
 
+@logged_in
 def download_view(request, **kwargs):
-    context = get_context(**kwargs)
+    context = get_student_context(**kwargs)
     file_full_path = context['upload'].file.name
     with open(file_full_path) as fd:
         data = fd.read()

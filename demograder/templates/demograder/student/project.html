@@ -1,17 +1,17 @@
 {% extends "demograder/student.html" %}
 
 {% block breadcrumb %}
-<!-- begin project.html:breadcrumb -->
+<!-- begin demograder/student/project.html:breadcrumb -->
 <a href="{% url 'index' %}">Home</a>
 &gt;
 <a href="{% url 'course' project.course.id %}">{{ project.course.catalog_id }}</a>
 &gt;
 <a href="{% url 'project' project.id %}">{{ project.name }}</a>
-<!-- end project.html:breadcrumb -->
+<!-- end demograder/student/project.html:breadcrumb -->
 {% endblock %}
 
 {% block content %}
-<!-- begin project.html:content -->
+<!-- begin demograder/student/project.html:content -->
 <h2>Project: {{ project.name }}</h2>
 
 <h3>Submit</h3>
@@ -78,5 +78,5 @@
 	You have not submitted to this project.
 {% endif %}
 
-<!-- end project.html:content -->
+<!-- end demograder/student/project.html:content -->
 {% endblock %}

@@ -14,10 +14,16 @@ class Person(models.Model):
     name = models.CharField(max_length=50)
     email = models.EmailField(primary_key=True)
     @property
-    def course_set(self):
+    def enrolled_course_set(self):
         return Course.objects.filter(enrollment__student=self)
     @property
-    def courses(self):
+    def enrolled_course_str(self):
+        return ','.join(sorted(course.catalog_id for course in self.course_set.all()))
+    @property
+    def offering_course_set(self):
+        return Course.objects.filter(offering__instructor=self)
+    @property
+    def offering_course_str(self):
         return ','.join(sorted(course.catalog_id for course in self.course_set.all()))
     def __str__(self):
         return self.name
@@ -101,7 +107,6 @@ class Project(models.Model):
     script = models.FileField(upload_to=_project_path, blank=True)
     @property
     def directory(self):
-        # FIXME need to separate project scripts from submission uploads
         context = (
             UPLOAD_PATH, # root
             str(self.course.year), # year

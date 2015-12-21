@@ -1,7 +1,7 @@
 {% extends "demograder/student.html" %}
 
 {% block breadcrumb %}
-<!-- begin project_upload.html:breadcrumb -->
+<!-- begin demograder/student/project_upload.html:breadcrumb -->
 <a href="{% url 'index' %}">Home</a>
 &gt;
 <a href="{% url 'course' course.id %}">{{ course.department.catalog_code }} {{ course.course_number }}</a>
@@ -9,11 +9,11 @@
 <a href="{% url 'project' project.id %}">{{ project.name }}</a>
 &gt;
 <a href="{% url 'project_upload' project.id %}">Upload</a>
-<!-- end project_upload.html:breadcrumb -->
+<!-- end demograder/student/project_upload.html:breadcrumb -->
 {% endblock %}
 
 {% block content %}
-<!-- begin project_upload.html:content -->
+<!-- begin demograder/student/project_upload.html:content -->
 <h2>{{ project.title }}</h2>
 
 <h3>{{ student.name }}</h3>
@@ -29,5 +29,5 @@
 	</p>
 	<p><input type="submit" value="Upload" /></p>
 </form>
-<!-- end project_upload.html:content -->
+<!-- end demograder/student/project_upload.html:content -->
 {% endblock %}

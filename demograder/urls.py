@@ -3,7 +3,10 @@ from django.conf.urls import url
 from .views import common, student, instructor
 
 urlpatterns = [
-    url(r'^$', student.index_view, name='index'),
+    url(r'^$', common.index_view, name='index'),
+    url(r'^login/$', common.login_view, name='login'), # TODO this should direct to an Kerberos login page
+    # student pages
+    url(r'^student/$', student.index_view, name='student'),
     url(r'^courses/(?P<course_id>[0-9]+)/$', student.course_view, name='course'),
     url(r'^projects/(?P<project_id>[0-9]+)/$', student.project_view, name='project'),
     url(r'^projects/(?P<project_id>[0-9]+)/upload/$', student.project_upload_view, name='project_upload'),
@@ -11,4 +14,6 @@ urlpatterns = [
     url(r'^submissions/(?P<submission_id>[0-9]+)/$', student.project_view, name='submission'),
     url(r'^download/(?P<upload_id>[0-9]+)/$', student.download_view, name='download'),
     url(r'^results/(?P<result_id>[0-9]+)/$', student.result_view, name='result'),
+    # instructor pages
+    url(r'^instructor/$', instructor.index_view, name='instructor'),
 ]
