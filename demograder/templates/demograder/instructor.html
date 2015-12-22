@@ -7,7 +7,7 @@
 	<ul>
 		{% for course in user.offering_course_set.all %}
 			<li>
-				<a href="{% url 'course' course.id %}"><span class="catalog-code">{{ course.catalog_id }}</span>: {{ course.title }}</a>
+				<a href="{% url 'instructor_course' course.id %}"><span class="catalog-code">{{ course.catalog_id }}</span>: {{ course.title }}</a>
 			</li>
 		{% endfor %}
 	</ul>

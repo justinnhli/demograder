@@ -1,0 +1,16 @@
+{% extends "demograder/instructor.html" %}
+
+{% block breadcrumb %}
+<!-- begin demograder/instructor/course_form.html:breadcrumb -->
+<a href="{% url 'instructor' %}">Instructor Home</a>
+<!-- end demograder/instructor/course_form.html:breadcrumb -->
+{% endblock %}
+
+{% block content %}
+<!-- begin demograder/instructor/course_form.html:content -->
+<h2>{{ course.title }}</h2>
+
+<a href="{% url 'course_edit' course.id %}">Edit the course</a> or <a href="{% url 'course_delete' course.id %}">Delete the course</a>
+
+<!-- end demograder/instructor/course_form.html:content -->
+{% endblock %}

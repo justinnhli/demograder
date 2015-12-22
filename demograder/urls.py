@@ -16,4 +16,8 @@ urlpatterns = [
     url(r'^results/(?P<result_id>[0-9]+)/$', student.result_view, name='result'),
     # instructor pages
     url(r'^instructor/$', instructor.index_view, name='instructor'),
+    url(r'^instructor/course_create/$', instructor.CourseCreate.as_view(), name='course_create'),
+    url(r'^instructor/course_edit/(?P<course_id>[0-9]+)/$', instructor.CourseEdit.as_view(), name='course_edit'),
+    url(r'^instructor/course/(?P<course_id>[0-9]+)/$', instructor.course_view, name='instructor_course'),
+    url(r'^instructor/course_delete/(?P<course_id>[0-9]+)/$', instructor.CourseDelete.as_view(), name='course_delete'),
 ]

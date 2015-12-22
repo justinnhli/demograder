@@ -2,7 +2,7 @@
 
 {% block breadcrumb %}
 <!-- begin demograder/instructor/index.html:breadcrumb -->
-<a href="{% url 'index' %}">Home</a>
+<a href="{% url 'instructor' %}">Instructor Home</a>
 <!-- end demograder/instructor/index.html:breadcrumb -->
 {% endblock %}
 
@@ -10,6 +10,6 @@
 <!-- begin demograder/instructor/index.html:content -->
 <h2>Welcome!</h2>
 
-Select a course from the menu on the left to begin, or you can <a href="">create a new course</a>
+Select a course from the menu on the left to begin, or you can <a href="{% url 'course_create' %}">create a new course</a>
 <!-- end demograder/instructor/index.html:content -->
 {% endblock %}

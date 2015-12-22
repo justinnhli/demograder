@@ -1,0 +1,18 @@
+{% extends "demograder/instructor.html" %}
+
+{% block breadcrumb %}
+<!-- begin demograder/instructor/course_form.html:breadcrumb -->
+<a href="{% url 'instructor' %}">Instructor Home</a>
+<!-- end demograder/instructor/course_form.html:breadcrumb -->
+{% endblock %}
+
+{% block content %}
+<!-- begin demograder/instructor/course_form.html:content -->
+<h2>{{ form_title_verb }} {{ form_object_type }}</h2>
+
+<form action="{% url 'instructor' %}" method="post">{% csrf_token %}
+    {{ form.as_p }}
+    <input type="submit" value="{{ form_submit_verb }}" />
+</form>
+<!-- end demograder/instructor/course_form.html:content -->
+{% endblock %}
