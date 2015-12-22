@@ -1,6 +1,6 @@
 body {background-color:#000000; color:#FFFFFF;}
 a, a:active, a:visited {color:#FFFFFF;}
-input[type=submit] {color:#000000;}
+input[type=number], input[type=submit], input[type=text], select {color:#000000;}
 
 #sidebar {background-color:#333333; padding:1.25em;}
 
