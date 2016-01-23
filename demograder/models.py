@@ -109,6 +109,7 @@ class Project(models.Model):
     course = models.ForeignKey(Course)
     name = models.CharField(max_length=200)
     script = models.FileField(upload_to=_project_path, blank=True)
+    hidden = models.BooleanField(default=False)
     @property
     def directory(self):
         context = (

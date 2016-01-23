@@ -18,9 +18,11 @@
 {% if course.project_set.all %}
 	<ul>
 		{% for project in course.project_set.all %}
-			<li>
-				<a href="{% url 'project' project.id %}">{{ project.name }}</a>
-			</li>
+			{% if not project.hidden %}
+				<li>
+					<a href="{% url 'project' project.id %}">{{ project.name }}</a>
+				</li>
+			{% endif %}
 		{% endfor %}
 	</ul>
 {% else %}
