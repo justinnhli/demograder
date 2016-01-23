@@ -1,37 +1,60 @@
 from mimetypes import guess_type
 from os.path import basename, getsize
 
+from django.contrib.auth.decorators import login_required
+from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect, HttpResponse
-from django.shortcuts import render, render_to_response
+from django.shortcuts import render, render_to_response, get_object_or_404
 from django.template import RequestContext
 
-from ..forms import FileUploadForm
-from ..models import Submission, Upload
-from ..dispatcher import dispatch_submission
+from .forms import FileUploadForm
+from .models import Course, Enrollment, Project, Submission, Upload, Result
+from .dispatcher import dispatch_submission
 
-from .common import get_context, logged_in
-
-def get_student_context(**kwargs):
-    context = get_context(**kwargs)
-    # FIXME check permissions for course or redirect to home page
-    # FIXME check permissions for project or redirect to home page
-    # FIXME check permissions for submission or redirect to home page
+def get_context(request, **kwargs):
+    context = {}
+    context['user'] = request.user
+    if 'upload_id' in kwargs:
+        context['upload'] = get_object_or_404(Upload, id=kwargs['upload_id'])
+    if 'result_id' in kwargs:
+        context['result'] = get_object_or_404(Result, id=kwargs['result_id'])
+    if 'upload' in context:
+        context['submission'] = context['upload'].submission
+    elif 'result' in context:
+        context['submission'] = context['result'].submission
+    elif 'submission_id' in kwargs:
+        context['submission'] = get_object_or_404(Submission, id=kwargs['submission_id'])
+    if 'submission' in context:
+        context['project'] = context['submission'].project
+    elif 'project_id' in kwargs:
+        context['project'] = get_object_or_404(Project, id=kwargs['project_id'])
+    if 'project' in context:
+        context['course'] = context['project'].course
+    elif 'course_id' in kwargs:
+        context['course'] = get_object_or_404(Course, id=kwargs['course_id'])
+    if 'course' in context:
+        try:
+            Enrollment.objects.get(student=context['user'].person, course=context['course'])
+        except Enrollment.DoesNotExist:
+            raise PermissionDenied
+    # FIXME check result permissions
+    # FIXME check upload permissions
     return context
 
-@logged_in
+@login_required
 def index_view(request, **kwargs):
-    context = get_student_context(**kwargs)
-    return render(request, 'demograder/student/index.html', context)
+    context = get_context(request, **kwargs)
+    return render(request, 'demograder/index.html', context)
 
-@logged_in
+@login_required
 def course_view(request, **kwargs):
-    context = get_student_context(**kwargs)
-    return render(request, 'demograder/student/course.html', context)
+    context = get_context(request, **kwargs)
+    return render(request, 'demograder/course.html', context)
 
-@logged_in
+@login_required
 def project_view(request, **kwargs):
-    context = get_student_context(**kwargs)
+    context = get_context(request, **kwargs)
     submissions = Submission.objects.filter(project=context['project'], student=context['user'])
     submissions_exist = bool(submissions)
     if submissions_exist:
@@ -42,24 +65,24 @@ def project_view(request, **kwargs):
         else:
             context['most_recent'] = (context['submission'] == context['submissions'][0])
         context['results'] = context['submission'].result_set.all()
-    return render(request, 'demograder/student/project.html', context)
+    return render(request, 'demograder/project.html', context)
 
-@logged_in
+@login_required
 def project_upload_view(request, **kwargs):
-    context = get_student_context(**kwargs)
+    context = get_context(request, **kwargs)
     context.update(kwargs)
     context['form'] = FileUploadForm()
     # TODO load student's previous test results
     # Render list page with the documents and the form
     return render_to_response(
-        'demograder/student/project_upload.html',
+        'demograder/project_upload.html',
         context,
         context_instance=RequestContext(request)
     )
 
-@logged_in
+@login_required
 def project_submit_handler(request, **kwargs):
-    context = get_student_context(**kwargs)
+    context = get_context(request, **kwargs)
     if request.method != 'POST':
         return HttpResponseRedirect(reverse('project', kwargs=kwargs))
     # Handle file upload
@@ -80,18 +103,18 @@ def project_submit_handler(request, **kwargs):
         dispatch_submission(context['user'], context['project'], submission)
     return HttpResponseRedirect(reverse('project', kwargs=kwargs))
 
-@logged_in
+@login_required
 def result_view(request, **kwargs):
-    context = get_student_context(**kwargs)
+    context = get_context(request, **kwargs)
     print(context['result'].resultdependency_set.all())
     for dependency in context['result'].resultdependency_set.all():
         for upload in dependency.producer.upload_set.all():
             print(upload.id, upload.basename)
-    return render(request, 'demograder/student/result.html', context)
+    return render(request, 'demograder/result.html', context)
 
-@logged_in
+@login_required
 def download_view(request, **kwargs):
-    context = get_student_context(**kwargs)
+    context = get_context(request, **kwargs)
     file_full_path = context['upload'].file.name
     with open(file_full_path) as fd:
         data = fd.read()

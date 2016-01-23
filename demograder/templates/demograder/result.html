@@ -1,7 +1,7 @@
-{% extends "demograder/student.html" %}
+{% extends "demograder/base.html" %}
 
 {% block breadcrumb %}
-<!-- begin demograder/student/result.html:breadcrumb -->
+<!-- begin demograder/result.html:breadcrumb -->
 <a href="{% url 'index' %}">Home</a>
 &gt;
 <a href="{% url 'course' project.course.id %}">{{ project.course.catalog_id }}</a>
@@ -9,11 +9,11 @@
 <a href="{% url 'project' project.id %}">{{ project.name }}</a>
 &gt;
 <a href="{% url 'result' result.id %}">{{ result.submission.us_format }} Submission</a>
-<!-- end demograder/student/result.html:breadcrumb -->
+<!-- end demograder/result.html:breadcrumb -->
 {% endblock %}
 
 {% block content %}
-<!-- begin demograder/student/result.html:content -->
+<!-- begin demograder/result.html:content -->
 <h2>Results for {{ result.submission.us_format }} Submission</h2>
 
 <h3>Files Submitted</h3>
@@ -51,5 +51,5 @@
 {% endif %}
 
 
-<!-- end demograder/student/result.html:content -->
+<!-- end demograder/result.html:content -->
 {% endblock %}

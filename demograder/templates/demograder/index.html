@@ -8,8 +8,14 @@
 
 {% block content %}
 <!-- begin demograder/index.html:content -->
-<h2>Welcome!</h2>
+{% if user.is_authenticated %}
+	<h2>Welcome, {{ user.first_name }}!</h2>
 
-Please select if you are a <a href="{% url 'student' %}">students</a> or an <a href="{% url 'instructor' %}">instructor</a>.
+	Select a course from the menu on the left to begin.
+{% else %}
+	<h2>Welcome!</h2>
+
+	<a href="{% url 'login' %}">Log in</a> to begin.
+{% endif %}
 <!-- end demograder/index.html:content -->
 {% endblock %}

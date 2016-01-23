@@ -20,9 +20,7 @@ class CourseAdmin(admin.ModelAdmin):
     list_display = ('semester', 'catalog_id', 'title', 'students')
 admin.site.register(Course, CourseAdmin)
 
-class PersonAdmin(admin.ModelAdmin):
-    list_display = ('name', 'email')
-admin.site.register(Person, PersonAdmin)
+admin.site.register(Person)
 
 class EnrollmentAdmin(admin.ModelAdmin):
     list_display = ('semester', 'course', 'student')

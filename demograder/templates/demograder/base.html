@@ -21,13 +21,28 @@
 						<h1 id="logo"><a href="{% url 'index' %}">DEMO<br>grader</a></h1>
 					</div>
 					<div id="menu">
-						{% block menu %}{% endblock %}
+						{% if user.is_authenticated %}
+							<h3>Courses</h3>
+							{% if user.person.enrolled_course_set.all %}
+								<ul>
+									{% for course in user.person.enrolled_course_set.all %}
+										<li>
+											<a href="{% url 'course' course.id %}"><span class="catalog-code">{{ course.catalog_id }}</span>: {{ course.title }}</a>
+										</li>
+									{% endfor %}
+								</ul>
+							{% else %}
+								You are not registered for any course that uses Demograder. Contact your instructor to be added to the system.
+							{% endif %}
+						{% endif %}
 					</div>
 					<hr>
 					<div id="admin">
-						<a href="{% url 'student' %}">Students</a> |
-						<a href="{% url 'instructor' %}">Instructors</a> |
-						<a href="/admin/">Administrators</a>
+						{% if user.is_authenticated %}
+							Logged in as {{ user.first_name }} (<a href="{% url 'logout' %}">Logout</a>)
+						{% else %}
+							<a href="{% url 'login' %}">Login</a>
+						{% endif %}
 					</div>
 				</div>
 

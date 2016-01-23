@@ -1,6 +1,7 @@
 from datetime import datetime
 from os.path import basename, dirname, join as join_path
 
+from django.contrib.auth.models import User
 from django.db import models
 from pytz import timezone
 
@@ -11,8 +12,10 @@ UPLOAD_PATH = 'uploads'
 class Person(models.Model):
     class Meta:
         verbose_name_plural = 'People'
-    name = models.CharField(max_length=50)
-    email = models.EmailField(primary_key=True)
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    @property
+    def name(self):
+        return '{} {}'.format(self.user.first_name, self.user.last_name)
     @property
     def enrolled_course_set(self):
         return Course.objects.filter(enrollment__student=self)
@@ -26,7 +29,7 @@ class Person(models.Model):
     def offering_course_str(self):
         return ','.join(sorted(course.catalog_id for course in self.course_set.all()))
     def __str__(self):
-        return self.name
+        return self.user.username
 
 def _current_year():
     return datetime.today().year
@@ -77,7 +80,8 @@ class Course(models.Model):
         return Person.objects.filter(enrollment__course=self)
     @property
     def students(self):
-        return ','.join(self.student_set.values_list('name', flat=True).order_by('name'))
+        return ','.join(sorted(student.name for student in self.student_set))
+        #return ','.join(self.student_set.values_list('student__name', flat=True).order_by('name'))
     def __str__(self):
         return '[{}] ({}) {}'.format(self.semester, self.catalog_id, self.title)
 
@@ -203,7 +207,7 @@ class ProjectDependency(models.Model):
 
 class StudentDependency(models.Model):
     class Meta:
-        verbose_name_plural = 'PersonDependencies'
+        verbose_name_plural = 'StudentDependencies'
     student = models.ForeignKey(Person)
     dependency = models.ForeignKey(ProjectDependency)
     producer = models.ForeignKey(Person, related_name='downstream_set')
