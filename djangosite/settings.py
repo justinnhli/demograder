@@ -39,6 +39,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'demograder',
     'django_rq',
+    'sslserver',
 )
 
 MIDDLEWARE_CLASSES = (
