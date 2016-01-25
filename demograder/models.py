@@ -133,7 +133,7 @@ class Submission(models.Model):
         return join_path(
                 self.project.directory,
                 'submissions',
-                self.student.email[:self.student.email.find('@')],
+                self.student.user.username,
                 datetime.today().strftime('%Y%m%d%H%M%S%f'),
         )
     @property
@@ -152,7 +152,7 @@ class Submission(models.Model):
     def us_format(self):
         return self.timestamp.astimezone(timezone('US/Pacific')).strftime('%b %d, %Y %I:%M:%S %p')
     def __str__(self):
-        return self.timestamp.strftime("%Y-%m-%d %H:%M:%S") + self.student.email
+        return self.timestamp.strftime("%Y-%m-%d %H:%M:%S") + self.student.user.username
 
 def _upload_path(instance, filename):
     return join_path(instance.submission.directory,
