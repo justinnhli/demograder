@@ -42,8 +42,8 @@ def evaluate_submission(script, uploads, result, kwargs):
             stderr = e.stderr.decode('utf-8')
             return_code = 1
     # update Result
-    result.stdout = stdout
-    result.stderr = stderr
+    result.stdout = stdout.strip()
+    result.stderr = stderr.strip()
     result.return_code = return_code
     result.save()
 
