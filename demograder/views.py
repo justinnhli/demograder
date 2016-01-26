@@ -9,7 +9,7 @@ from django.shortcuts import render, render_to_response, get_object_or_404
 from django.template import RequestContext
 
 from .forms import FileUploadForm
-from .models import Course, Enrollment, Project, Submission, Upload, Result
+from .models import Course, Enrollment, Project, Submission, Upload, Result, StudentDependency
 from .dispatcher import dispatch_submission
 
 def get_context(request, **kwargs):
