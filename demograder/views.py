@@ -38,8 +38,26 @@ def get_context(request, **kwargs):
             Enrollment.objects.get(student=context['user'].person, course=context['course'])
         except Enrollment.DoesNotExist:
             raise PermissionDenied
-    # FIXME check result permissions
-    # FIXME check upload permissions
+    if 'upload' in context:
+        owner = context['upload'].student
+        project = context['project']
+        student = context['user'].person
+        if owner != student:
+            try:
+                StudentDependency.objects.get(
+                        producer=owner,
+                        student=student,
+                        dependency__producer=project,
+                )
+            except StudentDependency.DoesNotExist:
+                raise PermissionDenied
+    else:
+        if 'project' in context:
+            if context['project'].hidden and not context['user'].is_superuser:
+                raise PermissionDenied
+        if 'submission' in context:
+            if context['submission'].student != context['user'].person:
+                raise PermissionDenied
     return context
 
 @login_required
