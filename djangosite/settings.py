@@ -23,10 +23,9 @@ with open(os.path.join(BASE_DIR, 'djangosite', 'secret-key')) as fd:
 	SECRET_KEY = fd.read().strip()
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
-
+ALLOWED_HOSTS = ['autograder.cc.oxy.edu',]
 
 # Application definition
 
@@ -99,22 +98,26 @@ DATABASES = {
     }
 }
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/1.8/topics/i18n/
 
 LANGUAGE_CODE = 'en-us'
-
 TIME_ZONE = 'US/Pacific'
-
 USE_I18N = True
-
 USE_L10N = True
-
 USE_TZ = True
-
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.8/howto/static-files/
 
 STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, '../static')
+
+# Security (from `manage.py check --deploy`)
+X_FRAME_OPTIONS = 'DENY'
+SESSION_COOKIE_SECURE = True
+SECURE_CONTENT_TYPE_NOSNIFF = True
+SECURE_BROWSER_XSS_FILTER = True
+SECURE_SSL_REDIRECT = True
+CSRF_COOKIE_SECURE = True
+CSRF_COOKIE_HTTPONLY = True
