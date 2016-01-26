@@ -30,7 +30,9 @@ class OfferingAdmin(admin.ModelAdmin):
     list_display = ('semester', 'course', 'instructor')
 admin.site.register(Offering, OfferingAdmin)
 
-admin.site.register(Project)
+class ProjectAdmin.ModelAdmin):
+    list_display = ('course', 'name', 'hidden')
+admin.site.register(Project, ProjectAdmin)
 
 class SubmissionAdmin(admin.ModelAdmin):
     list_display = ('project', 'student', 'timestamp', 'uploads_str')
