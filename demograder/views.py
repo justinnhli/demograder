@@ -90,7 +90,6 @@ def project_upload_view(request, **kwargs):
     context = get_context(request, **kwargs)
     context.update(kwargs)
     context['form'] = FileUploadForm()
-    # TODO load student's previous test results
     # Render list page with the documents and the form
     return render_to_response(
         'demograder/project_upload.html',
