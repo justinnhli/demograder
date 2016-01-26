@@ -18,7 +18,7 @@
 {% if course.project_set.all %}
 	<ul>
 		{% for project in course.project_set.all %}
-			{% if not project.hidden %}
+			{% if not project.hidden or user.is_superuser %}
 				<li>
 					<a href="{% url 'project' project.id %}">{{ project.name }}</a>
 				</li>
