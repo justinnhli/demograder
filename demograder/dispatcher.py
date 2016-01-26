@@ -40,7 +40,7 @@ def evaluate_submission(script, uploads, result, kwargs):
         except TimeoutExpired as e:
             stdout = e.stdout.decode('utf-8')
             stderr = e.stderr.decode('utf-8')
-            return_code = e.returncode
+            return_code = 1
     # update Result
     result.stdout = stdout
     result.stderr = stderr
