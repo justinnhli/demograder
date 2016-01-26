@@ -109,6 +109,7 @@ class Project(models.Model):
     course = models.ForeignKey(Course)
     name = models.CharField(max_length=200)
     script = models.FileField(upload_to=_project_path, blank=True)
+    filename = models.CharField(max_length=200)
     hidden = models.BooleanField(default=False)
     @property
     def directory(self):
@@ -155,8 +156,7 @@ class Submission(models.Model):
         return self.timestamp.strftime("%Y-%m-%d %H:%M:%S") + self.student.user.username
 
 def _upload_path(instance, filename):
-    return join_path(instance.submission.directory,
-            filename)
+    return join_path(instance.submission.directory, instance.submission.project.filename)
 
 class Upload(models.Model):
     submission = models.ForeignKey(Submission)
