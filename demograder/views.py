@@ -4,7 +4,7 @@ from os.path import basename, getsize
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
-from django.http import HttpResponseRedirect, HttpResponse
+from django.http import HttpResponseRedirect, HttpResponse, Http404
 from django.shortcuts import render, render_to_response, get_object_or_404
 from django.template import RequestContext
 
@@ -140,3 +140,10 @@ def download_view(request, **kwargs):
     response['Content-Disposition'] = "attachment; filename={0}".format(basename(file_full_path))
     response['Content-Length'] = getsize(file_full_path)
     return response
+
+@login_required
+def populate_course_view(request, **kwargs):
+    context = get_context(request, **kwargs)
+    if not context['user'].is_superuser:
+        raise Http404
+    return HttpResponseRedirect(reverse('index', kwargs=kwargs))

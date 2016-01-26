@@ -1,6 +1,6 @@
 from django.conf.urls import url
 
-from .views import index_view, course_view, project_view, project_upload_view, project_submit_handler, download_view, result_view
+from .views import index_view, course_view, project_view, project_upload_view, project_submit_handler, download_view, result_view, populate_course_view
 
 urlpatterns = [
     url(r'^$', index_view, name='index'),
@@ -12,4 +12,5 @@ urlpatterns = [
     url(r'^submissions/(?P<submission_id>[0-9]+)/$', project_view, name='submission'),
     url(r'^download/(?P<upload_id>[0-9]+)/$', download_view, name='download'),
     url(r'^results/(?P<result_id>[0-9]+)/$', result_view, name='result'),
+    url(r'^populate/$', populate_course_view, name='populate'),
 ]
