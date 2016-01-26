@@ -22,11 +22,10 @@ def evaluate_submission(script, uploads, result, kwargs):
             tmp_uploads.append(copyfile(upload, join_path(temp_dir, basename(upload))))
         # copy all dependency files
         tmp_args = defaultdict(list)
-        for key, upstream_submissions in kwargs.items():
-            for submission in upstream_submissions:
-                for upload in submission.upload_set.all():
-                    filepath = upload.file.name
-                    tmp_args[key].append(copyfile(filepath, join_path(temp_dir, basename(filepath))))
+        for key, submission in kwargs.items():
+            for upload in submission.upload_set.all():
+                filepath = upload.file.name
+                tmp_args[key].append(copyfile(filepath, join_path(temp_dir, basename(filepath))))
         try:
             args = ['--_script', script, '--_uploads', ','.join(tmp_uploads)]
             for key, files in tmp_args.items():
@@ -60,7 +59,7 @@ def dispatch_submission(student, project, submission):
         # for each pair of students matched
         for student_dependency in project_dependency.studentdependency_set.filter(student=student):
             # add all submissions as arguments
-            space[project_dependency.keyword].append(tuple(student_dependency.producer.submission_set.filter(project=project_dependency.producer)))
+            space[project_dependency.keyword].extend(tuple(student_dependency.producer.submission_set.filter(project=project_dependency.producer)))
     keys = sorted(space.keys())
     for dependencies in product(*(space[key] for key in keys)):
         kwargs = dict(zip(keys, dependencies))
@@ -68,11 +67,9 @@ def dispatch_submission(student, project, submission):
             submission=submission,
         )
         result.save()
-        for upstream_submissions in kwargs.values():
-            for upstream_submission in upstream_submissions:
-                ResultDependency(
-                    result=result,
-                    producer=upstream_submission,
-
-                ).save()
+        for upstream_submission in kwargs.values():
+            ResultDependency(
+                result=result,
+                producer=upstream_submission,
+            ).save()
         django_rq.enqueue(evaluate_submission, script, uploads, result, kwargs)
