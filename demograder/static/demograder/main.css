@@ -37,4 +37,14 @@ input[type=number], input[type=submit], input[type=text], select {color:#000000;
 #history-table th:last-child, #history-table td:last-child {border-right-style:none;}
 #history-table tr:last-child td {border-bottom-style:none;}
 
+#grade-heading {clear:both; padding-top:0.5em;}
+#grade-table {border-collapse:collapse; width:100%;}
+#grade-table th {text-align:center;}
+#grade-table td {padding:0 0.5em 0 0.5em;}
+#grade-table tr:first-child th {border-top-style:none;}
+#grade-table th, #grade-table td {border:#808080 1px solid;}
+#grade-table th:first-child, #grade-table td:first-child {border-left-style:none;}
+#grade-table th:last-child, #grade-table td:last-child {border-right-style:none;}
+#grade-table tr:last-child td {border-bottom-style:none;}
+
 #footer {padding:1em; text-align:center;}

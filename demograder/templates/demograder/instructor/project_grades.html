@@ -1,0 +1,41 @@
+{% extends "demograder/base.html" %}
+
+{% block breadcrumb %}
+<!-- begin demograder/project.html:breadcrumb -->
+<a href="{% url 'index' %}">Home</a>
+&gt;
+<a href="{% url 'course' project.course.id %}">{{ project.course.catalog_id }}</a>
+&gt;
+<a href="{% url 'project' project.id %}">{{ project.name }}</a>
+<!-- end demograder/project.html:breadcrumb -->
+{% endblock %}
+
+{% block content %}
+<!-- begin demograder/instructor/project_grades.html:content -->
+<h2>Project: {{ project.name }}</h2>
+
+<table id="grade-table">
+	<tr>
+		<th>Student</th>
+		<th>Submission Time</th>
+		<th>Score</th>
+		<th>Upload</th>
+	</tr>
+	{% for submission in submissions %}
+		<tr>
+			<td>{{ submission.name }}</td>
+			<td>{{ submission.timestamp }}</td>
+			<td>{{ submission.score }}</td>
+			<td>
+			{% for upload in submission.uploads %}
+				{% if not forloop.first %},{% endif %}
+				<a href="{% url 'download' upload.id %}">{{ upload.basename }}</a>
+			{% endfor %}
+			</td>
+		</tr>
+
+	{% endfor %}
+</table>
+
+<!-- end demograder/project.html:content -->
+{% endblock %}
