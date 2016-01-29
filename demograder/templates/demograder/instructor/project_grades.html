@@ -1,13 +1,13 @@
 {% extends "demograder/base.html" %}
 
 {% block breadcrumb %}
-<!-- begin demograder/project.html:breadcrumb -->
+<!-- begin demograder/project_grades.html:breadcrumb -->
 <a href="{% url 'index' %}">Home</a>
 &gt;
 <a href="{% url 'course' project.course.id %}">{{ project.course.catalog_id }}</a>
 &gt;
 <a href="{% url 'project' project.id %}">{{ project.name }}</a>
-<!-- end demograder/project.html:breadcrumb -->
+<!-- end demograder/instructor/project_grades.html:breadcrumb -->
 {% endblock %}
 
 {% block content %}
@@ -25,7 +25,7 @@
 		<tr>
 			<td>{{ submission.name }}</td>
 			<td>{{ submission.timestamp }}</td>
-			<td>{{ submission.score }}</td>
+			<td><a href="{% url 'submission' submission.id %}">{{ submission.us_format }}</a></td>
 			<td>
 			{% for upload in submission.uploads %}
 				{% if not forloop.first %},{% endif %}
@@ -33,7 +33,6 @@
 			{% endfor %}
 			</td>
 		</tr>
-
 	{% endfor %}
 </table>
 

@@ -3,6 +3,7 @@ from collections import namedtuple
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect, Http404
+from django.shortcuts import render
 
 from .models import Submission
 from .views import get_context
@@ -17,15 +18,15 @@ def project_grade_view(request, **kwargs):
     for enrollment in context['course'].enrollment_set.all():
         student = enrollment.student
         name = '{} {}'.format(student.user.first_name, student.user.last_name)
-        submission = Submission.objects.filter(student=student, project=context['project']).latest('timestamp')
-        if bool(submission):
+        try:
+            submission = Submission.objects.filter(student=student, project=context['project']).latest('timestamp')
             timestamp = submission.isoformat()
             score = '{}/{}'.format(submission.score, submission.max_score)
             uploads = list(submission.upload_set.all())
-        else:
+        except Submission.DoesNotExist:
             timestamp = 'N/A'
             score = 'N/A'
             uploads = []
         submissions.append(Grade(name, timestamp, score, uploads))
     context['submissions'] = sorted(submissions, key=(lambda g: g.name))
-    return HttpResponseRedirect(reverse('index', kwargs=kwargs))
+    return render(request, 'demograder/instructor/project_grades.html', context)
