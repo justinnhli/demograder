@@ -6,6 +6,7 @@ db.sqlite3
 dump.rdb
 demograder/migrations
 djangosite/secret-key
+static
 
 # uploads
 projects
