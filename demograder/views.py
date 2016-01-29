@@ -69,6 +69,7 @@ def index_view(request, **kwargs):
 @login_required
 def course_view(request, **kwargs):
     context = get_context(request, **kwargs)
+    context['projects'] = Project.objects.filter(course=context['course']).order_by('name')
     return render(request, 'demograder/course.html', context)
 
 @login_required
