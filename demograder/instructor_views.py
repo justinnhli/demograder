@@ -20,7 +20,7 @@ def project_grade_view(request, **kwargs):
         name = '{} {}'.format(student.user.first_name, student.user.last_name)
         try:
             submission = Submission.objects.filter(student=student, project=context['project']).latest('timestamp')
-            timestamp = submission.isoformat()
+            timestamp = submission.isoformat
             score = '{}/{}'.format(submission.score, submission.max_score)
             uploads = list(submission.upload_set.all())
         except Submission.DoesNotExist:

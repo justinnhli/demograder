@@ -125,10 +125,6 @@ def project_submit_handler(request, **kwargs):
 @login_required
 def result_view(request, **kwargs):
     context = get_context(request, **kwargs)
-    print(context['result'].resultdependency_set.all())
-    for dependency in context['result'].resultdependency_set.all():
-        for upload in dependency.producer.upload_set.all():
-            print(upload.id, upload.basename)
     return render(request, 'demograder/result.html', context)
 
 @login_required
