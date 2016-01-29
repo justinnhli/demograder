@@ -33,31 +33,32 @@ def get_context(request, **kwargs):
         context['course'] = context['project'].course
     elif 'course_id' in kwargs:
         context['course'] = get_object_or_404(Course, id=kwargs['course_id'])
-    if 'course' in context:
-        try:
-            Enrollment.objects.get(student=context['user'].person, course=context['course'])
-        except Enrollment.DoesNotExist:
-            raise PermissionDenied
-    if 'upload' in context:
-        owner = context['upload'].student
-        project = context['project']
-        student = context['user'].person
-        if owner != student:
+    if not context['user'].is_superuser:
+        if 'course' in context:
             try:
-                StudentDependency.objects.get(
-                        producer=owner,
-                        student=student,
-                        dependency__producer=project,
-                )
-            except StudentDependency.DoesNotExist:
+                Enrollment.objects.get(student=context['user'].person, course=context['course'])
+            except Enrollment.DoesNotExist:
                 raise PermissionDenied
-    else:
-        if 'project' in context:
-            if context['project'].hidden and not context['user'].is_superuser:
-                raise PermissionDenied
-        if 'submission' in context:
-            if context['submission'].student != context['user'].person:
-                raise PermissionDenied
+        if 'upload' in context:
+            owner = context['upload'].student
+            project = context['project']
+            student = context['user'].person
+            if owner != student:
+                try:
+                    StudentDependency.objects.get(
+                            producer=owner,
+                            student=student,
+                            dependency__producer=project,
+                    )
+                except StudentDependency.DoesNotExist:
+                    raise PermissionDenied
+        else:
+            if 'project' in context:
+                if context['project'].hidden:
+                    raise PermissionDenied
+            if 'submission' in context:
+                if context['submission'].student != context['user'].person:
+                    raise PermissionDenied
     return context
 
 @login_required
