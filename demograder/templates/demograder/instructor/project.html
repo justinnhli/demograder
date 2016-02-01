@@ -4,9 +4,7 @@
 <!-- begin demograder/instructor/project.html:breadcrumb -->
 <a href="{% url 'index' %}">Home</a>
 &gt;
-<a href="{% url 'course' project.course.id %}">{{ project.course.catalog_id }}</a>
-&gt;
-<a href="{% url 'project' project.id %}">{{ project.name }}</a>
+<a href="{% url 'instructor_student' student.id %}">{{ student.name }}</a>
 <!-- end demograder/instructor/project.html:breadcrumb -->
 {% endblock %}
 
@@ -22,11 +20,11 @@
 	</tr>
 	{% for submission in submissions %}
 		<tr>
-			<td>{{ submission.student.name }}</td>
+			<td><a href="{% url 'instructor_student' submission.student.id %}">{{ submission.student.name }}</a></td>
 			<td>{{ submission.isoformat }}</td>
 			<td>
-				{% if submission.sid %}
-					<a href="{% url 'submission' submission.sid %}">{{ submission.score }}/{{ submission.score }}</a>
+				{% if submission.id %}
+					<a href="{% url 'submission' submission.id %}">{{ submission.score }}/{{ submission.score }}</a>
 				{% else %}
 					{{ submission.score }}/{{ submission.score }}
 				{% endif %}

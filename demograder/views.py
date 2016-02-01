@@ -9,7 +9,7 @@ from django.shortcuts import render, render_to_response, get_object_or_404
 from django.template import RequestContext
 
 from .forms import FileUploadForm
-from .models import Course, Enrollment, Project, Submission, Upload, Result, StudentDependency
+from .models import Course, Enrollment, Person, Project, Submission, Upload, Result, StudentDependency
 from .dispatcher import dispatch_submission
 
 def get_context(request, **kwargs):
@@ -31,7 +31,7 @@ def get_context(request, **kwargs):
     elif 'project_id' in kwargs:
         context['project'] = get_object_or_404(Project, id=kwargs['project_id'])
         context['student'] = context['user'].person
-    else:
+    elif 'student_id' in kwargs:
         context['student'] = get_object_or_404(Person, id=kwargs['student_id'])
     if 'project' in context:
         context['course'] = context['project'].course

@@ -25,8 +25,8 @@
 			<td>{{ submission.project.name }}</td>
 			<td>{{ submission.isoformat }}</td>
 			<td>
-				{% if submission.sid %}
-					<a href="{% url 'submission' submission.sid %}">{{ submission.score }}/{{ submission.score }}</a>
+				{% if submission.id %}
+					<a href="{% url 'submission' submission.id %}">{{ submission.score }}/{{ submission.score }}</a>
 				{% else %}
 					{{ submission.score }}/{{ submission.score }}
 				{% endif %}

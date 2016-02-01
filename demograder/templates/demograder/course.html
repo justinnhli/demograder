@@ -1,16 +1,16 @@
 {% extends "demograder/base.html" %}
 
 {% block breadcrumb %}
-<!-- begin project_list.html:breadcrumb -->
+<!-- begin demograder/course.html:breadcrumb -->
 <a href="{% url 'index' %}">Home</a>
 &gt;
 <a href="{% url 'course' course.id %}">{{ course.catalog_id }}</a>
-<!-- end project_list.html:breadcrumb -->
+<!-- end demograder/course.html:breadcrumb -->
 {% endblock %}
 
 
 {% block content %}
-<!-- begin project_list.html:content -->
+<!-- begin demograder/course.html:content -->
 <h2>{{ course.catalog_id}}: {{ course.title }}</h2>
 
 <h3>Projects</h3>
@@ -28,5 +28,5 @@
 {% else %}
 	This course currently has no projects.
 {% endif %}
-<!-- end project_list.html:content -->
+<!-- end demograder/course.html:content -->
 {% endblock %}
