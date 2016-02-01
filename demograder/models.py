@@ -22,12 +22,6 @@ class Person(models.Model):
     @property
     def enrolled_course_str(self):
         return ','.join(sorted(course.catalog_id for course in self.course_set.all()))
-    @property
-    def offering_course_set(self):
-        return Course.objects.filter(offering__instructor=self)
-    @property
-    def offering_course_str(self):
-        return ','.join(sorted(course.catalog_id for course in self.course_set.all()))
     def __str__(self):
         return self.user.username
 
@@ -88,13 +82,6 @@ class Course(models.Model):
 class Enrollment(models.Model):
     course = models.ForeignKey(Course)
     student = models.ForeignKey(Person)
-    @property
-    def semester(self):
-        return self.course.semester
-
-class Offering(models.Model):
-    course = models.ForeignKey(Course)
-    instructor = models.ForeignKey(Person)
     @property
     def semester(self):
         return self.course.semester

@@ -5,7 +5,7 @@ from django.contrib import admin
 from .models import Year
 from .models import Department, Course
 from .models import Person
-from .models import Enrollment, Offering
+from .models import Enrollment
 from .models import Project
 from .models import Submission, Upload, Result
 from .models import ProjectDependency, StudentDependency, ResultDependency
@@ -25,10 +25,6 @@ admin.site.register(Person)
 class EnrollmentAdmin(admin.ModelAdmin):
     list_display = ('semester', 'course', 'student')
 admin.site.register(Enrollment, EnrollmentAdmin)
-
-class OfferingAdmin(admin.ModelAdmin):
-    list_display = ('semester', 'course', 'instructor')
-admin.site.register(Offering, OfferingAdmin)
 
 class ProjectAdmin(admin.ModelAdmin):
     list_display = ('course', 'name', 'hidden')
