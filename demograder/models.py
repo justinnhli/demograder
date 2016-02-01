@@ -135,7 +135,7 @@ class Submission(models.Model):
         return ', '.join(sorted(u.file.name for u in self.upload_set.all()))
     @property
     def isoformat(self):
-        return self.timestamp.strftime('%Y-%m-%d %H:%M:%S')
+        return self.timestamp.astimezone(timezone('US/Pacific')).strftime('%Y-%m-%d %H:%M:%S')
     @property
     def us_format(self):
         return self.timestamp.astimezone(timezone('US/Pacific')).strftime('%b %d, %Y %I:%M:%S %p')

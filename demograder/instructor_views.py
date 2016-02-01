@@ -1,32 +1,39 @@
 from collections import namedtuple
 
 from django.contrib.auth.decorators import login_required
-from django.core.urlresolvers import reverse
-from django.http import HttpResponseRedirect, Http404
+from django.http import Http404
 from django.shortcuts import render
 
 from .models import Submission
 from .views import get_context
 
 @login_required
-def project_grade_view(request, **kwargs):
-    Grade = namedtuple('Grade', ('name', 'timestamp', 'score', 'uploads'))
+def instructor_student_view(request, **kwargs):
     context = get_context(request, **kwargs)
     if not context['user'].is_superuser:
         raise Http404
+    context['submissions'] = context['student'].submission_set.order_by('-timestamp')
+    return render(request, 'demograder/instructor/student.html', context)
+
+@login_required
+def instructor_project_view(request, **kwargs):
+    context = get_context(request, **kwargs)
+    if not context['user'].is_superuser:
+        raise Http404
+    SubmissionDisplay = namedtuple('SubmissionDisplay', ('id', 'student', 'isoformat', 'score', 'max_score'))
     submissions = []
-    for enrollment in context['course'].enrollment_set.all():
-        student = enrollment.student
-        name = '{} {}'.format(student.user.first_name, student.user.last_name)
+    for student in context['course'].student_set.all():
         try:
             submission = Submission.objects.filter(student=student, project=context['project']).latest('timestamp')
+            sid = submission.id
             timestamp = submission.isoformat
-            score = '{}/{}'.format(submission.score, submission.max_score)
-            uploads = list(submission.upload_set.all())
+            score = submission.score
+            max_score = submission.max_score
         except Submission.DoesNotExist:
+            sid = 0
             timestamp = 'N/A'
-            score = 'N/A'
-            uploads = []
-        submissions.append(Grade(name, timestamp, score, uploads))
-    context['submissions'] = sorted(submissions, key=(lambda g: g.name))
-    return render(request, 'demograder/instructor/project_grades.html', context)
+            score = 'N'
+            max_score = 'A'
+        submissions.append(SubmissionDisplay(sid, student, timestamp, score, max_score))
+    context['submissions'] = sorted(submissions, key=(lambda g: g.student.name))
+    return render(request, 'demograder/instructor/project.html', context)

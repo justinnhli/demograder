@@ -2,6 +2,15 @@ body {background-color:#000000; color:#FFFFFF;}
 a, a:active, a:visited {color:#FFFFFF;}
 input[type=number], input[type=submit], input[type=text], select {color:#000000;}
 
+table {border-collapse:collapse; width:100%;}
+table th {text-align:center;}
+table td {padding:0 0.5em 0 0.5em;}
+table tr:first-child th {border-top-style:none;}
+table th, table td {border:#808080 1px solid;}
+table th:first-child, table td:first-child {border-left-style:none;}
+table th:last-child, table td:last-child {border-right-style:none;}
+table tr:last-child td {border-bottom-style:none;}
+
 #sidebar {background-color:#333333; padding:1.25em;}
 
 #logo-container {text-align:center;}
@@ -28,23 +37,5 @@ input[type=number], input[type=submit], input[type=text], select {color:#000000;
 #scoreboard a.score.tbd {background-color:#808080;}
 
 #history-heading {clear:both; padding-top:0.5em;}
-#history-table {border-collapse:collapse; width:100%;}
-#history-table th {text-align:center;}
-#history-table td {padding:0 0.5em 0 0.5em;}
-#history-table tr:first-child th {border-top-style:none;}
-#history-table th, #history-table td {border:#808080 1px solid;}
-#history-table th:first-child, #history-table td:first-child {border-left-style:none;}
-#history-table th:last-child, #history-table td:last-child {border-right-style:none;}
-#history-table tr:last-child td {border-bottom-style:none;}
-
-#grade-heading {clear:both; padding-top:0.5em;}
-#grade-table {border-collapse:collapse; width:100%;}
-#grade-table th {text-align:center;}
-#grade-table td {padding:0 0.5em 0 0.5em;}
-#grade-table tr:first-child th {border-top-style:none;}
-#grade-table th, #grade-table td {border:#808080 1px solid;}
-#grade-table th:first-child, #grade-table td:first-child {border-left-style:none;}
-#grade-table th:last-child, #grade-table td:last-child {border-right-style:none;}
-#grade-table tr:last-child td {border-bottom-style:none;}
 
 #footer {padding:1em; text-align:center;}
