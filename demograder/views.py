@@ -140,8 +140,9 @@ def download_view(request, **kwargs):
     return response
 
 @login_required
-def populate_course_view(request, **kwargs):
+def display_view(request, **kwargs):
     context = get_context(request, **kwargs)
-    if not context['user'].is_superuser:
-        raise Http404
-    return HttpResponseRedirect(reverse('index', kwargs=kwargs))
+    file_full_path = context['upload'].file.name
+    with open(file_full_path) as fd:
+        data = fd.read()
+    return HttpResponse(data, content_type='text/plain')

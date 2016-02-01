@@ -19,7 +19,11 @@
 <h3>Files Submitted</h3>
 	<ul>
 		{% for upload in result.submission.upload_set.all %}
-			<li><a href="{% url 'download' upload.id %}">{{ upload.basename }}</a></li>
+			{% if user.is_superuser %}
+				<li><a href="{% url 'display' upload.id %}">{{ upload.basename }}</a></li>
+			{% else %}
+				<li><a href="{% url 'download' upload.id %}">{{ upload.basename }}</a></li>
+			{% endif %}
 		{% endfor %}
 	</ul>
 
