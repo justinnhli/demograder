@@ -45,7 +45,12 @@
 		There are no results associated with this submission.
 	{% endif %}
 
-	<h3 id="history-heading">Submission History</h3>
+	<h3 id="history-heading">
+		Submission History
+		{% if user != student %}
+			for {{ user.first_name }} {{ user.last_name }}
+		{% endif %}
+	</h3>
 	<div id="history">
 		<table id="history-table">
 			<tr>

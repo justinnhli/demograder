@@ -27,8 +27,10 @@ def get_context(request, **kwargs):
         context['submission'] = get_object_or_404(Submission, id=kwargs['submission_id'])
     if 'submission' in context:
         context['project'] = context['submission'].project
+        context['student'] = context['submission'].student
     elif 'project_id' in kwargs:
         context['project'] = get_object_or_404(Project, id=kwargs['project_id'])
+        context['student'] = context['user'].person
     if 'project' in context:
         context['course'] = context['project'].course
     elif 'course_id' in kwargs:
@@ -40,15 +42,12 @@ def get_context(request, **kwargs):
             except Enrollment.DoesNotExist:
                 raise PermissionDenied
         if 'upload' in context:
-            owner = context['upload'].student
-            project = context['project']
-            student = context['user'].person
-            if owner != student:
+            if context['user'].person != context['student']:
                 try:
                     StudentDependency.objects.get(
-                            producer=owner,
-                            student=student,
-                            dependency__producer=project,
+                            producer=context['student'],
+                            student=context['user'].person,
+                            dependency__producer=context['project'],
                     )
                 except StudentDependency.DoesNotExist:
                     raise PermissionDenied
@@ -75,7 +74,7 @@ def course_view(request, **kwargs):
 @login_required
 def project_view(request, **kwargs):
     context = get_context(request, **kwargs)
-    submissions = Submission.objects.filter(project=context['project'], student=context['user'].person)
+    submissions = Submission.objects.filter(project=context['project'], student=context['student'])
     submissions_exist = bool(submissions)
     if submissions_exist:
         context['submissions'] = submissions.order_by('-timestamp')
