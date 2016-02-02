@@ -1,0 +1,31 @@
+{% extends "demograder/base.html" %}
+
+{% block breadcrumb %}
+<!-- begin demograder/instructor/course.html:breadcrumb -->
+<a href="{% url 'index' %}">Home</a>
+&gt;
+<a href="{% url 'instructor_student' student.id %}">{{ student.name }}</a>
+<!-- end demograder/instructor/course.html:breadcrumb -->
+{% endblock %}
+
+{% block content %}
+<!-- begin demograder/instructor/course.html:content -->
+<h2>{{ course.catalog_id}}: {{ course.title }}</h2>
+
+<h3>Students</h3>
+
+<ul>
+	{% for student in students %}
+		<li><a href="{% url 'instructor_student' student.id %}">{{ student.name }}</a></li>
+	{% endfor %}
+</ul>
+
+<h3>Projects</h3>
+
+<ul>
+	{% for project in projects %}
+		<li><a href="{% url 'instructor_project' project.id %}">{{ project.name }}</a></li>
+	{% endfor %}
+</ul>
+<!-- end demograder/instructor/course.html:content -->
+{% endblock %}

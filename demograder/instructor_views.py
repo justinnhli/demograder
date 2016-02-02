@@ -10,6 +10,23 @@ from .views import get_context
 SubmissionDisplay = namedtuple('SubmissionDisplay', ('id', 'student', 'project', 'isoformat', 'score', 'max_score'))
 
 @login_required
+def instructor_submission_view(request, **kwargs):
+    context = get_context(request, **kwargs)
+    if not context['user'].is_superuser:
+        raise Http404
+    context['submissions'] = Submissions.objects.all().order_by('-timestamp')
+    return render(request, 'demograder/instructor/submissions.html', context)
+
+@login_required
+def instructor_course_view(request, **kwargs):
+    context = get_context(request, **kwargs)
+    if not context['user'].is_superuser:
+        raise Http404
+    context['students'] = context['course'].student_set.all().order_by('name')
+    context['projects'] = context['course'].project_set.all().order_by('name')
+    return render(request, 'demograder/instructor/course.html', context)
+
+@login_required
 def instructor_student_view(request, **kwargs):
     context = get_context(request, **kwargs)
     if not context['user'].is_superuser:

@@ -14,6 +14,8 @@ urlpatterns = [
     url(r'^download/(?P<upload_id>[0-9]+)/$', download_view, name='download'),
     url(r'^display/(?P<upload_id>[0-9]+)/$', display_view, name='display'),
 
+    url(r'^instructor/submissions/$', instructor_submissions_view, name='instructor_submissions'),
+    url(r'^instructor/courses/(?P<course_id>[0-9]+)/$', instructor_course_view, name='instructor_course'),
     url(r'^instructor/students/(?P<student_id>[0-9]+)/$', instructor_student_view, name='instructor_student'),
     url(r'^instructor/projects/(?P<project_id>[0-9]+)/$', instructor_project_view, name='instructor_project'),
 ]

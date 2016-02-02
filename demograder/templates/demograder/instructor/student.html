@@ -37,20 +37,23 @@
 
 <h3>Submission History</h3>
 
-<table>
-	<tr>
-		<th>Project</th>
-		<th>Submission Time</th>
-		<th>Score</th>
-	</tr>
-	{% for submission in submissions %}
+{% if submissions %}
+	<table>
 		<tr>
-			<td>{{ submission.project.name }}</td>
-			<td>{{ submission.isoformat }}</td>
-			<td><a href="{% url 'submission' submission.id %}">{{ submission.score }}/{{ submission.score }}</a></td>
+			<th>Project</th>
+			<th>Submission Time</th>
+			<th>Score</th>
 		</tr>
-	{% endfor %}
-</table>
-
+		{% for submission in submissions %}
+			<tr>
+				<td>{{ submission.project.name }}</td>
+				<td>{{ submission.isoformat }}</td>
+				<td><a href="{% url 'submission' submission.id %}">{{ submission.score }}/{{ submission.score }}</a></td>
+			</tr>
+		{% endfor %}
+	</table>
+{% else %}
+	<p>This student has not submitted anything.</p>
+{% endif %}
 <!-- end demograder/instructor/student.html:content -->
 {% endblock %}
