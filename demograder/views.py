@@ -77,14 +77,11 @@ def course_view(request, **kwargs):
 def project_view(request, **kwargs):
     context = get_context(request, **kwargs)
     submissions = Submission.objects.filter(project=context['project'], student=context['student'])
-    submissions_exist = bool(submissions)
-    if submissions_exist:
+    if bool(submissions):
         context['submissions'] = submissions.order_by('-timestamp')
         if 'submission' not in context:
             context['submission'] = context['submissions'][0]
-            context['most_recent'] = True
-        else:
-            context['most_recent'] = (context['submission'] == context['submissions'][0])
+        context['latest'] = context['submissions'][0]
         context['results'] = context['submission'].result_set.all()
     return render(request, 'demograder/project.html', context)
 

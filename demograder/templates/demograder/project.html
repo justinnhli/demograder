@@ -23,10 +23,10 @@
 	<p>
 		From
 		{{ submission.us_format }}
-		{% if most_recent %}
-			(most recent submit)
+		{% if submission == latest %}
+			(most recent submission)
 		{% else %}
-			(<a href="{% url 'project' project.id %}">see most recent submission</a>)
+			(<a href="{% url 'submission' latest.id %}">see most recent submission</a>)
 		{% endif %}
 	</p>
 	<p>
@@ -58,8 +58,8 @@
 
 	<h3 id="history-heading">
 		Submission History
-		{% if user != student %}
-			for {{ student.name }}
+		{% if user.is_superuser %}
+			for <a href="{% url 'instructor_student' submission.student.id %}">{{ submission.student.name }}</a>
 		{% endif %}
 	</h3>
 	<div id="history">
@@ -75,7 +75,11 @@
 				<td>
 					{% for upload in submission.upload_set.all %}
 						{% if not forloop.first %},{% endif %}
-						<a href="{% url 'download' upload.id %}">{{ upload.basename }}</a>
+						{% if user.is_superuser %}
+							<a href="{% url 'display' upload.id %}">{{ upload.basename }}</a>
+						{% else %}
+							<a href="{% url 'download' upload.id %}">{{ upload.basename }}</a>
+						{% endif %}
 					{% endfor %}
 				</td>
 				<td>
