@@ -19,8 +19,8 @@
 	</tr>
 	{% for submission in submissions %}
 		<tr>
-			<td>{{ submission.student.name }}</td>
-			<td>{{ submission.project.name }}</td>
+			<td><a href="{% url 'instructor_student' submission.student.id %}">{{ submission.student.name }}</a></td>
+			<td><a href="{% url 'instructor_project' submission.project.id %}">{{ submission.project.name }}</a></td>
 			<td>{{ submission.isoformat }}</td>
 			<td><a href="{% url 'submission' submission.id %}">{{ submission.score }}/{{ submission.score }}</a></td>
 		</tr>

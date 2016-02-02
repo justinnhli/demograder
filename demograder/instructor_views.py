@@ -4,17 +4,25 @@ from django.contrib.auth.decorators import login_required
 from django.http import Http404
 from django.shortcuts import render
 
-from .models import Submission
+from .models import Course, Submission
 from .views import get_context
 
 SubmissionDisplay = namedtuple('SubmissionDisplay', ('id', 'student', 'project', 'isoformat', 'score', 'max_score'))
 
 @login_required
-def instructor_submission_view(request, **kwargs):
+def instructor_view(request, **kwargs):
     context = get_context(request, **kwargs)
     if not context['user'].is_superuser:
         raise Http404
-    context['submissions'] = Submissions.objects.all().order_by('-timestamp')
+    context['courses'] = Course.objects.all()
+    return render(request, 'demograder/instructor/index.html', context)
+
+@login_required
+def instructor_submissions_view(request, **kwargs):
+    context = get_context(request, **kwargs)
+    if not context['user'].is_superuser:
+        raise Http404
+    context['submissions'] = Submission.objects.order_by('-timestamp')[:100]
     return render(request, 'demograder/instructor/submissions.html', context)
 
 @login_required
@@ -22,8 +30,8 @@ def instructor_course_view(request, **kwargs):
     context = get_context(request, **kwargs)
     if not context['user'].is_superuser:
         raise Http404
-    context['students'] = context['course'].student_set.all().order_by('name')
-    context['projects'] = context['course'].project_set.all().order_by('name')
+    context['students'] = context['course'].student_set.order_by('user__first_name', 'user__last_name')
+    context['projects'] = context['course'].project_set.order_by('name')
     return render(request, 'demograder/instructor/course.html', context)
 
 @login_required
