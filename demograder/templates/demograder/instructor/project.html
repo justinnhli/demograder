@@ -2,11 +2,11 @@
 
 {% block breadcrumb %}
 <!-- begin demograder/instructor/project.html:breadcrumb -->
-<a href="{% url 'index' %}">Home</a>
+<a href="{% url 'instructor_index' %}">Home</a>
 &gt;
-<a href="{% url 'course' project.course.id %}">{{ project.course.catalog_id }}</a>
+<a href="{% url 'instructor_course' project.course.id %}">{{ project.course.catalog_id }}</a>
 &gt;
-<a href="{% url 'project' project.id %}">{{ project.name }}</a>
+<a href="{% url 'instructor_project' project.id %}">{{ project.name }}</a>
 <!-- end demograder/instructor/project.html:breadcrumb -->
 {% endblock %}
 

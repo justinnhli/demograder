@@ -2,7 +2,7 @@
 
 {% block breadcrumb %}
 <!-- begin demograder/instructor/student.html:breadcrumb -->
-<a href="{% url 'index' %}">Home</a>
+<a href="{% url 'instructor_index' %}">Home</a>
 &gt;
 <a href="{% url 'instructor_student' student.id %}">{{ student.name }}</a>
 <!-- end demograder/instructor/student.html:breadcrumb -->
@@ -26,7 +26,7 @@
 			<td>{{ submission.isoformat }}</td>
 			<td>
 				{% if submission.id %}
-					<a href="{% url 'submission' submission.id %}">{{ submission.score }}/{{ submission.score }}</a></td>
+					<a href="{% url 'submission' submission.id %}">{{ submission.score }}/{{ submission.max_score }}</a></td>
 				{% else %}
 					{{ submission.score }}/{{ submission.max_score }}
 				{% endif %}
@@ -46,9 +46,9 @@
 		</tr>
 		{% for submission in submissions %}
 			<tr>
-				<td>{{ submission.project.name }}</td>
+				<td><a href="{% url 'instructor_project' submission.project.id %}">{{ submission.project.name }}</a></td>
 				<td>{{ submission.isoformat }}</td>
-				<td><a href="{% url 'submission' submission.id %}">{{ submission.score }}/{{ submission.score }}</a></td>
+				<td><a href="{% url 'submission' submission.id %}">{{ submission.score }}/{{ submission.max_score }}</a></td>
 			</tr>
 		{% endfor %}
 	</table>
