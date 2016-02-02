@@ -29,6 +29,17 @@
 			(<a href="{% url 'project' project.id %}">see most recent submission</a>)
 		{% endif %}
 	</p>
+	<p>
+		Uploads:
+		{% for upload in submission.upload_set.all %}
+			{% if not forloop.first %},{% endif %}
+			{% if user.is_superuser %}
+				<a href="{% url 'display' upload.id %}">{{ upload.basename }}</a>
+			{% else %}
+				<a href="{% url 'download' upload.id %}">{{ upload.basename }}</a>
+			{% endif %}
+		{% endfor %}
+	</p>
 	{% if results %}
 		<div id="scoreboard">
 			{% for result in results %}
