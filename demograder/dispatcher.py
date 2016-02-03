@@ -9,13 +9,13 @@ import django_rq
 
 from .models import Result, ResultDependency
 
-SHELL_ADAPTOR = join_path(dirname(__file__), 'shell-adaptor.py')
+DGLIB = join_path(dirname(__file__), 'dglib.py')
 
 def evaluate_submission(script, uploads, result, kwargs):
     # create temporary directory
     with TemporaryDirectory() as temp_dir:
-        # copy shell adaptor
-        tmp_adaptor = copyfile(SHELL_ADAPTOR, join_path(temp_dir, basename(SHELL_ADAPTOR)))
+        # copy dglib library
+        tmp_dglib = copyfile(DGLIB, join_path(temp_dir, basename(DGLIB)))
         # copy the submission
         tmp_uploads = []
         for upload in uploads:
@@ -31,7 +31,7 @@ def evaluate_submission(script, uploads, result, kwargs):
             for key, files in tmp_args.items():
                 args.extend(('--{}'.format(key), ','.join(files)))
             # FIXME switch user
-            args = ['python3.5', tmp_adaptor] + args
+            args = ['python3.5', tmp_dglib] + args
             # timeout is in seconds (300s == 5min)
             completed_process = run_process(args, timeout=10, stderr=PIPE, stdout=PIPE)
             stdout = completed_process.stdout.decode('utf-8')
