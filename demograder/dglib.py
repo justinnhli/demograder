@@ -18,13 +18,17 @@ def function_test(fn, arguments, expected):
     -------------------
     {}
     ''').strip()
-    if repr(arguments).startswith('('):
+    multiple_arguments = repr(arguments).startswith('(')
+    if multiple_arguments:
         template_input = '{}{}'.format(fn.__name__, repr(arguments))
     else:
         template_input = '{}({})'.format(fn.__name__, repr(arguments))
     template_expected = repr(expected)
     try:
-        actual = fn(*arguments)
+        if multiple_arguments:
+            actual = fn(*arguments)
+        else:
+            actual = fn(arguments)
         template_actual = repr(actual)
         error = False
     except Exception as e:
