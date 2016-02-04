@@ -1,8 +1,20 @@
 import sys
+from ast import parse
 from importlib.util import spec_from_file_location, module_from_spec
 from os.path import basename
 from subprocess import run as run_process, PIPE
 from textwrap import dedent
+
+def syntax_test():
+    submission = sys.argv[1]
+    source = ''
+    with open(submission) as fd:
+        source = fd.read()
+    try:
+        parse(source, filename=submission)
+        print_result('Submission is valid Python file.', True)
+    except SyntaxError as e:
+        print_result('Submission has Python syntax errors.', False)
 
 def function_test(fn, arguments, expected):
     template = dedent('''
@@ -39,11 +51,6 @@ def function_test(fn, arguments, expected):
     print_result(transcript, (not error and expected == actual))
 
 def input_output_test(in_str, out_str):
-    upload = sys.argv[1]
-    input_text = dedent(in_str).strip()
-    expected_output = dedent(out_str).strip()
-    completed = run_process(['python3.5', upload], input=input_text, stdout=PIPE, universal_newlines=True)
-    actual_output = completed.stdout.strip()
     template = dedent('''
     INPUT
     -----
@@ -57,6 +64,10 @@ def input_output_test(in_str, out_str):
     -------------
     {}
     ''').strip()
+    submission = sys.argv[1]
+    input_text = dedent(in_str).strip()
+    expected_output = dedent(out_str).strip()
+    actual_output = run_process(['python3.5', submission], input=input_text, stdout=PIPE, universal_newlines=True).stdout.strip()
     transcript = template.format(input_text, expected_output, actual_output)
     passed = False
     for line in expected_output.splitlines():
