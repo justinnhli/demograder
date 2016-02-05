@@ -10,20 +10,40 @@
 <!-- begin demograder/instructor/course.html:content -->
 <h2>{{ course.catalog_id}}: {{ course.title }}</h2>
 
-<h3>Students</h3>
+<table>
+	<tr>
+		<td style="border-style:none;">
 
-<ul>
-	{% for student in students %}
-		<li><a href="{% url 'instructor_student' student.id %}">{{ student.name }}</a></li>
-	{% endfor %}
-</ul>
+			<h3>Students</h3>
+			<ul>
+				{% for student in students %}
+					<li><a href="{% url 'instructor_student' student.id %}">{{ student.name }}</a></li>
+				{% endfor %}
+			</ul>
 
-<h3>Projects</h3>
+		</td>
+		<td style="border-style:none;">
 
-<ul>
-	{% for project in projects %}
-		<li><a href="{% url 'instructor_project' project.id %}">{{ project.name }}</a></li>
-	{% endfor %}
-</ul>
+			<h3>Assignments</h3>
+			{% if assignments %}
+				{% for assignment in assignments %}
+					<h4>{{ assignment.name }}</h4>
+					<ul>
+						{% for project in assignment.projects %}
+							{% if not project.hidden or user.is_superuser %}
+								<li>
+									<a href="{% url 'project' project.id %}">{{ project.name }}</a>
+								</li>
+							{% endif %}
+						{% endfor %}
+					</ul>
+				{% endfor %}
+			{% else %}
+				This course currently has no projects.
+			{% endif %}
+
+		</td>
+	</tr>
+</table>
 <!-- end demograder/instructor/course.html:content -->
 {% endblock %}

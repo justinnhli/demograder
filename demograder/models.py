@@ -94,6 +94,7 @@ def _project_path(instance, filename):
 
 class Project(models.Model):
     course = models.ForeignKey(Course)
+    assignment = models.CharField(max_length=200)
     name = models.CharField(max_length=200)
     script = models.FileField(upload_to=_project_path, blank=True)
     filename = models.CharField(max_length=200)

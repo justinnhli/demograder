@@ -1,3 +1,4 @@
+from collections import namedtuple
 from mimetypes import guess_type
 from os.path import basename, getsize
 
@@ -11,6 +12,8 @@ from django.template import RequestContext
 from .forms import FileUploadForm
 from .models import Course, Enrollment, Person, Project, Submission, Upload, Result, StudentDependency
 from .dispatcher import dispatch_submission
+
+AssignmentInfo = namedtuple('AssignmentInfo', ('name', 'max_id', 'projects'))
 
 def get_context(request, **kwargs):
     context = {}
@@ -70,7 +73,12 @@ def index_view(request, **kwargs):
 @login_required
 def course_view(request, **kwargs):
     context = get_context(request, **kwargs)
-    context['projects'] = Project.objects.filter(course=context['course']).order_by('name')
+    assignments = []
+    for assignment in set(Project.objects.values_list('assignment', flat=True)):
+        projects = Project.objects.filter(assignment=assignment).order_by('name')
+        if context['user'].is_superuser or any(not p.hidden for p in projects):
+            assignments.append(AssignmentInfo(assignment, max(p.id for p in projects), projects))
+    context['assignments'] = sorted(assignments, key=(lambda a: -a.max_id))
     return render(request, 'demograder/course.html', context)
 
 @login_required

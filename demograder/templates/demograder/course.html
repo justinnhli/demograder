@@ -13,18 +13,21 @@
 <!-- begin demograder/course.html:content -->
 <h2>{{ course.catalog_id}}: {{ course.title }}</h2>
 
-<h3>Projects</h3>
+<h3>Assignments</h3>
 
-{% if projects %}
-	<ul>
-		{% for project in projects %}
-			{% if not project.hidden or user.is_superuser %}
-				<li>
-					<a href="{% url 'project' project.id %}">{{ project.name }}</a>
-				</li>
-			{% endif %}
-		{% endfor %}
-	</ul>
+{% if assignments %}
+	{% for assignment in assignments %}
+		<h4>{{ assignment.name }}</h4>
+		<ul>
+			{% for project in assignment.projects %}
+				{% if not project.hidden or user.is_superuser %}
+					<li>
+						<a href="{% url 'project' project.id %}">{{ project.name }}</a>
+					</li>
+				{% endif %}
+			{% endfor %}
+		</ul>
+	{% endfor %}
 {% else %}
 	This course currently has no projects.
 {% endif %}

@@ -4,8 +4,8 @@ from django.contrib.auth.decorators import login_required
 from django.http import Http404
 from django.shortcuts import render
 
-from .models import Course, Submission
-from .views import get_context
+from .models import Course, Project, Submission
+from .views import get_context, AssignmentInfo
 
 SubmissionDisplay = namedtuple('SubmissionDisplay', ('id', 'student', 'project', 'isoformat', 'score', 'max_score'))
 
@@ -31,7 +31,12 @@ def instructor_course_view(request, **kwargs):
     if not context['user'].is_superuser:
         raise Http404
     context['students'] = context['course'].student_set.order_by('user__first_name', 'user__last_name')
-    context['projects'] = context['course'].project_set.order_by('name')
+    assignments = []
+    for assignment in set(Project.objects.values_list('assignment', flat=True)):
+        projects = Project.objects.filter(assignment=assignment).order_by('name')
+        if context['user'].is_superuser or any(not p.hidden for p in projects):
+            assignments.append(AssignmentInfo(assignment, max(p.id for p in projects), projects))
+    context['assignments'] = sorted(assignments, key=(lambda a: -a.max_id))
     return render(request, 'demograder/instructor/course.html', context)
 
 @login_required
