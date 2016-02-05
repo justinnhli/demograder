@@ -1,7 +1,8 @@
 from collections import namedtuple
 
 from django.contrib.auth.decorators import login_required
-from django.http import Http404
+from django.core.urlresolvers import reverse
+from django.http import HttpResponseRedirect, Http404
 from django.shortcuts import render
 
 from .models import Course, Project, Submission
@@ -71,3 +72,12 @@ def instructor_project_view(request, **kwargs):
         submissions.append(submission)
     context['submissions'] = sorted(submissions, key=(lambda s: s.student.name))
     return render(request, 'demograder/instructor/project.html', context)
+
+@login_required
+def instructor_dependencies_view(request, **kwargs):
+    context = get_context(request, **kwargs)
+    if not context['user'].is_superuser:
+        raise Http404
+    # put student dependency code here
+    # eventually a GUI will be built for this
+    return HttpResponseRedirect(reverse('index', kwargs=kwargs))

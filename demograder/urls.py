@@ -1,7 +1,7 @@
 from django.conf.urls import url
 
 from .views import index_view, course_view, project_view, project_upload_view, project_submit_handler, result_view, download_view, display_view
-from .instructor_views import instructor_view, instructor_submissions_view, instructor_course_view, instructor_student_view, instructor_project_view
+from .instructor_views import instructor_view, instructor_submissions_view, instructor_course_view, instructor_student_view, instructor_project_view, instructor_dependencies_view
 
 urlpatterns = [
     url(r'^$', index_view, name='index'),
@@ -19,4 +19,5 @@ urlpatterns = [
     url(r'^instructor/course/(?P<course_id>[0-9]+)/$', instructor_course_view, name='instructor_course'),
     url(r'^instructor/student/(?P<student_id>[0-9]+)/$', instructor_student_view, name='instructor_student'),
     url(r'^instructor/project/(?P<project_id>[0-9]+)/$', instructor_project_view, name='instructor_project'),
+    #url(r'^instructor/depends/$', instructor_dependencies_view, name='instructor_dependencies'),
 ]
