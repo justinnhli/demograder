@@ -27,7 +27,7 @@ class EnrollmentAdmin(admin.ModelAdmin):
 admin.site.register(Enrollment, EnrollmentAdmin)
 
 class ProjectAdmin(admin.ModelAdmin):
-    list_display = ('course', 'name', 'hidden')
+    list_display = ('course', 'assignment', 'name', 'hidden')
 admin.site.register(Project, ProjectAdmin)
 
 class SubmissionAdmin(admin.ModelAdmin):
