@@ -1,6 +1,7 @@
 import sys
 from ast import parse
 from contextlib import redirect_stdout
+from importlib import import_module
 from importlib.util import spec_from_file_location, module_from_spec
 from io import StringIO
 from os.path import basename
@@ -28,6 +29,23 @@ def syntax_test():
         print_result('Submission is valid Python file.', True)
     except SyntaxError as e:
         print_result('Submission has Python syntax errors: ' + str(e), False)
+
+def module_test(module):
+    stdout = StringIO()
+    with redirect_stdout(stdout):
+        import_module(module)
+    actual_output = stdout.getvalue()
+    passed = (actual_output == '')
+    if passed:
+        print_result('Module imports cleanly.', passed)
+    else:
+        transcript = dedent('''
+        Importing module results in unexpected prints.
+        Printouts are marked within '>>>' and '<<<':
+
+        >>>{}<<<
+        ''').strip().format(actual_output)
+        print_result(transcript, passed)
 
 def function_test(fn, arguments, expected_return, expected_output=''):
     template = dedent('''
