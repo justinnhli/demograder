@@ -99,8 +99,8 @@ def input_output_test(in_str, out_str):
     submission = sys.argv[1]
     input_text = dedent(in_str).strip()
     expected_output = dedent(out_str).strip()
-    completed = run_process(['python3.5', submission], input=input_text, stdout=PIPE, universal_newlines=True)
-    actual_output = completed.stdout.strip()
+    completed = run_process(['python3.5', submission], input=input_text, stdout=PIPE, stderr=PIPE, universal_newlines=True)
+    actual_output = (completed.stdout.strip() + '\n' + completed.stderr.strip()).strip()
     transcript = template.format(input_text, expected_output, actual_output)
     print_result(transcript, completed.returncode == 0 and not _multiline_diff(expected_output, actual_output))
 
