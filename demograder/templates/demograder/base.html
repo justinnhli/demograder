@@ -43,6 +43,9 @@
 						{% else %}
 							<a href="{% url 'login' %}">Login</a>
 						{% endif %}
+						{% if user.is_superuser %}
+							<br><a href="{% url 'instructor_index' %}">Instructor Home</a>
+						{% endif %}
 					</div>
 				</div>
 
