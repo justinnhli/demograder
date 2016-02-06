@@ -105,7 +105,7 @@ def input_output_test(in_str, out_str):
     print_result(transcript, completed.returncode == 0 and not _multiline_diff(expected_output, actual_output))
 
 def print_result(transcript, passed):
-    print(transcript)
+    print(transcript.strip())
     print()
     if passed:
         print('pass')
