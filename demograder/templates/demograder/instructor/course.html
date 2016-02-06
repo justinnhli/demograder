@@ -32,7 +32,7 @@
 						{% for project in assignment.projects %}
 							{% if not project.hidden or user.is_superuser %}
 								<li>
-									<a href="{% url 'project' project.id %}">{{ project.name }}</a>
+									<a href="{% url 'instructor_project' project.id %}">{{ project.name }}</a>
 								</li>
 							{% endif %}
 						{% endfor %}
