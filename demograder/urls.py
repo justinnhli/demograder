@@ -16,8 +16,9 @@ urlpatterns = [
 
     url(r'^instructor/$', instructor_view, name='instructor_index'),
     url(r'^instructor/submissions/$', instructor_submissions_view, name='instructor_submissions'),
-    url(r'^instructor/course/(?P<course_id>[0-9]+)/$', instructor_course_view, name='instructor_course'),
     url(r'^instructor/student/(?P<student_id>[0-9]+)/$', instructor_student_view, name='instructor_student'),
+    url(r'^instructor/course/(?P<course_id>[0-9]+)/$', instructor_course_view, name='instructor_course'),
+    url(r'^instructor/assignment/(?P<project_id>[0-9]+)/$', instructor_assignment_view, name='instructor_assignment'),
     url(r'^instructor/project/(?P<project_id>[0-9]+)/$', instructor_project_view, name='instructor_project'),
     #url(r'^instructor/depends/$', instructor_dependencies_view, name='instructor_dependencies'),
 ]

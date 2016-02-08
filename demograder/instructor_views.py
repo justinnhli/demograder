@@ -1,4 +1,4 @@
-from collections import namedtuple
+from collections import namedtuple, defaultdict
 
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
@@ -27,20 +27,6 @@ def instructor_submissions_view(request, **kwargs):
     return render(request, 'demograder/instructor/submissions.html', context)
 
 @login_required
-def instructor_course_view(request, **kwargs):
-    context = get_context(request, **kwargs)
-    if not context['user'].is_superuser:
-        raise Http404
-    context['students'] = context['course'].student_set.order_by('user__first_name', 'user__last_name')
-    assignments = []
-    for assignment in set(Project.objects.values_list('assignment', flat=True)):
-        projects = Project.objects.filter(assignment=assignment).order_by('name')
-        if context['user'].is_superuser or any(not p.hidden for p in projects):
-            assignments.append(AssignmentInfo(assignment, max(p.id for p in projects), projects))
-    context['assignments'] = sorted(assignments, key=(lambda a: -a.max_id))
-    return render(request, 'demograder/instructor/course.html', context)
-
-@login_required
 def instructor_student_view(request, **kwargs):
     context = get_context(request, **kwargs)
     if not context['user'].is_superuser:
@@ -57,6 +43,36 @@ def instructor_student_view(request, **kwargs):
     context['grades'] = sorted(context['grades'], key=(lambda s: s.project.name))
     context['submissions'] = context['student'].submission_set.order_by('-timestamp')
     return render(request, 'demograder/instructor/student.html', context)
+
+@login_required
+def instructor_course_view(request, **kwargs):
+    context = get_context(request, **kwargs)
+    if not context['user'].is_superuser:
+        raise Http404
+    context['students'] = context['course'].student_set.order_by('user__first_name', 'user__last_name')
+    assignments = []
+    for assignment in set(Project.objects.values_list('assignment', flat=True)):
+        projects = Project.objects.filter(assignment=assignment).order_by('name')
+        if context['user'].is_superuser or any(not p.hidden for p in projects):
+            assignments.append(AssignmentInfo(assignment, max(p.id for p in projects), projects))
+    context['assignments'] = sorted(assignments, key=(lambda a: -a.max_id))
+    return render(request, 'demograder/instructor/course.html', context)
+
+@login_required
+def instructor_assignment_view(request, **kwargs):
+    context = get_context(request, **kwargs)
+    if not context['user'].is_superuser:
+        raise Http404
+    context['grades'] = defaultdict(list) # student -> (submission, submission, ...)
+    context['projects'] = Project.objects.filter(assignment=context['assignment']).order_by('name')
+    for student in context['course'].student_set.order_by('user__username'):
+        for project in context['projects']:
+            try:
+                submission = Submission.objects.filter(student=student, project=project).latest('timestamp')
+            except Submission.DoesNotExist:
+                submission = SubmissionDisplay(0, context['student'], project, 'N/A', 'N', 'A')
+            context['grades'][student].append(submission)
+    return render(request, 'demograder/instructor/assignment.html', context)
 
 @login_required
 def instructor_project_view(request, **kwargs):

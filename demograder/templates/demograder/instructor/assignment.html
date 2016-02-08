@@ -1,0 +1,36 @@
+{% extends "demograder/base.html" %}
+
+{% block breadcrumb %}
+<!-- begin demograder/instructor/assignment.html:breadcrumb -->
+<a href="{% url 'instructor_index' %}">Home</a>
+<!-- end demograder/instructor/assignment.html:breadcrumb -->
+{% endblock %}
+
+{% block content %}
+<!-- begin demograder/instructor/assignment.html:content -->
+<h2>{{ assignment }}</h2>
+
+<table>
+	<tr>
+		<th>Student<th>
+		{% for project in projects %}
+			<th><a href="{% url 'instructor_project' project.id %}">{{ project.name }}</a></th>
+		{% endfor %}
+	</tr>
+	{% for student, submissions in grades.items %}
+		<tr>
+			<td><a href="{% url 'instructor_student' student.id %}">{{ student.name }}</a></td>
+			{% for submission in submissions %}
+				<td>
+					{% if submission.id %}
+						<a href="{% url 'submission' submission.id %}">{{ submission.score }}/{{ submission.max_score }}</a>
+					{% else %}
+						{{ submission.score }}/{{ submission.max_score }}
+					{% endif %}
+				</td>
+			{% endfor %}
+		</tr>
+	{% endfor %}
+</table>
+<!-- end demograder/instructor/assignment.html:content -->
+{% endblock %}

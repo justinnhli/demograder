@@ -37,6 +37,8 @@ def get_context(request, **kwargs):
     elif 'student_id' in kwargs:
         context['student'] = get_object_or_404(Person, id=kwargs['student_id'])
     if 'project' in context:
+        context['assignment'] = context['project'].assignment
+    if 'project' in context:
         context['course'] = context['project'].course
     elif 'course_id' in kwargs:
         context['course'] = get_object_or_404(Course, id=kwargs['course_id'])
