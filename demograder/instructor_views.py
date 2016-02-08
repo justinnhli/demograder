@@ -1,4 +1,4 @@
-from collections import namedtuple, defaultdict
+from collections import namedtuple
 
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
@@ -63,9 +63,10 @@ def instructor_assignment_view(request, **kwargs):
     context = get_context(request, **kwargs)
     if not context['user'].is_superuser:
         raise Http404
-    context['grades'] = defaultdict(list) # student -> (submission, submission, ...)
+    context['grades'] = {} # student -> (submission, submission, ...)
     context['projects'] = Project.objects.filter(assignment=context['assignment']).order_by('name')
-    for student in context['course'].student_set.order_by('user__username'):
+    for student in context['course'].student_set.order_by('user__first_name', 'user__last_name'):
+        context['grades'][student] = []
         for project in context['projects']:
             try:
                 submission = Submission.objects.filter(student=student, project=project).latest('timestamp')
