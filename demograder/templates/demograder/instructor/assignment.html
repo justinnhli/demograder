@@ -12,12 +12,12 @@
 
 <table>
 	<tr>
-		<th>Student<th>
+		<th>Student</th>
 		{% for project in projects %}
 			<th><a href="{% url 'instructor_project' project.id %}">{{ project.name }}</a></th>
 		{% endfor %}
 	</tr>
-	{% for student, submissions in grades.items %}
+	{% for student, submissions in grades%}
 		<tr>
 			<td><a href="{% url 'instructor_student' student.id %}">{{ student.name }}</a></td>
 			{% for submission in submissions %}

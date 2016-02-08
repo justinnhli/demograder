@@ -63,16 +63,18 @@ def instructor_assignment_view(request, **kwargs):
     context = get_context(request, **kwargs)
     if not context['user'].is_superuser:
         raise Http404
-    context['grades'] = {} # student -> (submission, submission, ...)
-    context['projects'] = Project.objects.filter(assignment=context['assignment']).order_by('name')
+    context['grades'] = [] # student -> (submission, submission, ...)
+    context['projects'] = Project.objects.filter(assignment=context['assignment'], hidden=False).order_by('name')
     for student in context['course'].student_set.order_by('user__first_name', 'user__last_name'):
+        submissions = []
         context['grades'][student] = []
         for project in context['projects']:
             try:
                 submission = Submission.objects.filter(student=student, project=project).latest('timestamp')
             except Submission.DoesNotExist:
                 submission = SubmissionDisplay(0, context['student'], project, 'N/A', 'N', 'A')
-            context['grades'][student].append(submission)
+            submissions.append(submission)
+        context['grades'].append(student, submissions)
     return render(request, 'demograder/instructor/assignment.html', context)
 
 @login_required
