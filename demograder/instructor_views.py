@@ -67,14 +67,13 @@ def instructor_assignment_view(request, **kwargs):
     context['projects'] = Project.objects.filter(assignment=context['assignment'], hidden=False).order_by('name')
     for student in context['course'].student_set.order_by('user__first_name', 'user__last_name'):
         submissions = []
-        context['grades'][student] = []
         for project in context['projects']:
             try:
                 submission = Submission.objects.filter(student=student, project=project).latest('timestamp')
             except Submission.DoesNotExist:
                 submission = SubmissionDisplay(0, context['student'], project, 'N/A', 'N', 'A')
             submissions.append(submission)
-        context['grades'].append(student, submissions)
+        context['grades'].append((student, submissions))
     return render(request, 'demograder/instructor/assignment.html', context)
 
 @login_required
