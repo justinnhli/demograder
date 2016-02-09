@@ -3,6 +3,7 @@ from itertools import product
 from os.path import basename, dirname, join as join_path
 from shutil import copyfile
 from tempfile import TemporaryDirectory
+from textwrap import dedent
 from subprocess import run as run_process, PIPE, TimeoutExpired
 
 import django_rq
@@ -10,6 +11,8 @@ import django_rq
 from .models import Result, ResultDependency
 
 DGLIB = join_path(dirname(__file__), 'dglib.py')
+
+TIMEOUT_LIMIT = 10 # sections
 
 def evaluate_submission(script, uploads, result, kwargs):
     # create temporary directory
@@ -32,13 +35,16 @@ def evaluate_submission(script, uploads, result, kwargs):
                 args.extend(('--{}'.format(key), ','.join(files)))
             # FIXME switch user
             args = ['python3.5', tmp_dglib] + args
-            # timeout is in seconds (300s == 5min)
-            completed_process = run_process(args, timeout=10, stderr=PIPE, stdout=PIPE)
+            completed_process = run_process(args, timeout=TIMEOUT_LIMIT, stderr=PIPE, stdout=PIPE)
             stdout = completed_process.stdout.decode('utf-8')
             stderr = completed_process.stderr.decode('utf-8')
             return_code = completed_process.returncode
         except TimeoutExpired as e:
             stdout = e.stdout.decode('utf-8')
+            stdout += '\n\n' +  dedent('''
+            The program failed to complete within {}
+            seconds and was terminated.
+            '''.format(TIMEOUT_LIMIT)).strip()
             stderr = e.stderr.decode('utf-8')
             return_code = 1
     # update Result
