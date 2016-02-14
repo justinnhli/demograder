@@ -94,10 +94,19 @@ def instructor_project_view(request, **kwargs):
     return render(request, 'demograder/instructor/project.html', context)
 
 @login_required
-def instructor_dependencies_view(request, **kwargs):
+def instructor_single_dependencies_view(request, **kwargs):
     context = get_context(request, **kwargs)
     if not context['user'].is_superuser:
         raise Http404
-    # put student dependency code here
+    # FIXME put student dependency code here
+    # eventually a GUI will be built for this
+    return HttpResponseRedirect(reverse('index', kwargs=kwargs))
+
+@login_required
+def instructor_multiple_dependencies_view(request, **kwargs):
+    context = get_context(request, **kwargs)
+    if not context['user'].is_superuser:
+        raise Http404
+    # FIXME put student dependency code here
     # eventually a GUI will be built for this
     return HttpResponseRedirect(reverse('index', kwargs=kwargs))
