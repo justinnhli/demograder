@@ -55,6 +55,12 @@
 	<pre>
 {{ result.stdout}}
 {{ result.stderr}}
+
+{% if result.return_code == 0 %}
+pass
+{% else %}
+FAIL
+{% endif %}
 	</pre>
 {% endif %}
 

@@ -26,9 +26,9 @@ def syntax_test():
         source = fd.read()
     try:
         parse(source, filename=submission)
-        print_result('Submission is valid Python file.', True)
+        print_result('Submission is valid Python file.', True, should_exit=True)
     except SyntaxError as e:
-        print_result('Submission has Python syntax errors: ' + str(e), False)
+        print_result('Submission has Python syntax errors: ' + str(e), False, should_exit=True)
 
 def module_test(module):
     stdout = StringIO()
@@ -37,7 +37,7 @@ def module_test(module):
     actual_output = stdout.getvalue()
     passed = (actual_output == '')
     if passed:
-        print_result('Module imports cleanly.', passed)
+        print_result('Module imports cleanly.', passed, should_exit=True)
     else:
         transcript = dedent('''
         Importing module results in unexpected prints.
@@ -45,7 +45,7 @@ def module_test(module):
 
         >>>{}<<<
         ''').strip().format(actual_output)
-        print_result(transcript, passed)
+        print_result(transcript, passed, should_exit=True)
 
 def function_test(fn, arguments, expected_return, expected_output=''):
     template = dedent('''
@@ -98,7 +98,7 @@ def function_test(fn, arguments, expected_return, expected_output=''):
     passed = (not error and
             expected_return == actual_return and
             not _multiline_diff(expected_output, actual_output))
-    print_result(transcript, passed)
+    print_result(transcript, passed, should_exit=True)
 
 def input_output_test(in_str, out_str):
     template = dedent('''
@@ -120,17 +120,15 @@ def input_output_test(in_str, out_str):
     completed = run_process(['python3.5', submission], input=input_text, stdout=PIPE, stderr=PIPE, universal_newlines=True)
     actual_output = (completed.stdout.strip() + '\n' + completed.stderr.strip()).strip()
     transcript = template.format(input_text, expected_output, actual_output)
-    print_result(transcript, completed.returncode == 0 and not _multiline_diff(expected_output, actual_output))
+    print_result(transcript, completed.returncode == 0 and not _multiline_diff(expected_output, actual_output), should_exit=True)
 
-def print_result(transcript, passed):
+def print_result(transcript, passed, should_exit=False):
     print(transcript.strip())
-    print()
-    if passed:
-        print('pass')
-        exit(0)
-    else:
-        print('FAIL')
-        exit(1)
+    if should_exit:
+        if passed:
+            exit(0)
+        else:
+            exit(1)
 
 def shell_adaptor():
     args = sys.argv[1:]
