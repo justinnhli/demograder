@@ -53,20 +53,21 @@ def evaluate_submission(script, uploads, result, kwargs):
     result.return_code = return_code
     result.save()
 
-def dispatch_submission(student, project, submission):
+def dispatch_submission(submission):
+    project = submission.project
     if not project.script:
         return
-    script = project.script.name
-    uploads = tuple(upload.file.name for upload in submission.upload_set.all())
     # space is a dictionary of lists of Submissions
     space = defaultdict(list)
     # for each project dependency
     for project_dependency in project.projectdependency_set.all():
         # for each pair of students matched
-        for student_dependency in project_dependency.studentdependency_set.filter(student=student):
+        for student_dependency in project_dependency.studentdependency_set.filter(student=submission.student):
             # add all submissions as arguments
             space[project_dependency.keyword].extend(tuple(student_dependency.producer.submission_set.filter(project=project_dependency.producer)))
     keys = sorted(space.keys())
+    script = project.script.name
+    uploads = tuple(upload.file.name for upload in submission.upload_set.all())
     for dependencies in product(*(space[key] for key in keys)):
         kwargs = dict(zip(keys, dependencies))
         result = Result(

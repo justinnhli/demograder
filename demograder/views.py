@@ -127,7 +127,7 @@ def project_submit_handler(request, **kwargs):
         )
         upload.save()
         # find combination of all dependent files and submission and submit to RQ
-        dispatch_submission(context['user'].person, context['project'], submission)
+        dispatch_submission(submission)
     return HttpResponseRedirect(reverse('project', kwargs=kwargs))
 
 @login_required
