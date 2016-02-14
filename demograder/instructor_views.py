@@ -7,8 +7,7 @@ from django.shortcuts import render
 
 from .models import Course, Project, Submission
 from .views import get_context, AssignmentInfo
-
-SubmissionDisplay = namedtuple('SubmissionDisplay', ('id', 'student', 'project', 'isoformat', 'score', 'max_score'))
+from .utils import SubmissionDisplay
 
 @login_required
 def instructor_view(request, **kwargs):
@@ -92,6 +91,16 @@ def instructor_project_view(request, **kwargs):
         submissions.append(submission)
     context['submissions'] = sorted(submissions, key=(lambda s: s.student.name))
     return render(request, 'demograder/instructor/project.html', context)
+
+@login_required
+def instructor_regrade_view(request, **kwargs):
+    context = get_context(request, **kwargs)
+    if not context['user'].is_superuser:
+        raise Http404
+    for submission in get_last_submissions(context['project']):
+        submission.result_set.all().delete()
+        dispatch_submission(submission)
+    return HttpResponseRedirect(reverse('index', kwargs=kwargs))
 
 @login_required
 def instructor_single_dependencies_view(request, **kwargs):
