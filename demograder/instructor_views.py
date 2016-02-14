@@ -40,7 +40,7 @@ def instructor_student_view(request, **kwargs):
                 except Submission.DoesNotExist:
                     submission = SubmissionDisplay(0, context['student'], project, 'N/A', 'N', 'A')
                 context['grades'].append(submission)
-    context['grades'] = sorted(context['grades'], key=(lambda s: s.project.name))
+    context['grades'] = sorted(context['grades'], key=(lambda s: (s.project.assignment, s.project.name)))
     context['submissions'] = context['student'].submission_set.order_by('-timestamp')
     return render(request, 'demograder/instructor/student.html', context)
 
@@ -63,17 +63,19 @@ def instructor_assignment_view(request, **kwargs):
     context = get_context(request, **kwargs)
     if not context['user'].is_superuser:
         raise Http404
-    context['grades'] = [] # student -> (submission, submission, ...)
+    context['grades'] = [] # ((student, (submission, submission, ...), grade), ...)
     context['projects'] = Project.objects.filter(assignment=context['assignment'], hidden=False).order_by('name')
     for student in context['course'].student_set.order_by('user__first_name', 'user__last_name'):
         submissions = []
+        grade = 0
         for project in context['projects']:
             try:
                 submission = Submission.objects.filter(student=student, project=project).latest('timestamp')
+                grade += submission.score / submission.max_score
             except Submission.DoesNotExist:
                 submission = SubmissionDisplay(0, context['student'], project, 'N/A', 'N', 'A')
             submissions.append(submission)
-        context['grades'].append((student, submissions))
+        context['grades'].append((student, submissions, '{:.2f}'.format(100 * grade / len(submissions))))
     return render(request, 'demograder/instructor/assignment.html', context)
 
 @login_required

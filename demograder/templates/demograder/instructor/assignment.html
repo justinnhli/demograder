@@ -18,8 +18,9 @@
 		{% for project in projects %}
 			<th><a href="{% url 'instructor_project' project.id %}">{{ project.name }}</a></th>
 		{% endfor %}
+		<th>Grade</th>
 	</tr>
-	{% for student, submissions in grades%}
+	{% for student, submissions, grade in grades%}
 		<tr>
 			<td><a href="{% url 'instructor_student' student.id %}">{{ student.name }}</a></td>
 			{% for submission in submissions %}
@@ -31,6 +32,7 @@
 					{% endif %}
 				</td>
 			{% endfor %}
+			<td style="text-align:right;">{{ grade }}%</td>
 		</tr>
 	{% endfor %}
 </table>
