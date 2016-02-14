@@ -11,11 +11,21 @@ UPLOAD_PATH = 'uploads'
 
 class Person(models.Model):
     class Meta:
+        ordering = ('last_name', 'first_name')
         verbose_name_plural = 'People'
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     @property
-    def name(self):
+    def username(self):
+        return self.user.username
+    @property
+    def full_name(self):
         return '{} {}'.format(self.user.first_name, self.user.last_name)
+    @property
+    def first_name(self):
+        return self.user.first_name
+    @property
+    def last_name(self):
+        return self.user.last_name
     @property
     def enrolled_course_set(self):
         return Course.objects.filter(enrollment__student=self)
@@ -34,12 +44,16 @@ class Year(models.Model):
         return str(self.value)
 
 class Department(models.Model):
+    class Meta:
+        ordering = ('name',)
     name = models.CharField(max_length=200)
     catalog_code = models.CharField(max_length=10, unique=True)
     def __str__(self):
         return self.name
 
 class Course(models.Model):
+    class Meta:
+        ordering = ('-year', '-season', 'catalog_id')
     WINTER = 0
     SPRING = 1
     SUMMER = 2
@@ -62,7 +76,7 @@ class Course(models.Model):
         return self.SEASONS[self.season][1]
     @property
     def semester(self):
-        return '{} {}'.format(self.year, self.season_string)
+        return '{} {}'.format(self.season_string, self.year)
     @property
     def catalog_id(self):
         return '{} {}'.format(self.department.catalog_code, self.course_number)
@@ -93,6 +107,9 @@ def _project_path(instance, filename):
     )
 
 class Project(models.Model):
+    class Meta:
+        ordering = ('assignment', 'name')
+        unique_together = ('assignment', 'name')
     course = models.ForeignKey(Course)
     assignment = models.CharField(max_length=200)
     name = models.CharField(max_length=200)
@@ -114,6 +131,9 @@ class Project(models.Model):
         return self.name
 
 class Submission(models.Model):
+    class Meta:
+        get_latest_by = 'timestamp'
+        ordering = ('-timestamp',)
     project = models.ForeignKey(Project)
     student = models.ForeignKey(Person)
     timestamp = models.DateTimeField(auto_now_add=True)
@@ -188,15 +208,17 @@ class Result(models.Model):
 class ProjectDependency(models.Model):
     class Meta:
         verbose_name_plural = 'ProjectDependencies'
+        unique_together = ('project', 'producer')
     project = models.ForeignKey(Project)
     producer = models.ForeignKey(Project, related_name='downstream_set')
     keyword = models.CharField(max_length=20)
     def __str__(self):
-        return '{} <- {}'.format(self.project, self.producer)
+        return '{} -> {}'.format(self.producer, self.project)
 
 class StudentDependency(models.Model):
     class Meta:
         verbose_name_plural = 'StudentDependencies'
+        unique_together = ('student', 'dependency', 'producer')
     student = models.ForeignKey(Person)
     dependency = models.ForeignKey(ProjectDependency)
     producer = models.ForeignKey(Person, related_name='downstream_set')
