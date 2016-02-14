@@ -28,7 +28,7 @@
 			<td>{{ submission.isoformat }}</td>
 			<td>
 				{% if submission.id %}
-					<a href="{% url 'submission' submission.id %}">{{ submission.score }}/{{ submission.max_score }}</a>
+					<a href="{% url 'instructor_submission' submission.id %}">{{ submission.score }}/{{ submission.max_score }}</a>
 				{% else %}
 					{{ submission.score }}/{{ submission.max_score }}
 				{% endif %}

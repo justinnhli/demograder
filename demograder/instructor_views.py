@@ -93,6 +93,16 @@ def instructor_project_view(request, **kwargs):
     return render(request, 'demograder/instructor/project.html', context)
 
 @login_required
+def instructor_submission_view(request, **kwargs):
+    context = get_context(request, **kwargs)
+    if not context['user'].is_superuser:
+        raise Http404
+    context['submissions'] = Submission.objects.filter(project=context['project'], student=context['student']).order_by('-timestamp')
+    if 'submission' not in context:
+        context['submission'] = context['submissions'][0]
+    return render(request, 'demograder/project.html', context)
+
+@login_required
 def instructor_regrade_view(request, **kwargs):
     context = get_context(request, **kwargs)
     if not context['user'].is_superuser:

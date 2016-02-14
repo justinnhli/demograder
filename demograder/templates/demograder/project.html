@@ -14,16 +14,12 @@
 <!-- begin demograder/project.html:content -->
 <h2>Project: {{ project.name }}</h2>
 
-{% if user.is_superuser %}
-	<a href="{% url 'instructor_project' project.id %}">Instructor View</a>
-{% endif %}
-
 <h3>Submit</h3>
 <p><a href="{% url 'project_upload' project.id %}">Upload New Version</a></p>
 
 {% if submission %}
 
-	<h3>Test Results</h3>
+	<h3>Test Results: {{ submission.score }}/{{ submission.max_score }}</h3>
 	<p>
 		From
 		{{ submission.us_format }}
