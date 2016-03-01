@@ -161,7 +161,7 @@ class Submission(models.Model):
     def us_format(self):
         return self.timestamp.astimezone(timezone('US/Pacific')).strftime('%b %d, %Y %I:%M:%S %p')
     def __str__(self):
-        return self.timestamp.strftime("%Y-%m-%d %H:%M:%S") + self.student.user.username
+        return 'Submission({}, {}, {})'.format(self.student, self.project, self.isoformat)
 
 def _upload_path(instance, filename):
     return join_path(instance.submission.directory, instance.submission.project.filename)
@@ -179,8 +179,11 @@ class Upload(models.Model):
     def filename(self):
         return self.file.name
     @property
-    def timestamp(self):
-        return self.submission.timestamp
+    def isoformat(self):
+        return self.submission.isoformat
+    @property
+    def us_format(self):
+        return self.submission.us_format
     @property
     def project(self):
         return self.submission.project
@@ -196,14 +199,19 @@ class Result(models.Model):
     stderr = models.TextField(blank=True)
     return_code = models.IntegerField(null=True, blank=True)
     @property
-    def submission_timestamp(self):
-        return self.submission.timestamp
+    def isoformat(self):
+        return self.submission.isoformat
+    @property
+    def us_format(self):
+        return self.submission.us_format
     @property
     def project(self):
         return self.submission.project
     @property
     def student(self):
         return self.submission.student
+    def __str__(self):
+        return 'Result({}, {}, {})'.format(self.submission.student, self.submission.project, self.submission.isoformat)
 
 class ProjectDependency(models.Model):
     class Meta:
