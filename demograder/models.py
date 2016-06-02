@@ -94,6 +94,8 @@ class Course(models.Model):
         return '[{}] ({}) {}'.format(self.semester, self.catalog_id, self.title)
 
 class Enrollment(models.Model):
+    class Meta:
+        unique_together = ('course', 'student',)
     course = models.ForeignKey(Course)
     student = models.ForeignKey(Person)
     @property
