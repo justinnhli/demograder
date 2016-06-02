@@ -38,7 +38,6 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'demograder',
     'django_rq',
-    'sslserver',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -98,6 +97,23 @@ DATABASES = {
     }
 }
 
+# Password validation
+
+AUTH_PASSWORD_VALIDATORS = [
+    {
+        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+    },
+]
+
 # Internationalization
 # https://docs.djangoproject.com/en/1.8/topics/i18n/
 
@@ -112,12 +128,3 @@ USE_TZ = True
 
 STATIC_URL = 'https://autograder.cc.oxy.edu/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
-
-# Security (from `manage.py check --deploy`)
-X_FRAME_OPTIONS = 'DENY'
-SESSION_COOKIE_SECURE = True
-SECURE_CONTENT_TYPE_NOSNIFF = True
-SECURE_BROWSER_XSS_FILTER = True
-SECURE_SSL_REDIRECT = True
-CSRF_COOKIE_SECURE = True
-CSRF_COOKIE_HTTPONLY = True
