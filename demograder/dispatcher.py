@@ -19,6 +19,8 @@ def evaluate_submission(script, uploads, result, kwargs):
     with TemporaryDirectory() as temp_dir:
         # copy dglib library
         tmp_dglib = copyfile(DGLIB, join_path(temp_dir, basename(DGLIB)))
+        # copy the submission script
+        tmp_script = copyfile(script, join_path(temp_dir, basename(script)))
         # copy the submission
         tmp_uploads = []
         for upload in uploads:
@@ -30,7 +32,7 @@ def evaluate_submission(script, uploads, result, kwargs):
                 filepath = upload.file.name
                 tmp_args[key].append(copyfile(filepath, join_path(temp_dir, basename(filepath))))
         try:
-            args = ['--_script', script, '--_uploads', ','.join(tmp_uploads)]
+            args = ['--_script', tmp_script, '--_uploads', ','.join(tmp_uploads)]
             for key, files in tmp_args.items():
                 args.extend(('--{}'.format(key), ','.join(files)))
             # FIXME switch user
