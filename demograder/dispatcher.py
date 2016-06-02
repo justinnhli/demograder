@@ -12,7 +12,7 @@ from .models import Result, ResultDependency
 
 DGLIB = join_path(dirname(__file__), 'dglib.py')
 
-TIMEOUT_LIMIT = 10 # sections
+TIMEOUT_LIMIT = 10 # seconds
 
 def evaluate_submission(script, uploads, result, kwargs):
     # create temporary directory
