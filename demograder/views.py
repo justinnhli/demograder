@@ -18,52 +18,61 @@ AssignmentInfo = namedtuple('AssignmentInfo', ('name', 'max_id', 'projects'))
 def get_context(request, **kwargs):
     context = {}
     context['user'] = request.user
+    context['person'] = context['user'].person
+    # upload
     if 'upload_id' in kwargs:
         context['upload'] = get_object_or_404(Upload, id=kwargs['upload_id'])
+    # result
     if 'result_id' in kwargs:
         context['result'] = get_object_or_404(Result, id=kwargs['result_id'])
+    # submission
     if 'upload' in context:
         context['submission'] = context['upload'].submission
     elif 'result' in context:
         context['submission'] = context['result'].submission
     elif 'submission_id' in kwargs:
         context['submission'] = get_object_or_404(Submission, id=kwargs['submission_id'])
+    # project and student
     if 'submission' in context:
         context['project'] = context['submission'].project
         context['student'] = context['submission'].student
     elif 'project_id' in kwargs:
         context['project'] = get_object_or_404(Project, id=kwargs['project_id'])
-        context['student'] = context['user'].person
+        context['student'] = context['person']
     elif 'student_id' in kwargs:
         context['student'] = get_object_or_404(Person, id=kwargs['student_id'])
+    # assignment
     if 'project' in context:
         context['assignment'] = context['project'].assignment
-    if 'project' in context:
-        context['course'] = context['project'].course
+    # course
+    if 'assignment' in context:
+        context['course'] = context['assignment'].course
     elif 'course_id' in kwargs:
         context['course'] = get_object_or_404(Course, id=kwargs['course_id'])
+    if 'course' in context:
+        context['is_instructor'] = (context['course'].instructor == context['person'])
     if not context['user'].is_superuser:
         if 'course' in context:
             try:
-                Enrollment.objects.get(student=context['user'].person, course=context['course'])
+                Enrollment.objects.get(student=context['person'], course=context['course'])
             except Enrollment.DoesNotExist:
                 raise PermissionDenied
         if 'upload' in context:
-            if context['user'].person != context['student']:
+            if context['person'] != context['student']:
                 try:
                     StudentDependency.objects.get(
                             producer=context['student'],
-                            student=context['user'].person,
+                            student=context['person'],
                             dependency__producer=context['project'],
                     )
                 except StudentDependency.DoesNotExist:
                     raise PermissionDenied
         else:
             if 'project' in context:
-                if context['project'].hidden:
+                if not context['project'].visible:
                     raise PermissionDenied
             if 'submission' in context:
-                if context['submission'].student != context['user'].person:
+                if context['submission'].student != context['person']:
                     raise PermissionDenied
     return context
 
@@ -75,12 +84,10 @@ def index_view(request, **kwargs):
 @login_required
 def course_view(request, **kwargs):
     context = get_context(request, **kwargs)
-    assignments = []
-    for assignment in set(Project.objects.values_list('assignment', flat=True)):
-        projects = Project.objects.filter(assignment=assignment).order_by('name')
-        if context['user'].is_superuser or any(not p.hidden for p in projects):
-            assignments.append(AssignmentInfo(assignment, max(p.id for p in projects), projects))
-    context['assignments'] = sorted(assignments, key=(lambda a: -a.max_id))
+    if context['course'].instructor == context['person']:
+        context['assignments'] = context['course'].assignments()
+    else:
+        context['assignments'] = [a for a in context['course'].assignments() if any(p.visible for p in a.projects())]
     return render(request, 'demograder/course.html', context)
 
 @login_required
@@ -93,7 +100,8 @@ def project_view(request, **kwargs):
             context['submission'] = context['submissions'][0]
         context['latest'] = context['submissions'][0]
         context['results'] = context['submission'].result_set.all()
-    return render(request, 'demograder/project.html', context)
+    context['form'] = FileUploadForm()
+    return render(request, 'demograder/project.html', context, context_instance=RequestContext(request))
 
 @login_required
 def project_upload_view(request, **kwargs):
@@ -117,7 +125,7 @@ def project_submit_handler(request, **kwargs):
     if form.is_valid():
         submission = Submission(
                 project=context['project'],
-                student=context['user'].person,
+                student=context['person'],
         )
         submission.save()
         # TODO handle multiple files per submission

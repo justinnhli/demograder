@@ -11,9 +11,9 @@ UPLOAD_PATH = 'uploads'
 
 class Person(models.Model):
     class Meta:
-        ordering = ('last_name', 'first_name')
+        ordering = ('user__last_name', 'user__first_name',)
         verbose_name_plural = 'People'
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, unique=True)
     @property
     def username(self):
         return self.user.username
@@ -26,14 +26,13 @@ class Person(models.Model):
     @property
     def last_name(self):
         return self.user.last_name
-    @property
-    def enrolled_course_set(self):
+    def instructing_courses(self):
+        return Course.objects.filter(instructor=self)
+    def enrolled_courses(self):
         return Course.objects.filter(enrollment__student=self)
-    @property
-    def enrolled_course_str(self):
-        return ','.join(sorted(course.catalog_id for course in self.course_set.all()))
     def __str__(self):
-        return self.user.username
+        # human readable, used by Django admin displays
+        return self.username
 
 def _current_year():
     return datetime.today().year
@@ -41,6 +40,7 @@ def _current_year():
 class Year(models.Model):
     value = models.IntegerField(default=_current_year, unique=True)
     def __str__(self):
+        # human readable, used by Django admin displays
         return str(self.value)
 
 class Department(models.Model):
@@ -49,11 +49,12 @@ class Department(models.Model):
     name = models.CharField(max_length=200)
     catalog_code = models.CharField(max_length=10, unique=True)
     def __str__(self):
+        # human readable, used by Django admin displays
         return self.name
 
 class Course(models.Model):
     class Meta:
-        ordering = ('-year', '-season', 'catalog_id')
+        ordering = ('-year', '-season', 'department', 'course_number',)
     WINTER = 0
     SPRING = 1
     SUMMER = 2
@@ -67,31 +68,23 @@ class Course(models.Model):
     year = models.ForeignKey(Year)
     season = models.IntegerField(choices=SEASONS)
     department = models.ForeignKey(Department)
-    course_number = models.IntegerField(default=0)
+    course_number = models.IntegerField()
     title = models.CharField(max_length=200)
-    class Meta:
-        ordering = ('-year', 'season', 'department__catalog_code', 'course_number')
+    instructor = models.ForeignKey(Person)
     @property
-    def season_string(self):
+    def season_str(self):
         return self.SEASONS[self.season][1]
     @property
-    def semester(self):
-        return '{} {}'.format(self.season_string, self.year)
+    def semester_str(self):
+        return '{} {}'.format(self.season_str, self.year)
     @property
-    def catalog_id(self):
+    def catalog_id_str(self):
         return '{} {}'.format(self.department.catalog_code, self.course_number)
-    @property
-    def projects(self):
-        return ','.join(sorted(p.name for p in self.project_set.all()))
-    @property
-    def student_set(self):
-        return Person.objects.filter(enrollment__course=self)
-    @property
-    def students(self):
-        return ','.join(sorted(student.name for student in self.student_set))
-        #return ','.join(self.student_set.values_list('student__name', flat=True).order_by('name'))
+    def assignments(self):
+        return Assignment.objects.filter(course=self)
     def __str__(self):
-        return '[{}] ({}) {}'.format(self.semester, self.catalog_id, self.title)
+        # human readable, used by Django admin displays
+        return self.semester_str + ' ' + self.catalog_id_str
 
 class Enrollment(models.Model):
     class Meta:
@@ -99,8 +92,42 @@ class Enrollment(models.Model):
     course = models.ForeignKey(Course)
     student = models.ForeignKey(Person)
     @property
-    def semester(self):
-        return self.course.semester
+    def semester_str(self):
+        return self.course.semester_str
+    @property
+    def title(self):
+        return self.course.title
+    @property
+    def username(self):
+        return self.student.username
+    @property
+    def full_name(self):
+        return self.student.full_name
+    @property
+    def first_name(self):
+        return self.student.first_name
+    @property
+    def last_name(self):
+        return self.student.last_name
+
+class Assignment(models.Model):
+    class Meta:
+        ordering = ('-deadline',)
+        unique_together = ('course', 'name')
+    course = models.ForeignKey(Course)
+    name = models.CharField(max_length=200)
+    deadline = models.DateTimeField()
+    @property
+    def iso_format(self):
+        return self.deadline.astimezone(timezone('US/Pacific')).strftime('%Y-%m-%d %H:%M:%S')
+    @property
+    def us_format(self):
+        return self.deadline.astimezone(timezone('US/Pacific')).strftime('%b %d, %Y %I:%M:%S %p')
+    def projects(self):
+        return Project.objects.filter(assignment=self)
+    def __str__(self):
+        # human readable, used by Django admin displays
+        return '({}) {}'.format(self.course, self.name)
 
 def _project_path(instance, filename):
     return join_path(instance.directory,
@@ -112,12 +139,28 @@ class Project(models.Model):
     class Meta:
         ordering = ('assignment', 'name')
         unique_together = ('assignment', 'name')
-    course = models.ForeignKey(Course)
-    assignment = models.CharField(max_length=200)
+    LATEST = 0
+    ALL = 1
+    MULTIPLE = 2
+    SUBMISSION_TYPES = (
+            (LATEST, 'Latest'),
+            (ALL, 'All'),
+            (MULTIPLE, 'Student Selected'),
+    )
+    assignment = models.ForeignKey(Assignment)
     name = models.CharField(max_length=200)
-    script = models.FileField(upload_to=_project_path, blank=True)
     filename = models.CharField(max_length=200)
-    hidden = models.BooleanField(default=False)
+    timeout = models.IntegerField(default=5)
+    submission_type = models.IntegerField(choices=SUBMISSION_TYPES)
+    script = models.FileField(upload_to=_project_path, blank=True)
+    visible = models.BooleanField(default=False)
+    locked = models.BooleanField(default=False)
+    @property
+    def course(self):
+        return self.assignment.course
+    @property
+    def deadline(self):
+        return self.assignment.deadline
     @property
     def directory(self):
         context = (
@@ -130,7 +173,25 @@ class Project(models.Model):
         )
         return join_path(*context)
     def __str__(self):
-        return self.name
+        # human readable, used by Django admin displays
+        return '{}: {}'.format(self.assignment, self.name)
+
+class ProjectDependency(models.Model):
+    class Meta:
+        verbose_name_plural = 'ProjectDependencies'
+        unique_together = ('project', 'producer')
+    INSTRUCTOR = 0
+    CLIQUE = 1
+    GROUP = 2
+    DEPENDENCY_TYPES = (
+        (INSTRUCTOR, 'All to Instructor'),
+        (CLIQUE, 'All to All'),
+        (GROUP, 'Assignment Groups'),
+    )
+    producer = models.ForeignKey(Project, related_name='downstream_set')
+    project = models.ForeignKey(Project)
+    dependency_structure = models.IntegerField(choices=DEPENDENCY_TYPES)
+    keyword = models.CharField(max_length=20)
 
 class Submission(models.Model):
     class Meta:
@@ -148,22 +209,29 @@ class Submission(models.Model):
                 datetime.today().strftime('%Y%m%d%H%M%S%f'),
         )
     @property
-    def score(self):
+    def num_passed(self):
         return len(self.result_set.filter(return_code=0))
     @property
+    def num_failed(self):
+        return len(self.result_set.exclude(return_code=0).exclude(return_code__isnull=True))
+    @property
+    def num_tbd(self):
+        return len(self.result_set.filter(return_code__isnull=True))
+    @property
+    def score(self):
+        return self.num_passed
+    @property
     def max_score(self):
-        return len(self.result_set.all())
+        return self.num_passed + self.num_failed + self.num_tbd
     @property
     def uploads_str(self):
         return ', '.join(sorted(u.file.name for u in self.upload_set.all()))
     @property
-    def isoformat(self):
+    def iso_format(self):
         return self.timestamp.astimezone(timezone('US/Pacific')).strftime('%Y-%m-%d %H:%M:%S')
     @property
     def us_format(self):
         return self.timestamp.astimezone(timezone('US/Pacific')).strftime('%b %d, %Y %I:%M:%S %p')
-    def __str__(self):
-        return 'Submission({}, {}, {})'.format(self.student, self.project, self.isoformat)
 
 def _upload_path(instance, filename):
     return join_path(instance.submission.directory, instance.submission.project.filename)
@@ -181,8 +249,8 @@ class Upload(models.Model):
     def filename(self):
         return self.file.name
     @property
-    def isoformat(self):
-        return self.submission.isoformat
+    def iso_format(self):
+        return self.submission.iso_format
     @property
     def us_format(self):
         return self.submission.us_format
@@ -192,38 +260,31 @@ class Upload(models.Model):
     @property
     def student(self):
         return self.submission.student
-    def __str__(self):
-        return self.file.name
 
 class Result(models.Model):
     submission = models.ForeignKey(Submission)
+    timestamp = models.DateTimeField(auto_now_add=True)
     stdout = models.TextField(blank=True)
     stderr = models.TextField(blank=True)
     return_code = models.IntegerField(null=True, blank=True)
     @property
-    def isoformat(self):
-        return self.submission.isoformat
+    def submission_iso_format(self):
+        return self.submission.iso_format
     @property
-    def us_format(self):
+    def submission_us_format(self):
         return self.submission.us_format
+    @property
+    def result_iso_format(self):
+        return self.timestamp.astimezone(timezone('US/Pacific')).strftime('%Y-%m-%d %H:%M:%S')
+    @property
+    def result_us_format(self):
+        return self.timestamp.astimezone(timezone('US/Pacific')).strftime('%b %d, %Y %I:%M:%S %p')
     @property
     def project(self):
         return self.submission.project
     @property
     def student(self):
         return self.submission.student
-    def __str__(self):
-        return 'Result({}, {}, {})'.format(self.submission.student, self.submission.project, self.submission.isoformat)
-
-class ProjectDependency(models.Model):
-    class Meta:
-        verbose_name_plural = 'ProjectDependencies'
-        unique_together = ('project', 'producer')
-    project = models.ForeignKey(Project)
-    producer = models.ForeignKey(Project, related_name='downstream_set')
-    keyword = models.CharField(max_length=20)
-    def __str__(self):
-        return '{} -> {}'.format(self.producer, self.project)
 
 class StudentDependency(models.Model):
     class Meta:

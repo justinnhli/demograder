@@ -22,12 +22,22 @@
 					</div>
 					<div id="menu">
 						{% if user.is_authenticated %}
-							<h3>Courses</h3>
-							{% if user.person.enrolled_course_set.all %}
+							{% if user.person.instructing_courses.all %}
+								<h3>Instructing Courses</h3>
 								<ul>
-									{% for course in user.person.enrolled_course_set.all %}
+									{% for course in user.person.instructing_courses.all %}
 										<li>
-											<a href="{% url 'course' course.id %}"><span class="catalog-code">{{ course.catalog_id }}</span>: {{ course.title }}</a>
+											<a href="{% url 'course' course.id %}"><span class="catalog-code">{{ course.catalog_id_str }}</span>: {{ course.title }}</a>
+										</li>
+									{% endfor %}
+								</ul>
+							{% endif %}
+							<h3>Enrolled Courses</h3>
+							{% if user.person.enrolled_courses.all %}
+								<ul>
+									{% for course in user.person.enrolled_courses.all %}
+										<li>
+											<a href="{% url 'course' course.id %}"><span class="catalog-code">{{ course.catalog_id_str }}</span>: {{ course.title }}</a>
 										</li>
 									{% endfor %}
 								</ul>
@@ -44,7 +54,7 @@
 							<a href="{% url 'login' %}">Login</a>
 						{% endif %}
 						{% if user.is_superuser %}
-							<br><a href="{% url 'instructor_index' %}">Instructor Home</a>
+							<br><br><a href="/admin">django admin</a>
 						{% endif %}
 					</div>
 				</div>

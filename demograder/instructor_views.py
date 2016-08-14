@@ -7,7 +7,7 @@ from django.shortcuts import render
 
 from .models import Course, Project, Submission
 from .views import get_context, AssignmentInfo
-from .utils import SubmissionDisplay
+from .util import SubmissionDisplay
 
 @login_required
 def instructor_view(request, **kwargs):

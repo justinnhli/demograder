@@ -4,7 +4,9 @@
 <!-- begin demograder/project.html:breadcrumb -->
 <a href="{% url 'index' %}">Home</a>
 &gt;
-<a href="{% url 'course' project.course.id %}">{{ project.course.catalog_id }}</a>
+<a href="{% url 'course' project.course.id %}">{{ project.course.catalog_id_str }}</a>
+&gt;
+{{ project.assignment.name }}
 &gt;
 <a href="{% url 'project' project.id %}">{{ project.name }}</a>
 <!-- end demograder/project.html:breadcrumb -->
@@ -12,10 +14,16 @@
 
 {% block content %}
 <!-- begin demograder/project.html:content -->
-<h2>Project: {{ project.name }}</h2>
+<h2>{{ project.assignment.name }}: {{ project.name }}</h2>
+Due {{ project.assignment.us_format }}
 
-<h3>Submit</h3>
-<p><a href="{% url 'project_upload' project.id %}">Upload New Version</a></p>
+<h3>Upload New Version</h3>
+<form action="{% url 'project_submit' project.id %}" method="post" enctype="multipart/form-data">
+	{% csrf_token %}
+	<p>{{ form.non_field_errors }}</p>
+	<p>{{ form.file.errors }}</p>
+	<p>{{ form.file }} <input type="submit" value="Upload" /></p>
+</form>
 
 {% if submission %}
 
@@ -95,6 +103,7 @@
 	</div>
 
 {% else %}
+	<h3>Past Submissions</h3>
 	You have not submitted to this project.
 {% endif %}
 

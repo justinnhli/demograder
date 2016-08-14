@@ -6,6 +6,8 @@
 &gt;
 <a href="{% url 'course' course.id %}">{{ course.department.catalog_code }} {{ course.course_number }}</a>
 &gt;
+{{ project.assignment.name }}
+&gt;
 <a href="{% url 'project' project.id %}">{{ project.name }}</a>
 &gt;
 <a href="{% url 'project_upload' project.id %}">Upload</a>
