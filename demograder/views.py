@@ -11,7 +11,7 @@ from django.template import RequestContext
 
 from .forms import FileUploadForm
 from .models import Course, Enrollment, Person, Project, Submission, Upload, Result, StudentDependency
-from .dispatcher import dispatch_submission
+from .dispatcher import enqueue_submission_dispatch
 
 AssignmentInfo = namedtuple('AssignmentInfo', ('name', 'max_id', 'projects'))
 
@@ -104,18 +104,6 @@ def project_view(request, **kwargs):
     return render(request, 'demograder/project.html', context, context_instance=RequestContext(request))
 
 @login_required
-def project_upload_view(request, **kwargs):
-    context = get_context(request, **kwargs)
-    context.update(kwargs)
-    context['form'] = FileUploadForm()
-    # Render list page with the documents and the form
-    return render_to_response(
-        'demograder/project_upload.html',
-        context,
-        context_instance=RequestContext(request)
-    )
-
-@login_required
 def project_submit_handler(request, **kwargs):
     context = get_context(request, **kwargs)
     if request.method != 'POST':
@@ -134,8 +122,7 @@ def project_submit_handler(request, **kwargs):
                 file=request.FILES['file'],
         )
         upload.save()
-        # find combination of all dependent files and submission and submit to RQ
-        dispatch_submission(submission)
+        enqueue_submission_dispatch(submission)
     return HttpResponseRedirect(reverse('project', kwargs=kwargs))
 
 @login_required

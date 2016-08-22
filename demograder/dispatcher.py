@@ -10,11 +10,15 @@ import django_rq
 
 from .models import Result, ResultDependency
 
+DISPATCH_QUEUE = Queue('dispatch', connection=redis_conn)
+EVALUATION_QUEUE = Queue('evaluation', connection=redis_conn)
+
 DGLIB = join_path(dirname(__file__), 'dglib.py')
 
 TIMEOUT_LIMIT = 10 # seconds
 
 def evaluate_submission(script, uploads, result, kwargs):
+    _setup_django()
     # create temporary directory
     with TemporaryDirectory() as temp_dir:
         # copy dglib library
@@ -56,6 +60,8 @@ def evaluate_submission(script, uploads, result, kwargs):
     result.save()
 
 def dispatch_submission(submission):
+    _setup_django()
+    student = submission.student
     project = submission.project
     if not project.script:
         return
@@ -63,10 +69,19 @@ def dispatch_submission(submission):
     space = defaultdict(list)
     # for each project dependency
     for project_dependency in project.projectdependency_set.all():
-        # for each pair of students matched
-        for student_dependency in project_dependency.studentdependency_set.filter(student=submission.student):
-            # add all submissions as arguments
-            space[project_dependency.keyword].extend(tuple(student_dependency.producer.submission_set.filter(project=project_dependency.producer)))
+        # FIXME 
+        if project_dependency.dependency_structure == ProjectDependency.SELF:
+            space[project_dependency.keyword].extend(tuple(student.submissions.filter(project=project_dependency.producer)))
+        elif project_dependency.dependency_structure == ProjectDependency.INSTRUCTOR:
+            space[project_dependency.keyword].extend(tuple(proejct.course.instructor.submissions.filter(project=project_dependency.producer)))
+        elif project_dependency.dependency_structure == ProjectDependency.CLIQUE:
+            for classmate in project.course.enrolled_students
+            pass
+        elif project_dependency.dependency_structure == ProjectDependency.CUSTOM:
+            # for each pair of students matched
+            for student_dependency in project_dependency.studentdependency_set.filter(student=submission.student):
+                # add all submissions as arguments
+                space[project_dependency.keyword].extend(tuple(student_dependency.producer.submissions.filter(project=project_dependency.producer)))
     keys = sorted(space.keys())
     script = project.script.name
     uploads = tuple(upload.file.name for upload in submission.upload_set.all())
@@ -81,4 +96,13 @@ def dispatch_submission(submission):
                 result=result,
                 producer=upstream_submission,
             ).save()
-        django_rq.enqueue(evaluate_submission, script, uploads, result, kwargs)
+        EVALUATION_QUEUE.enqueue(evaluate_submission, script, uploads, result, kwargs)
+
+def enqueue_submission_dispatch(submission):
+    DISPATCH_QUEUE.enqueue(dispatch_submission, submission)
+
+def _setup_django():
+    import os
+    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "djangosite.settings")
+    import django
+    django.setup()

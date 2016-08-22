@@ -30,6 +30,11 @@ class Person(models.Model):
         return Course.objects.filter(instructor=self)
     def enrolled_courses(self):
         return Course.objects.filter(enrollment__student=self)
+    '''
+    # Django might create this automatically; will uncomment if there are errors
+    def submission(self):
+        return Submission.objects.filter(student=self)
+    '''
     def __str__(self):
         # human readable, used by Django admin displays
         return self.username
@@ -80,6 +85,8 @@ class Course(models.Model):
     @property
     def catalog_id_str(self):
         return '{} {}'.format(self.department.catalog_code, self.course_number)
+    def enrolled_students(self):
+        return Person.objects.filter(enrollment__course=self)
     def assignments(self):
         return Assignment.objects.filter(course=self)
     def __str__(self):
@@ -180,13 +187,15 @@ class ProjectDependency(models.Model):
     class Meta:
         verbose_name_plural = 'ProjectDependencies'
         unique_together = ('project', 'producer')
-    INSTRUCTOR = 0
-    CLIQUE = 1
-    GROUP = 2
+    SELF = 0
+    INSTRUCTOR = 1
+    CLIQUE = 2
+    CUSTOM = 3
     DEPENDENCY_TYPES = (
+        (SELF, 'Self'),
         (INSTRUCTOR, 'All to Instructor'),
         (CLIQUE, 'All to All'),
-        (GROUP, 'Assignment Groups'),
+        (CUSTOM, 'Custom Groups'),
     )
     producer = models.ForeignKey(Project, related_name='downstream_set')
     project = models.ForeignKey(Project)
