@@ -30,11 +30,8 @@ class Person(models.Model):
         return Course.objects.filter(instructor=self)
     def enrolled_courses(self):
         return Course.objects.filter(enrollment__student=self)
-    '''
-    # Django might create this automatically; will uncomment if there are errors
-    def submission(self):
+    def submissions(self):
         return Submission.objects.filter(student=self)
-    '''
     def __str__(self):
         # human readable, used by Django admin displays
         return self.username
@@ -179,6 +176,10 @@ class Project(models.Model):
             str(self.id), # project
         )
         return join_path(*context)
+    def upstream_dependencies(self):
+        return ProjectDependency.objects.filter(project=self)
+    def downstream_dependencies(self):
+        return ProjectDependency.objects.filter(producer=self)
     def __str__(self):
         # human readable, used by Django admin displays
         return '{}: {}'.format(self.assignment, self.name)
@@ -201,6 +202,12 @@ class ProjectDependency(models.Model):
     project = models.ForeignKey(Project)
     dependency_structure = models.IntegerField(choices=DEPENDENCY_TYPES)
     keyword = models.CharField(max_length=20)
+    def __str__(self):
+        return '({} {}) {} --> {}'.format(
+                self.project.assignment.course,
+                self.project.assignment.name,
+                self.producer.name,
+                self.project.name)
 
 class Submission(models.Model):
     class Meta:
@@ -241,6 +248,8 @@ class Submission(models.Model):
     @property
     def us_format(self):
         return self.timestamp.astimezone(timezone('US/Pacific')).strftime('%b %d, %Y %I:%M:%S %p')
+    def uploads(self):
+        return Upload.objects.filter(submission=self)
 
 def _upload_path(instance, filename):
     return join_path(instance.submission.directory, instance.submission.project.filename)
@@ -310,4 +319,5 @@ class ResultDependency(models.Model):
     class Meta:
         verbose_name_plural = 'ResultDependencies'
     result = models.ForeignKey(Result)
+    project_dependency = models.ForeignKey(ProjectDependency)
     producer = models.ForeignKey(Submission, related_name='downstream_set')

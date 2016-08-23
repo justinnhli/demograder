@@ -88,7 +88,13 @@ DATABASES = {
 # https://github.com/ui/django-rq
 
 RQ_QUEUES = {
-    'default': {
+    'dispatch': {
+        'HOST': 'localhost',
+        'PORT': 6379,
+        'DB': 0,
+        'DEFAULT_TIMEOUT': 360,
+    },
+    'evaluation': {
         'HOST': 'localhost',
         'PORT': 6379,
         'DB': 0,
