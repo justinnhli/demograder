@@ -16,19 +16,31 @@ Demograder uses an all-Python stack:
 
 ## Running
 
-0. Go to the root of this repository
+1. Go to the root of this repository
 
 		cd demograder
 
 1. Set up a virtual environment with the necessary packages
 
-		virtualenv venv
-		source venv/bin/activation
+		python3 -m venv /PATH/TO/VENV/demograder
+		source /PATH/TO/VENV/demograder/bin/activation
 		pip install -r requirements.txt
 
-2. Start the services
+1. Change directory paths in `Procfile`, `gunicorn.conf`, and `nginx.conf`
 
-		honcho start
+1. Copy/link the nginx configuration `nginx.conf` to `/etc/nginx/sites-enabled/`
+
+1. Set up django by running:
+
+		./manage.py migrate
+		./manage.py createsuperuser
+		./manage.py makemigrations demograder
+		./manage.py migrate
+		for fixture in demograder/fixtures/*.json; do
+			./manage.py loaddata "$fixture"
+		done
+
+1. Start the services with `honcho start`, or to specific the number of workers, `honcho start -c rqworker=4`
 
 ## Known Issues
 
