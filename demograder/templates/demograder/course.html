@@ -23,7 +23,7 @@
 				{% if project.visible or user.is_superuser %}
 					<li>
 						<a href="{% url 'project' project.id %}">{{ project.name }}</a>
-						{% if user.is_superuser %}(hidden){% endif %}
+						{% if not project.visible %}(hidden){% endif %}
 					</li>
 				{% endif %}
 			{% endfor %}
