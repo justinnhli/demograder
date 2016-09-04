@@ -38,6 +38,7 @@ Demograder uses an all-Python stack:
 		./manage.py createsuperuser
 		./manage.py makemigrations demograder
 		./manage.py migrate
+		./manage.py collectstatic
 
 1. Load fixtures in `demograder/fixtures`:
 
