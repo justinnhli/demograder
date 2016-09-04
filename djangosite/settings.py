@@ -26,7 +26,7 @@ with open(os.path.join(BASE_DIR, 'djangosite', 'secret-key')) as fd:
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['autograder.cc.oxy.edu',]
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
 
 LOGIN_REDIRECT_URL = '/demograder/'
 
