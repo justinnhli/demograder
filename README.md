@@ -30,15 +30,22 @@ Demograder uses an all-Python stack:
 
 1. Copy/link the nginx configuration `nginx.conf` to `/etc/nginx/sites-enabled/`
 
+1. Create `djangosite/secret-key`
+
 1. Set up django by running:
 
 		./manage.py migrate
 		./manage.py createsuperuser
 		./manage.py makemigrations demograder
 		./manage.py migrate
-		for fixture in demograder/fixtures/*.json; do
-			./manage.py loaddata "$fixture"
-		done
+
+1. Load fixtures in `demograder/fixtures`:
+
+		./manage.py loaddata demograder/fixtures/$FIXTURE
+
+1. (Re-)Start nginx:
+
+		sudo service nginx restart
 
 1. Start the services with `honcho start`, or to specific the number of workers, `honcho start -c rqworker=4`
 
