@@ -99,6 +99,7 @@ def project_view(request, **kwargs):
         if 'submission' not in context:
             context['submission'] = context['submissions'][0]
         context['latest'] = context['submissions'][0]
+        context['allow_submit'] = (context['latest'].num_tbd == 0)
         context['results'] = context['submission'].result_set.all()
     context['form'] = FileUploadForm()
     return render(request, 'demograder/project.html', context, context_instance=RequestContext(request))
