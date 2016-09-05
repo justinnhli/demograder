@@ -54,7 +54,7 @@
 							<a href="{% url 'login' %}">Login</a>
 						{% endif %}
 						{% if user.is_superuser %}
-							<br><br><a href="/admin">django admin</a>
+						<br><br><a href="{% url 'instructor_submissions' %}">submissions</a>&nbsp;&nbsp;&nbsp;<a href="/admin">django admin</a>
 						{% endif %}
 					</div>
 				</div>

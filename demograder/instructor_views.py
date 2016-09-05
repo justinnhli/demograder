@@ -22,7 +22,7 @@ def instructor_submissions_view(request, **kwargs):
     context = get_context(request, **kwargs)
     if not context['user'].is_superuser:
         raise Http404
-    context['submissions'] = Submission.objects.filter(project__hidden=False).order_by('-timestamp')[:100]
+    context['submissions'] = Submission.objects.filter(project__visible=True).order_by('-timestamp')[:100]
     return render(request, 'demograder/instructor/submissions.html', context)
 
 @login_required
@@ -33,7 +33,7 @@ def instructor_student_view(request, **kwargs):
     context['grades'] = []
     for course in context['student'].enrolled_course_set.all():
         for project in course.project_set.all():
-            if not project.hidden:
+            if project.visible:
                 try:
                     submission = Submission.objects.filter(student=context['student'], project=project).latest('timestamp')
                 except Submission.DoesNotExist:
@@ -52,7 +52,7 @@ def instructor_course_view(request, **kwargs):
     assignments = []
     for assignment in set(Project.objects.values_list('assignment', flat=True)):
         projects = Project.objects.filter(assignment=assignment).order_by('name')
-        if context['user'].is_superuser or any(not p.hidden for p in projects):
+        if context['user'].is_superuser or any(p.visible for p in projects):
             assignments.append(AssignmentInfo(assignment, max(p.id for p in projects), projects))
     context['assignments'] = sorted(assignments, key=(lambda a: -a.max_id))
     return render(request, 'demograder/instructor/course.html', context)
@@ -63,7 +63,7 @@ def instructor_assignment_view(request, **kwargs):
     if not context['user'].is_superuser:
         raise Http404
     context['grades'] = [] # ((student, (submission, submission, ...), grade), ...)
-    context['projects'] = Project.objects.filter(assignment=context['assignment'], hidden=False).order_by('name')
+    context['projects'] = Project.objects.filter(assignment=context['assignment'], visible=True).order_by('name')
     for student in context['course'].student_set.order_by('user__first_name', 'user__last_name'):
         submissions = []
         grade = 0
