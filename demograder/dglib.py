@@ -8,16 +8,14 @@ from os.path import basename
 from subprocess import run as run_process, PIPE
 from textwrap import dedent
 
-def _multiline_diff(expected, actual):
+def is_different(expected, actual):
     different = False
-    for line in expected.splitlines():
-        line = line.strip()
-        actual = actual.strip()
-        if not actual.startswith(line):
-            different = True
-            break
-        actual = actual[len(line):]
-    return different or actual.strip() != ''
+    expected_lines = expected.splitlines()
+    actual_lines = actual.splitlines()
+    for expected_line, actual_line in zip(expected_lines, actual_lines):
+        if expected_line.strip() != actual_line.strip():
+            return True
+    return False
 
 def syntax_test():
     submission = sys.argv[1]
@@ -97,7 +95,7 @@ def function_test(fn, arguments, expected_return, expected_output=''):
             actual_output)
     passed = (not error and
             expected_return == actual_return and
-            not _multiline_diff(expected_output, actual_output))
+            not is_different(expected_output, actual_output))
     print_result(transcript, passed, should_exit=True)
 
 def input_output_test(in_str, out_str):
@@ -120,7 +118,7 @@ def input_output_test(in_str, out_str):
     completed = run_process(['python3.5', submission], input=input_text, stdout=PIPE, stderr=PIPE, universal_newlines=True)
     actual_output = (completed.stdout.strip() + '\n' + completed.stderr.strip()).strip()
     transcript = template.format(input_text, expected_output, actual_output)
-    print_result(transcript, completed.returncode == 0 and not _multiline_diff(expected_output, actual_output), should_exit=True)
+    print_result(transcript, completed.returncode == 0 and not is_different(expected_output, actual_output), should_exit=True)
 
 def print_result(transcript, passed, should_exit=False):
     print(transcript.strip())
