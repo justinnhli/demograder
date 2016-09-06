@@ -20,19 +20,19 @@
 		{% endfor %}
 		<th>Grade</th>
 	</tr>
-	{% for student, submissions, grade in grades%}
+	{% for student, submissions, grade in student_scores %}
 		<tr>
-			<td><a href="{% url 'instructor_student' student.id %}">{{ student.name }}</a></td>
+			<td><a href="{% url 'instructor_student' student.id %}">{{ student.full_name }}</a></td>
 			{% for submission in submissions %}
 				<td>
-					{% if submission.id %}
-						<a href="{% url 'instructor_submission' submission.id %}">{{ submission.score }}/{{ submission.max_score }}</a>
+					{% if submission == None %}
+						N/A
 					{% else %}
-						{{ submission.score }}/{{ submission.max_score }}
+						<a href="{% url 'instructor_submission' submission.id %}">{{ submission.score }}/{{ submission.max_score }}</a>
 					{% endif %}
 				</td>
 			{% endfor %}
-			<td style="text-align:right;">{{ grade }}%</td>
+			<td style="text-align:right;">{{ grade }}</td>
 		</tr>
 	{% endfor %}
 </table>

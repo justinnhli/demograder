@@ -1,4 +1,5 @@
 from collections import namedtuple
+from statistics import mean
 
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
@@ -57,24 +58,29 @@ def instructor_course_view(request, **kwargs):
     context['assignments'] = sorted(assignments, key=(lambda a: -a.max_id))
     return render(request, 'demograder/instructor/course.html', context)
 
+AssignmentSummaryRow = namedtuple('AssignmentSummaryRow', ('student', 'submissions', 'grade'))
+
 @login_required
 def instructor_assignment_view(request, **kwargs):
     context = get_context(request, **kwargs)
     if not context['user'].is_superuser:
         raise Http404
-    context['grades'] = [] # ((student, (submission, submission, ...), grade), ...)
-    context['projects'] = Project.objects.filter(assignment=context['assignment'], visible=True).order_by('name')
-    for student in context['course'].student_set.order_by('user__first_name', 'user__last_name'):
+    context['projects'] = context['assignment'].projects().filter(visible=True)
+    context['student_scores'] = []
+    for student in context['course'].enrolled_students():
         submissions = []
-        grade = 0
+        scores = []
         for project in context['projects']:
-            try:
-                submission = Submission.objects.filter(student=student, project=project).latest('timestamp')
-                grade += submission.score / submission.max_score
-            except Submission.DoesNotExist:
-                submission = SubmissionDisplay(0, context['student'], project, 'N/A', 'N', 'A')
-            submissions.append(submission)
-        context['grades'].append((student, submissions, '{:.2f}'.format(100 * grade / len(submissions))))
+            # FIXME deal with other submission types
+            if project.submission_type == Project.LATEST:
+                try:
+                    submission = Submission.objects.filter(student=student, project=project).latest('timestamp')
+                    submissions.append(submission)
+                    scores.append(submission.score / submission.max_score)
+                except Submission.DoesNotExist:
+                    submissions.append(None)
+                    scores.append(0)
+        context['student_scores'].append(AssignmentSummaryRow(student, submissions, '{:.2%}'.format(mean(scores))))
     return render(request, 'demograder/instructor/assignment.html', context)
 
 @login_required
