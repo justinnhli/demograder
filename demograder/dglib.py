@@ -9,13 +9,10 @@ from subprocess import run as run_process, PIPE
 from textwrap import dedent
 
 def is_different(expected, actual):
-    different = False
-    expected_lines = expected.splitlines()
-    actual_lines = actual.splitlines()
-    for expected_line, actual_line in zip(expected_lines, actual_lines):
-        if expected_line.strip() != actual_line.strip():
-            return True
-    return False
+    # Note: this function deliberately ignores newlines to deal with input()
+    expected = ''.join(line.strip() for line in expected.splitlines())
+    actual = ''.join(line.strip() for line in actual.splitlines())
+    return expected != actual
 
 def syntax_test():
     submission = sys.argv[1]
