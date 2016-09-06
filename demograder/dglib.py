@@ -9,10 +9,15 @@ from subprocess import run as run_process, PIPE
 from textwrap import dedent
 
 def is_different(expected, actual):
-    # Note: this function deliberately ignores newlines to deal with input()
-    expected = ''.join(line.strip() for line in expected.splitlines())
-    actual = ''.join(line.strip() for line in actual.splitlines())
-    return expected != actual
+    # note: this function deliberately ignores newlines to deal with input()
+    different = False
+    for line in expected.splitlines():
+        line = line.strip()
+        actual = actual.strip()
+        if not actual.startswith(line):
+            return True
+        actual = actual[len(line):]
+    return actual.strip() != ''
 
 def syntax_test():
     submission = sys.argv[1]
@@ -42,7 +47,7 @@ def module_test(module):
         ''').strip().format(actual_output)
         print_result(transcript, passed, should_exit=True)
 
-def function_test(fn, arguments, expected_return, expected_output=''):
+def function_test(fn, arguments, expected_return, expected_output='', quiet=False, should_exit=True):
     template = dedent('''
     FUNCTION CALL
     -------------
@@ -93,7 +98,7 @@ def function_test(fn, arguments, expected_return, expected_output=''):
     passed = (not error and
             expected_return == actual_return and
             not is_different(expected_output, actual_output))
-    print_result(transcript, passed, should_exit=True)
+    print_result(transcript, passed, quiet=quiet, should_exit=should_exit)
 
 def input_output_test(in_str, out_str):
     template = dedent('''
@@ -117,8 +122,14 @@ def input_output_test(in_str, out_str):
     transcript = template.format(input_text, expected_output, actual_output)
     print_result(transcript, completed.returncode == 0 and not is_different(expected_output, actual_output), should_exit=True)
 
-def print_result(transcript, passed, should_exit=False):
-    print(transcript.strip())
+def print_result(transcript, passed, quiet=False, should_exit=False):
+    if not quiet:
+        print(transcript.strip())
+    elif passed:
+        print('pass')
+    else:
+        print(transcript.strip())
+        print('FAIL')
     if should_exit:
         if passed:
             exit(0)
