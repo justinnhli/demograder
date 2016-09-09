@@ -93,7 +93,7 @@ def lint_test():
         transcript = dedent('''
         There are some coding style issues; the numbers represent the line and column respectively.
 
-        >>>{}<<<
+        {}
         ''').strip().format('\n'.join(actual_output.splitlines()[1:]))
         print_result(transcript, passed, should_exit=True)
 
