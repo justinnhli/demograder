@@ -23,7 +23,7 @@
 					<div id="menu">
 						{% if user.is_authenticated %}
 							{% if user.person.instructing_courses.all %}
-								<h3>Instructing Courses</h3>
+								<h3>Courses Instructing</h3>
 								<ul>
 									{% for course in user.person.instructing_courses.all %}
 										<li>
@@ -32,7 +32,7 @@
 									{% endfor %}
 								</ul>
 							{% endif %}
-							<h3>Enrolled Courses</h3>
+							<h3>Courses Enrolled</h3>
 							{% if user.person.enrolled_courses.all %}
 								<ul>
 									{% for course in user.person.enrolled_courses.all %}
