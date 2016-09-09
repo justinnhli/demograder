@@ -8,8 +8,6 @@ from os.path import basename
 from subprocess import run as run_process, PIPE
 from textwrap import dedent
 
-from pylint.lint import Run as lint
-
 def is_different(expected, actual):
     # note: this function deliberately ignores newlines to deal with input()
     different = False
@@ -79,6 +77,7 @@ LINT_CHECKS = {
 }
 
 def lint_test():
+    from pylint.lint import Run as lint
     file = sys.argv[1]
     actual_output = StringIO()
     with redirect_stdout(actual_output):
@@ -89,7 +88,7 @@ def lint_test():
     actual_output = actual_output.getvalue().strip()
     passed = (actual_output == '')
     if passed:
-        print_result('Passed style checks', passed, should_exit=True)
+        print_result('Coding style okay.', passed, should_exit=True)
     else:
         transcript = dedent('''
         There are some coding style issues; the numbers represent the line and column respectively.
