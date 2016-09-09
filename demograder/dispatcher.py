@@ -54,7 +54,7 @@ def evaluate_submission(result):
             for key, files in tmp_args.items():
                 args.extend(('--{}'.format(key), ','.join(files)))
             # FIXME switch user
-            args = ['python3.5', tmp_dglib] + args
+            args = [sys.executable, tmp_dglib] + args
             print(args)
             completed_process = run_process(args, timeout=timeout, stderr=PIPE, stdout=PIPE)
             stdout = completed_process.stdout.decode('utf-8')
