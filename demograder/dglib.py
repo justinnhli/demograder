@@ -30,7 +30,11 @@ def syntax_test():
     except SyntaxError as e:
         print_result('Submission has Python syntax errors: ' + str(e), False, should_exit=True)
 
-def module_test(module):
+def module_test(module=None):
+    if module is None:
+        module = basename(sys.argv[1])
+    if module.endswith('.py'):
+        module = module[:-3]
     stdout = StringIO()
     with redirect_stdout(stdout):
         import_module(module)
