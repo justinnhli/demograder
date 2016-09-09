@@ -6,11 +6,11 @@ from .instructor_views import instructor_regrade_view, instructor_single_depende
 
 urlpatterns = [
     url(r'^$', index_view, name='index'),
-    url(r'^courses/(?P<course_id>[0-9]+)/$', course_view, name='course'),
-    url(r'^projects/(?P<project_id>[0-9]+)/$', project_view, name='project'),
-    url(r'^projects/(?P<project_id>[0-9]+)/submit/$', project_submit_handler, name='project_submit'),
-    url(r'^submissions/(?P<submission_id>[0-9]+)/$', project_view, name='submission'),
-    url(r'^results/(?P<result_id>[0-9]+)/$', result_view, name='result'),
+    url(r'^course/(?P<course_id>[0-9]+)/$', course_view, name='course'),
+    url(r'^project/(?P<project_id>[0-9]+)/$', project_view, name='project'),
+    url(r'^project/(?P<project_id>[0-9]+)/submit/$', project_submit_handler, name='project_submit'),
+    url(r'^submission/(?P<submission_id>[0-9]+)/$', project_view, name='submission'),
+    url(r'^result/(?P<result_id>[0-9]+)/$', result_view, name='result'),
     url(r'^download/(?P<upload_id>[0-9]+)/$', download_view, name='download'),
     url(r'^display/(?P<upload_id>[0-9]+)/$', display_view, name='display'),
 
