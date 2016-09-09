@@ -8,6 +8,8 @@ from os.path import basename
 from subprocess import run as run_process, PIPE
 from textwrap import dedent
 
+from pylint.lint import Run as lint
+
 def is_different(expected, actual):
     # note: this function deliberately ignores newlines to deal with input()
     different = False
@@ -49,6 +51,51 @@ def module_test(module=None):
 
         >>>{}<<<
         ''').strip().format(actual_output)
+        print_result(transcript, passed, should_exit=True)
+
+# from http://pylint-messages.wikidot.com/all-codes
+LINT_CHECKS = {
+    'C0301': 'Line too long (%s/%s)',
+    'C0303': 'Trailing whitespace',
+    'C0325': 'Unnecessary parens after %r keyword',
+    'C0326': '',
+    'E0104': 'Return outside function',
+    'E0107': 'Use of the non-existent %s operator',
+    'E0601': 'Using variable %r before assignment',
+    'E0602': 'Undefined variable %r',
+    'R0801': 'Similar lines in %s files',
+    'W0101': 'Unreachable code',
+    'W0102': 'Dangerous default value %s as argument',
+    'W0104': 'Statement seems to have no effect',
+    'W0120': 'Else clause on loop without a break statement',
+    'W0122': 'Use of exec',
+    'W0301': 'Unnecessary semicolon',
+    'W0311': 'Bad indentation. Found %s %s, expected %s',
+    'W0312': 'Found indentation with %ss instead of %ss',
+    'W0333': 'Use of the `` operator',
+    'W0603': 'Using the global statement',
+    'W0611': 'Unused import %s',
+    'W0612': 'Unused variable %r',
+}
+
+def lint_test():
+    file = sys.argv[1]
+    actual_output = StringIO()
+    with redirect_stdout(actual_output):
+        try:
+            lint([file, '--disable=all', '--enable=' + ','.join(sorted(LINT_CHECKS.keys()))])
+        except SystemExit:
+            pass
+    actual_output = actual_output.getvalue().strip()
+    passed = (actual_output == '')
+    if passed:
+        print_result('Passed style checks', passed, should_exit=True)
+    else:
+        transcript = dedent('''
+        There are some coding style issues; the numbers represent the line and column respectively.
+
+        >>>{}<<<
+        ''').strip().format('\n'.join(actual_output.splitlines()[1:]))
         print_result(transcript, passed, should_exit=True)
 
 def function_test(fn, arguments, expected_return, expected_output='', quiet=False, should_exit=True):
