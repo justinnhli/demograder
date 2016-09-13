@@ -123,10 +123,10 @@ class Assignment(models.Model):
     deadline = models.DateTimeField()
     @property
     def iso_format(self):
-        return self.deadline.astimezone(timezone('US/Pacific')).strftime('%Y-%m-%d %H:%M:%S')
+        return self.deadline.astimezone(timezone('US/Pacific')).strftime('%Y-%m-%d %H:%M')
     @property
     def us_format(self):
-        return self.deadline.astimezone(timezone('US/Pacific')).strftime('%b %d, %Y %I:%M:%S %p')
+        return self.deadline.astimezone(timezone('US/Pacific')).strftime('%b %d, %Y %I:%M %p')
     def projects(self):
         return Project.objects.filter(assignment=self)
     def __str__(self):
