@@ -82,7 +82,7 @@ def lint_test():
     actual_output = StringIO()
     with redirect_stdout(actual_output):
         try:
-            lint([file, '--disable=all', '--enable=' + ','.join(sorted(LINT_CHECKS.keys()))])
+            lint([file, '--disable=all', '--enable=' + ','.join(sorted(LINT_CHECKS.keys())), '--max-line-length=150'])
         except SystemExit:
             pass
     actual_output = actual_output.getvalue().strip()
