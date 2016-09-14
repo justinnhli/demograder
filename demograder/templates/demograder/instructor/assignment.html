@@ -4,7 +4,9 @@
 <!-- begin demograder/instructor/assignment.html:breadcrumb -->
 <a href="{% url 'instructor_index' %}">Instructor Home</a>
 &gt;
-<a href="{% url 'instructor_course' project.course.id %}">{{ project.course.catalog_id }}</a>
+<a href="{% url 'instructor_course' assignment.course.id %}">{{ assignment.course.catalog_id_str }}</a>
+&gt;
+{{ assignment.name }}
 <!-- end demograder/instructor/assignment.html:breadcrumb -->
 {% endblock %}
 

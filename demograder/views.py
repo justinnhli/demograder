@@ -10,7 +10,7 @@ from django.shortcuts import render, render_to_response, get_object_or_404
 from django.template import RequestContext
 
 from .forms import FileUploadForm
-from .models import Course, Enrollment, Person, Project, Submission, Upload, Result, StudentDependency
+from .models import Course, Enrollment, Person, Assignment, Project, Submission, Upload, Result, StudentDependency
 from .dispatcher import enqueue_submission_dispatch
 
 AssignmentInfo = namedtuple('AssignmentInfo', ('name', 'max_id', 'projects'))
@@ -42,7 +42,9 @@ def get_context(request, **kwargs):
     elif 'student_id' in kwargs:
         context['student'] = get_object_or_404(Person, id=kwargs['student_id'])
     # assignment
-    if 'project' in context:
+    if 'assignment_id' in kwargs:
+        context['assignment'] = get_object_or_404(Assignment, id=kwargs['assignment_id'])
+    elif 'project' in context:
         context['assignment'] = context['project'].assignment
     # course
     if 'assignment' in context:

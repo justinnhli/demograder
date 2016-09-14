@@ -17,7 +17,11 @@
 
 {% if assignments %}
 	{% for assignment in assignments %}
+	{% if user.is_superuser %}
+	<h4><a href="{% url 'instructor_assignment' assignment.id %}">{{ assignment.name }}</a> (due {{ assignment.us_format }})</h4>
+	{% else %}
 	<h4>{{ assignment.name }} (due {{ assignment.us_format }})</h4>
+	{% endif %}
 		<ul>
 			{% for project in assignment.projects %}
 				{% if project.visible or user.is_superuser %}
