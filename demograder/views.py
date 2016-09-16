@@ -62,6 +62,7 @@ def get_context(request, **kwargs):
         if 'upload' in context:
             if context['person'] != context['student']:
                 try:
+                    # FIXME update for new dependency shortcuts
                     StudentDependency.objects.get(
                             producer=context['student'],
                             student=context['person'],
