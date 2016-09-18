@@ -21,7 +21,7 @@
 		<tr>
 			<td><a href="{% url 'instructor_student' submission.student.id %}">{{ submission.student.full_name }}</a></td>
 			<td>
-				<a href="{% url 'instructor_assignment' submission.project.id %}">{{ submission.project.assignment }}</a>:
+				<a href="{% url 'instructor_assignment' submission.project.assignment.id %}">{{ submission.project.assignment }}</a>:
 				<a href="{% url 'instructor_project' submission.project.id %}">{{ submission.project.name }}</a>
 			</td>
 			<td>{{ submission.iso_format }}</td>
