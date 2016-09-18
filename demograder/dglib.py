@@ -56,8 +56,9 @@ LINT_CHECKS = {
     'C0301': 'Line too long (%s/%s)',
     'C0303': 'Trailing whitespace',
     'C0325': 'Unnecessary parens after %r keyword',
-    'C0326': '',
+    'C0326': 'No space allowed before %s',
     'E0001': 'Syntax error',
+    'E0102': 'Function already defined',
     'E0104': 'Return outside function',
     'E0107': 'Use of the non-existent %s operator',
     'E0601': 'Using variable %r before assignment',
@@ -68,6 +69,7 @@ LINT_CHECKS = {
     'W0104': 'Statement seems to have no effect',
     'W0120': 'Else clause on loop without a break statement',
     'W0122': 'Use of exec',
+    'W0125': 'Using a conditional statement with a constant value',
     'W0301': 'Unnecessary semicolon',
     'W0311': 'Bad indentation. Found %s %s, expected %s',
     'W0312': 'Found indentation with %ss instead of %ss',
@@ -83,7 +85,11 @@ def lint_test():
     actual_output = StringIO()
     with redirect_stdout(actual_output):
         try:
-            lint([file, '--disable=all', '--enable=' + ','.join(sorted(LINT_CHECKS.keys())), '--max-line-length=150'])
+            lint([file,
+                "--msg-template='Line {line}, column {column}: {msg}'",
+                '--disable=all',
+                '--enable=' + ','.join(sorted(LINT_CHECKS.keys())), '--max-line-length=150']
+            )
         except SystemExit:
             pass
     actual_output = actual_output.getvalue().strip()
@@ -92,7 +98,7 @@ def lint_test():
         print_result('Coding style okay.', passed, should_exit=True)
     else:
         transcript = dedent('''
-        There are some coding style issues; the numbers represent the line and column respectively.
+        There are some coding style issues:
 
         {}
         ''').strip().format('\n'.join(actual_output.splitlines()[1:]))
