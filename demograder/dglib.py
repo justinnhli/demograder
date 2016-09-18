@@ -57,6 +57,7 @@ LINT_CHECKS = {
     'C0303': 'Trailing whitespace',
     'C0325': 'Unnecessary parens after %r keyword',
     'C0326': '',
+    'E0001': 'Syntax error',
     'E0104': 'Return outside function',
     'E0107': 'Use of the non-existent %s operator',
     'E0601': 'Using variable %r before assignment',
