@@ -77,7 +77,7 @@ def instructor_assignment_view(request, **kwargs):
                     submission = Submission.objects.filter(student=student, project=project).latest('timestamp')
                     submissions.append(submission)
                     scores.append(submission.score / submission.max_score)
-                except Submission.DoesNotExist:
+                except (ZeroDivisionError, Submission.DoesNotExist):
                     submissions.append(None)
                     scores.append(0)
         context['student_scores'].append(AssignmentSummaryRow(student, submissions, '{:.2%}'.format(mean(scores))))
