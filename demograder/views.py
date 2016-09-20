@@ -82,6 +82,7 @@ def get_context(request, **kwargs):
 @login_required
 def index_view(request, **kwargs):
     context = get_context(request, **kwargs)
+    context['submissions'] = Submissions.objects.filter(student=context['student'])
     return render(request, 'demograder/index.html', context)
 
 @login_required

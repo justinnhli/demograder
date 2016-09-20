@@ -11,7 +11,23 @@
 {% if user.is_authenticated %}
 	<h2>Welcome, {{ user.first_name }}!</h2>
 
-	Select a course from the menu on the left to begin.
+	<p>Select a course from the menu on the left to begin.</p>
+
+	<p>Your latest submissions:</p>
+	<table>
+		<tr>
+			<th>Assignment</th>
+			<th>Date</th>
+			<th>Tests Passed</th>
+		</tr>
+		{% for submission in submissions %}
+		<tr>
+			<td>{{ submission.project.assignment }}: <a href="{% url 'project' submission.project.id %}">{{ submission.project.name }}</a></td>
+			<td>{{ submission.us_format }}</td>
+			<td><a href="{% url 'submission' submission.id %}">{{ submission.score }}/{{ submission.max_score }}</a></td>
+		</tr>
+		{% endfor %}
+	</table>
 {% else %}
 	<h2>Welcome!</h2>
 
