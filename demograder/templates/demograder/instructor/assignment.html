@@ -30,7 +30,7 @@
 					{% if submission == None %}
 						N/A
 					{% else %}
-						<a href="{% url 'instructor_submission' submission.id %}">{{ submission.score }}/{{ submission.max_score }}</a>
+						<a href="{% url 'submission' submission.id %}">{{ submission.score }}/{{ submission.max_score }}</a>
 					{% endif %}
 				</td>
 			{% endfor %}
