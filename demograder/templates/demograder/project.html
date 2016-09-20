@@ -32,7 +32,7 @@
 
 {% else %}
 
-<p>You cannot submit a new version until your <a href="{% url 'submission' latest.id %}">last submission</a> has been evaluated.</p>
+<p>You cannot submit until your <a href="{% url 'submission' latest.id %}">latest submission</a> has been completely evaluated.</p>
 
 {% endif %}
 
@@ -46,10 +46,10 @@
 	<p>
 		From
 		{{ submission.us_format }}
-		{% if submission == latest %}
+		{% if submission == project_latest %}
 			(most recent submission)
 		{% else %}
-			(<a href="{% url 'submission' latest.id %}">see most recent submission</a>)
+			(<a href="{% url 'submission' project_latest.id %}">see most recent submission</a>)
 		{% endif %}
 	</p>
 	<p>
