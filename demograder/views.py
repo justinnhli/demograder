@@ -10,7 +10,7 @@ from django.shortcuts import render, render_to_response, get_object_or_404
 from django.template import RequestContext
 
 from .forms import FileUploadForm
-from .models import Course, Enrollment, Person, Assignment, Project, Submission, Upload, Result, StudentDependency
+from .models import Course, Enrollment, Person, Assignment, Project, Submission, Upload, Result, ProjectDependency, StudentDependency
 from .dispatcher import enqueue_submission_dispatch
 
 AssignmentInfo = namedtuple('AssignmentInfo', ('name', 'max_id', 'projects'))
@@ -63,11 +63,7 @@ def get_context(request, **kwargs):
             if context['person'] != context['student']:
                 try:
                     # FIXME update for new dependency shortcuts
-                    StudentDependency.objects.get(
-                            producer=context['student'],
-                            student=context['person'],
-                            dependency__producer=context['project'],
-                    )
+                    ProjectDependency.objects.filter(producer=context['project'].project, project__visible=True)
                 except StudentDependency.DoesNotExist:
                     raise PermissionDenied
         else:
