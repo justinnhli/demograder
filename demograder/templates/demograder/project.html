@@ -16,7 +16,7 @@
 <!-- begin demograder/project.html:content -->
 <h2>
 	{{ project.assignment.name }}: {{ project.name }}
-	{% if user.is_superuser %}(<a href="{% url 'admin:demograder_project_change' submission.project.id %}">admin</a>){% endif %}
+	{% if user.is_superuser %}(<a href="{% url 'admin:demograder_project_change' project.id %}">admin</a>){% endif %}
 </h2>
 <p>Due {{ project.assignment.us_format }}</p>
 
