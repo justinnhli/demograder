@@ -29,8 +29,6 @@
 				<td>
 					{% if submission == None %}
 						N/A
-					{% elif submission.max_score == 0 %}
-						<a href="{% url 'submission' submission.id %}">0/0</a>
 					{% else %}
 						<a href="{% url 'submission' submission.id %}">{{ submission.score }}/{{ submission.max_score }}</a>
 					{% endif %}
