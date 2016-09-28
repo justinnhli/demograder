@@ -75,8 +75,9 @@ def instructor_assignment_view(request, **kwargs):
             if project.submission_type == Project.LATEST:
                 try:
                     submission = Submission.objects.filter(student=student, project=project).latest('timestamp')
+                    score = submission.score / submission.max_score
                     submissions.append(submission)
-                    scores.append(submission.score / submission.max_score)
+                    scores.append(score)
                 except (ZeroDivisionError, Submission.DoesNotExist):
                     submissions.append(None)
                     scores.append(0)
