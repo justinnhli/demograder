@@ -32,7 +32,7 @@ class Person(models.Model):
         return Course.objects.filter(enrollment__student=self)
     def submissions(self):
         return Submission.objects.filter(student=self)
-    def latest_submission(self)
+    def latest_submission(self):
         return Submission.objects.filter(student=self).latest()
     def may_submit(self):
         return (self.latest_submission.num_tbd == 0)
