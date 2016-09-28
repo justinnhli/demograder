@@ -35,7 +35,7 @@ class Person(models.Model):
     def latest_submission(self):
         return Submission.objects.filter(student=self).latest()
     def may_submit(self):
-        return (self.latest_submission.num_tbd == 0)
+        return (self.latest_submission().num_tbd == 0)
     def __str__(self):
         # human readable, used by Django admin displays
         return self.username
