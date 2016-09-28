@@ -307,6 +307,15 @@ class Result(models.Model):
     @property
     def student(self):
         return self.submission.student
+    @property
+    def is_tbd(self):
+        return self.return_code is None
+    @property
+    def passed(self):
+        return self.return_code == 0
+    @property
+    def failed(self):
+        return not self.passed
 
 class StudentDependency(models.Model):
     class Meta:

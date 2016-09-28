@@ -66,9 +66,9 @@
 	{% if results %}
 		<div id="scoreboard">
 			{% for result in results %}
-				{% if result.return_code == None %}
+				{% if result.is_tbd %}
 					<a class="score tbd" href="{% url 'result' result.id %}">TBD</a>
-				{% elif result.return_code == 0 %}
+				{% elif result.passed %}
 					<a class="score pass" href="{% url 'result' result.id %}">Pass</a>
 				{% else %}
 					<a class="score fail" href="{% url 'result' result.id %}">Fail</a>

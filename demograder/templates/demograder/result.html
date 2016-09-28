@@ -40,23 +40,19 @@
 		{% endfor %}
 	</ul>
 
-{% if result.return_code == None%}
+{% if result.is_tbd %}
 	<h3>Result to be determined</h3>
 {% else %}
 	<h3>
 		Result: 
-		{% if result.return_code == 0 %}
-			Pass
-		{% else %}
-			Fail
-		{% endif %}
+		{% if result.passed %}Pass{% else %}Fail{% endif %}
 	</h3>
 	Output:
 	<pre>
 {{ result.stdout}}
 {{ result.stderr}}
 
-{% if result.return_code == 0 %}
+{% if result.passed %}
 pass
 {% else %}
 FAIL
