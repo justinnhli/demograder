@@ -8,10 +8,11 @@
 
 {% block content %}
 <!-- begin demograder/instructor/submissions.html:content -->
-<h2>Submissions</h2>
+<h2>Latest Submissions</h2>
 
 <table>
 	<tr>
+		<th>Course</th>
 		<th>Student</th>
 		<th>Project</th>
 		<th>Submission Time</th>
@@ -19,11 +20,9 @@
 	</tr>
 	{% for submission in submissions %}
 		<tr>
+			<td><a href="{% url 'course' submission.project.course.id %}">{{ submission.project.course }}</a></td>
 			<td><a href="{% url 'instructor_student' submission.student.id %}">{{ submission.student.full_name }}</a></td>
-			<td>
-				<a href="{% url 'instructor_assignment' submission.project.assignment.id %}">{{ submission.project.assignment }}</a>:
-				<a href="{% url 'instructor_project' submission.project.id %}">{{ submission.project.name }}</a>
-			</td>
+			<td><a href="{% url 'instructor_assignment' submission.project.assignment.id %}">{{ submission.project.assignment.name }}</a>: {{ submission.project.name }}</td>
 			<td>{{ submission.iso_format }}</td>
 			<td><a href="{% url 'submission' submission.id %}">{{ submission.score }}/{{ submission.max_score }}</a></td>
 		</tr>

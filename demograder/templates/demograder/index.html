@@ -13,21 +13,25 @@
 
 	<p>Select a course from the menu on the left to begin.</p>
 
+	{% if submissions %}
 	<p>Your last {{ submissions|length }} submissions:</p>
 	<table>
 		<tr>
+			<th>Course</th>
 			<th>Assignment</th>
 			<th>Date</th>
 			<th>Tests Passed</th>
 		</tr>
 		{% for submission in submissions %}
 		<tr>
-			<td>{{ submission.project.assignment }}: <a href="{% url 'project' submission.project.id %}">{{ submission.project.name }}</a></td>
+			<td><a href="{% url 'course' submission.project.course.id %}">{{ submission.project.course }}</a></td>
+			<td>{{ submission.project.assignment.name }}: <a href="{% url 'project' submission.project.id %}">{{ submission.project.name }}</a></td>
 			<td>{{ submission.us_format }}</td>
 			<td><a href="{% url 'submission' submission.id %}">{{ submission.score }}/{{ submission.max_score }}</a></td>
 		</tr>
 		{% endfor %}
 	</table>
+	{% endif %}
 {% else %}
 	<h2>Welcome!</h2>
 
