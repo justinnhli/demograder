@@ -20,7 +20,7 @@
 </h2>
 <p>Due {{ project.assignment.us_format }}</p>
 
-{% if allow_submit %}
+{% if may_submit %}
 
 <h3>Upload New Version</h3>
 <form action="{% url 'project_submit' project.id %}" method="post" enctype="multipart/form-data">
