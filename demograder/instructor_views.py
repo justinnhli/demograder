@@ -124,7 +124,7 @@ def instructor_project_regrade_view(request, **kwargs):
             enqueue_submission_dispatch(submission)
         except Submission.DoesNotExist:
             pass
-    return HttpResponseRedirect(reverse('instructor_assignment', assignment=context['project'].assignment.id))
+    return HttpResponseRedirect(reverse('instructor_assignment', kwargs=kwargs)
 
 @login_required
 def instructor_submission_regrade_view(request, **kwargs):
@@ -133,4 +133,4 @@ def instructor_submission_regrade_view(request, **kwargs):
         raise Http404
     context['submission'].result_set.all().delete()
     enqueue_submission_dispatch(context['submission'])
-    return HttpResponseRedirect(reverse('submission', assignment=context['submission'].id))
+    return HttpResponseRedirect(reverse('submission', kwargs=kwargs))

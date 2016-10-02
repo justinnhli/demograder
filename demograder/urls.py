@@ -2,7 +2,7 @@ from django.conf.urls import url
 
 from .views import index_view, course_view, project_view, project_submit_handler, result_view, download_view, display_view
 from .instructor_views import instructor_view, instructor_submissions_view, instructor_student_view, instructor_course_view, instructor_assignment_view, instructor_project_view, instructor_submission_view
-from .instructor_views import instructor_regrade_view, instructor_single_dependencies_view, instructor_multiple_dependencies_view
+from .instructor_views import instructor_project_regrade_view, instructor_submission_regrade_view
 
 urlpatterns = [
     url(r'^$', index_view, name='index'),
@@ -21,6 +21,6 @@ urlpatterns = [
     url(r'^instructor/assignment/(?P<assignment_id>[0-9]+)/$', instructor_assignment_view, name='instructor_assignment'),
     url(r'^instructor/project/(?P<project_id>[0-9]+)/$', instructor_project_view, name='instructor_project'),
     url(r'^instructor/submission/(?P<submission_id>[0-9]+)/$', instructor_submission_view, name='instructor_submission'),
-    url(r'^instructor/project-regrade/(?P<project_id>[0-9]+)$', instructor_regrade_view, name='instructor_project_regrade'),
-    url(r'^instructor/submission-regrade/(?P<submission_id>[0-9]+)$', instructor_regrade_view, name='instructor_submission_regrade'),
+    url(r'^instructor/project-regrade/(?P<project_id>[0-9]+)$', instructor_project_regrade_view, name='instructor_project_regrade'),
+    url(r'^instructor/submission-regrade/(?P<submission_id>[0-9]+)$', instructor_submission_regrade_view, name='instructor_submission_regrade'),
 ]

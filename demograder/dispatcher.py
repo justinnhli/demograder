@@ -76,13 +76,16 @@ def evaluate_submission(result):
 
 def get_relevant_submissions(person, project):
     setup_django()
-    from demograder.models import Project
-    if project.submission_type == Project.LATEST:
-        return (person.submissions().filter(project=project).latest(),)
-    elif project.submission_type == Project.ALL:
-        return tuple(person.submissions().filter(project=project))
-    elif project.submission_type == Project.MULTIPLE:
-        return tuple() # FIXME not implemented
+    from demograder.models import Project, Submission
+    try:
+        if project.submission_type == Project.LATEST:
+            return (person.submissions().filter(project=project).latest(),)
+        elif project.submission_type == Project.ALL:
+            return tuple(person.submissions().filter(project=project))
+        elif project.submission_type == Project.MULTIPLE:
+            return tuple() # FIXME not implemented
+    except Submission.DoesNotExist:
+        return tuple()
 
 def dispatch_submission(submission):
     setup_django()
@@ -103,7 +106,7 @@ def dispatch_submission(submission):
         elif project_dependency.dependency_structure == ProjectDependency.CLIQUE:
             dependents[project_dependency].update(
                     get_relevant_submissions(project.course.instructor, project_dependency.producer))
-            for classmate in project.course.enrolled_students:
+            for classmate in project.course.enrolled_students():
                 dependents[project_dependency].update(
                         get_relevant_submissions(classmate, project_dependency.producer))
         elif project_dependency.dependency_structure == ProjectDependency.CUSTOM:
