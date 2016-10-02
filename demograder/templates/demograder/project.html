@@ -14,9 +14,15 @@
 
 {% block content %}
 <!-- begin demograder/project.html:content -->
+{% if user.is_superuser %}
+	<div id="admin_panel">
+		<a href="{% url 'admin:demograder_project_change' project.id %}">project admin</a>
+		<a href="{% url 'admin:demograder_submission_change' submission.id %}">submission admin</a>
+	</div>
+{% endif %}
+
 <h2>
 	{{ project.assignment.name }}: {{ project.name }}
-	{% if user.is_superuser %}(<a href="{% url 'admin:demograder_project_change' project.id %}">admin</a>){% endif %}
 </h2>
 <p>Due {{ project.assignment.us_format }}</p>
 
@@ -41,7 +47,6 @@
 	<h3>
 		{% if user.is_superuser %}{{ submission.student.full_name }}'s{% endif %}
 		Test Results: {{ submission.score }}/{{ submission.max_score }}
-		{% if user.is_superuser %}(<a href="{% url 'admin:demograder_submission_change' submission.id %}">admin</a>){% endif %}
 	</h3>
 	<p>
 		From
@@ -81,9 +86,6 @@
 
 	<h3 id="history-heading">
 		Submission History
-		{% if user.is_superuser %}
-			for <a href="{% url 'instructor_student' submission.student.id %}">{{ submission.student.name }}</a>
-		{% endif %}
 	</h3>
 	<div id="history">
 		<table>
