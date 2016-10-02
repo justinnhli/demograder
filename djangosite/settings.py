@@ -21,7 +21,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # SECURITY WARNING: keep the secret key used in production secret!
 with open(os.path.join(BASE_DIR, 'djangosite', 'secret-key')) as fd:
-	SECRET_KEY = fd.read().strip()
+    SECRET_KEY = fd.read().strip()
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
