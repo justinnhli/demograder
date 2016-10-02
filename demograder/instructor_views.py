@@ -9,6 +9,7 @@ from django.shortcuts import render
 from .models import Course, Project, Submission
 from .views import get_context, AssignmentInfo
 from .util import SubmissionDisplay
+from .dispatcher import enqueue_submission_dispatch
 
 @login_required
 def instructor_view(request, **kwargs):
@@ -112,29 +113,24 @@ def instructor_submission_view(request, **kwargs):
     return render(request, 'demograder/project.html', context)
 
 @login_required
-def instructor_regrade_view(request, **kwargs):
+def instructor_project_regrade_view(request, **kwargs):
     context = get_context(request, **kwargs)
     if not context['user'].is_superuser:
         raise Http404
-    for submission in get_last_submissions(context['project']):
-        submission.result_set.all().delete()
-        dispatch_submission(submission)
-    return HttpResponseRedirect(reverse('index', kwargs=kwargs))
+    for student in context['project'].course.enrolled_students():
+        try:
+            submission = Submission.objects.filter(project=context['project'], student=student).latest('-timestamp')
+            submission.result_set.all().delete()
+            enqueue_submission_dispatch(submission)
+        except Submission.DoesNotExist:
+            pass
+    return HttpResponseRedirect(reverse('instructor_assignment', assignment=context['project'].assignment.id))
 
 @login_required
-def instructor_single_dependencies_view(request, **kwargs):
+def instructor_submission_regrade_view(request, **kwargs):
     context = get_context(request, **kwargs)
     if not context['user'].is_superuser:
         raise Http404
-    # FIXME put student dependency code here
-    # eventually a GUI will be built for this
-    return HttpResponseRedirect(reverse('index', kwargs=kwargs))
-
-@login_required
-def instructor_multiple_dependencies_view(request, **kwargs):
-    context = get_context(request, **kwargs)
-    if not context['user'].is_superuser:
-        raise Http404
-    # FIXME put student dependency code here
-    # eventually a GUI will be built for this
-    return HttpResponseRedirect(reverse('index', kwargs=kwargs))
+    context['submission'].result_set.all().delete()
+    enqueue_submission_dispatch(context['submission'])
+    return HttpResponseRedirect(reverse('submission', assignment=context['submission'].id))

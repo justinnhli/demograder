@@ -17,7 +17,9 @@
 {% if user.is_superuser %}
 	<div id="admin_panel">
 		<a href="{% url 'admin:demograder_project_change' project.id %}">project admin</a>
+		<a href="{% url 'instructor_project_regrade' project.id %}">regrade project</a>
 		<a href="{% url 'admin:demograder_submission_change' submission.id %}">submission admin</a>
+		<a href="{% url 'instructor_submission_regrade' submission.id %}">regrade submission</a>
 	</div>
 {% endif %}
 

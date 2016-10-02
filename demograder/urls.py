@@ -21,7 +21,6 @@ urlpatterns = [
     url(r'^instructor/assignment/(?P<assignment_id>[0-9]+)/$', instructor_assignment_view, name='instructor_assignment'),
     url(r'^instructor/project/(?P<project_id>[0-9]+)/$', instructor_project_view, name='instructor_project'),
     url(r'^instructor/submission/(?P<submission_id>[0-9]+)/$', instructor_submission_view, name='instructor_submission'),
-    url(r'^instructor/danger/regrade/(?P<project_id>[0-9]+)$', instructor_regrade_view, name='instructor_regrade'),
-    url(r'^instructor/danger/single-depends/(?P<project_id>[0-9]+)$', instructor_single_dependencies_view, name='instructor_single_dependencies'),
-    url(r'^instructor/danger/multiple-depends/(?P<project_id>[0-9]+)$', instructor_multiple_dependencies_view, name='instructor_multiple_dependencies'),
+    url(r'^instructor/project-regrade/(?P<project_id>[0-9]+)$', instructor_regrade_view, name='instructor_project_regrade'),
+    url(r'^instructor/submission-regrade/(?P<submission_id>[0-9]+)$', instructor_regrade_view, name='instructor_submission_regrade'),
 ]
