@@ -124,7 +124,7 @@ def instructor_project_regrade_view(request, **kwargs):
             enqueue_submission_dispatch(submission)
         except Submission.DoesNotExist:
             pass
-    return HttpResponseRedirect(reverse('instructor_assignment', kwargs=kwargs)
+    return HttpResponseRedirect(reverse('instructor_assignment', kwargs=kwargs))
 
 @login_required
 def instructor_submission_regrade_view(request, **kwargs):
