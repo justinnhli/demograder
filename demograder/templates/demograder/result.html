@@ -32,7 +32,10 @@
 		{% for dependency in result.resultdependency_set.all %}
 			{% for upload in dependency.producer.upload_set.all %}
 				{% if user.is_superuser %}
-					<li><a href="{% url 'display' upload.id %}">{{ upload.basename }}</a></li>
+					<li>
+						<a href="{% url 'display' upload.id %}">{{ upload.basename }}</a>
+						(from <a href="{% url 'submission' upload.submission.id %}">{{ upload.submission.student.full_name }}'s submission</a>)
+					</li>
 				{% else %}
 					<li><a href="{% url 'download' upload.id %}">{{ upload.basename }}</a></li>
 				{% endif %}
