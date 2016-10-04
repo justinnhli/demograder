@@ -63,7 +63,7 @@ def get_context(request, **kwargs):
             if context['person'] != context['student']:
                 try:
                     # FIXME update for new dependency shortcuts
-                    ProjectDependency.objects.filter(producer=context['project'].project, project__visible=True)
+                    ProjectDependency.objects.filter(producer=context['project'], project__visible=True)
                 except StudentDependency.DoesNotExist:
                     raise PermissionDenied
         else:
