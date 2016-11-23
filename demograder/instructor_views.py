@@ -119,12 +119,12 @@ def instructor_project_regrade_view(request, **kwargs):
         raise Http404
     for student in context['project'].course.enrolled_students():
         try:
-            submission = Submission.objects.filter(project=context['project'], student=student).latest('-timestamp')
+            submission = Submission.objects.filter(project=context['project'], student=student).latest()
             submission.result_set.all().delete()
             enqueue_submission_dispatch(submission)
         except Submission.DoesNotExist:
             pass
-    return HttpResponseRedirect(reverse('instructor_assignment', kwargs=kwargs))
+    return HttpResponseRedirect(reverse('instructor_assignment', kwargs={'assignment_id':context['project'].assignment.id}))
 
 @login_required
 def instructor_submission_regrade_view(request, **kwargs):
