@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/1.9/ref/settings/
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
+from json import load as read_json
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -20,15 +21,21 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/1.9/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-with open(os.path.join(BASE_DIR, 'djangosite', 'secret-key')) as fd:
-    SECRET_KEY = fd.read().strip()
+with open(os.path.join(BASE_DIR, 'djangosite', 'secrets.json')) as fd:
+    json_dict = read_json(fd)
+    SECRET_KEY = json_dict["django_secret_key"]
+    SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = json_dict['google_oauth2_key']
+    SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = json_dict['google_oauth2_secret']
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
 ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
 
+LOGIN_URL = 'login'
+LOGOUT_URL = 'logout'
 LOGIN_REDIRECT_URL = '/demograder/'
+
 
 # Application definition
 
@@ -39,8 +46,15 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    # demograder proper
     'demograder',
+
+    # job queues
     'django_rq',
+
+    # social authentication
+    'social_django',
 ]
 
 MIDDLEWARE_CLASSES = [
@@ -52,6 +66,9 @@ MIDDLEWARE_CLASSES = [
     'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+
+    # social authentication
+    'social_django.middleware.SocialAuthExceptionMiddleware',
 ]
 
 ROOT_URLCONF = 'djangosite.urls'
@@ -67,6 +84,10 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+
+                # social authentication
+                'social_django.context_processors.backends',
+                'social_django.context_processors.login_redirect',
             ],
         },
     },
@@ -119,6 +140,14 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
+
+# Authentication backends
+AUTHENTICATION_BACKENDS = (
+    'django.contrib.auth.backends.ModelBackend',
+
+    'social_core.backends.google.GoogleOAuth2',
+)
+
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.9/topics/i18n/

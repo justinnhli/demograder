@@ -5,7 +5,7 @@ venv*
 db.sqlite3
 dump.rdb
 demograder/migrations
-djangosite/secret-key
+djangosite/secrets.json
 static
 
 # uploads

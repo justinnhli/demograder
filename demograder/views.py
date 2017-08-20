@@ -18,6 +18,8 @@ AssignmentInfo = namedtuple('AssignmentInfo', ('name', 'max_id', 'projects'))
 def get_context(request, **kwargs):
     context = {}
     context['user'] = request.user
+    if not hasattr(context['user'], 'person'):
+        Person(user=context['user']).save()
     context['person'] = context['user'].person
     # upload
     if 'upload_id' in kwargs:

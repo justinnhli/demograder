@@ -1,5 +1,5 @@
-body {background-color:#000000; color:#FFFFFF;}
-a, a:active, a:visited {color:#FFFFFF;}
+body {background-color:#EEEEEC;}
+a, a:active, a:visited {color:#000000;}
 input[type=number], input[type=submit], input[type=text], select {color:#000000;}
 
 table {border-collapse:collapse; width:100%;}
@@ -11,12 +11,12 @@ table th:first-child, table td:first-child {border-left-style:none;}
 table th:last-child, table td:last-child {border-right-style:none;}
 table tr:last-child td {border-bottom-style:none;}
 
-#sidebar {background-color:#333333; padding:1.25em;}
+#sidebar {background-color:#D3D7CF; padding:1.25em;}
 
 #logo-container {text-align:center;}
-#logo {color:#F05B21; font:40pt/90% 'Crimson Text',serif;}
-#logo a, #logo a:hover, #logo a:active, #logo a:visited {color:#F05B21;}
-#logo a:hover {color:#E14C11; text-decoration:none;}
+#logo {color:#FF671F; font:40pt/90% 'Crimson Text',serif;}
+#logo a, #logo a:hover, #logo a:active, #logo a:visited {color:#FF671F;}
+#logo a:hover {text-decoration:none;}
 
 #menu ul {padding-left:20px;}
 #menu .catalog-code {font-weight:bold;}
@@ -24,11 +24,11 @@ table tr:last-child td {border-bottom-style:none;}
 #admin {text-align:center;}
 
 #content a {text-decoration:underline;}
-#content a {color:#FFFFFF;}
+#content a {color:#000000;}
 
-#breadcrumb {background-color:#222222; margin:1em auto; padding:0.25em 0.25em;}
-#breadcrumb a, #breadcrumb a:active, #breadcrumb a:visited {color:#F05B21;}
-#breadcrumb a:hover {color:#F05B21;}
+#breadcrumb {background-color:#D3D7CF; margin:1em auto; padding:0.25em 0.25em;}
+#breadcrumb a, #breadcrumb a:active, #breadcrumb a:visited {color:#FF671F;}
+#breadcrumb a:hover {color:#FF671F;}
 
 #scoreboard a.score {align-items:center; display:flex; float:left; height:5em; justify-content:center; margin:0.1em; overflow:hidden; text-align:center; width:5em;}
 #scoreboard a.score:hover {font-weight:bold;}
