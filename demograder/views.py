@@ -116,7 +116,7 @@ def project_submit_handler(request, **kwargs):
     context = get_context(request, **kwargs)
     if request.method != 'POST':
         return HttpResponseRedirect(reverse('project', kwargs=kwargs))
-    if not context['person'].may_submit(context['project']):
+    if context['person'].may_submit(context['project']) == 'yes':
         return HttpResponseRedirect(reverse('project', kwargs=kwargs))
     # Handle file upload
     form = FileUploadForm(request.POST, request.FILES)
