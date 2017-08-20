@@ -13,7 +13,7 @@ urlpatterns = [
     url(r'^logout/$', auth_views.logout, {'next_page': '/login'}, name='logout'),
     url(r'^oauth/', include('social_django.urls', namespace='social')),
 
-    url(r'^$', RedirectView.as_view(url='index')),
+    url(r'^$', RedirectView.as_view(url='demograder/')),
     url(r'^demograder/$', index_view, name='index'),
     url(r'^demograder/course/(?P<course_id>[0-9]+)/$', course_view, name='course'),
     url(r'^demograder/project/(?P<project_id>[0-9]+)/$', project_view, name='project'),
