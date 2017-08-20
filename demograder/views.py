@@ -131,7 +131,7 @@ def project_submit_handler(request, **kwargs):
                 file=request.FILES['file'],
         )
         upload.save()
-        enqueue_submission_dispatch(submission)
+        enqueue_submission_dispatch(submission.id)
     return HttpResponseRedirect(reverse('project', kwargs=kwargs))
 
 @login_required
