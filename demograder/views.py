@@ -11,6 +11,7 @@ from .forms import FileUploadForm
 from .models import Course, Enrollment, Person, Assignment, Project, Submission, Upload, Result, ProjectDependency, StudentDependency
 from .dispatcher import enqueue_submission_dispatch
 
+
 def get_context(request, **kwargs):
     context = {}
     context['user'] = request.user
@@ -73,11 +74,13 @@ def get_context(request, **kwargs):
                     raise PermissionDenied
     return context
 
+
 @login_required
 def index_view(request, **kwargs):
     context = get_context(request, **kwargs)
     context['submissions'] = Submission.objects.filter(student=context['person'])[:20]
     return render(request, 'demograder/index.html', context)
+
 
 @login_required
 def course_view(request, **kwargs):
@@ -87,6 +90,7 @@ def course_view(request, **kwargs):
     else:
         context['assignments'] = [a for a in context['course'].assignments() if any(p.visible for p in a.projects())]
     return render(request, 'demograder/course.html', context)
+
 
 @login_required
 def project_view(request, **kwargs):
@@ -106,6 +110,7 @@ def project_view(request, **kwargs):
     context['form'] = FileUploadForm()
     return render(request, 'demograder/project.html', context)
 
+
 @login_required
 def project_submit_handler(request, **kwargs):
     context = get_context(request, **kwargs)
@@ -117,23 +122,25 @@ def project_submit_handler(request, **kwargs):
     form = FileUploadForm(request.POST, request.FILES)
     if form.is_valid():
         submission = Submission(
-                project=context['project'],
-                student=context['person'],
+            project=context['project'],
+            student=context['person'],
         )
         submission.save()
         # TODO handle multiple files per submission
         upload = Upload(
-                submission=submission,
-                file=request.FILES['file'],
+            submission=submission,
+            file=request.FILES['file'],
         )
         upload.save()
         enqueue_submission_dispatch(submission.id)
     return HttpResponseRedirect(reverse('project', kwargs=kwargs))
 
+
 @login_required
 def result_view(request, **kwargs):
     context = get_context(request, **kwargs)
     return render(request, 'demograder/result.html', context)
+
 
 @login_required
 def download_view(request, **kwargs):
@@ -142,9 +149,10 @@ def download_view(request, **kwargs):
     with open(file_full_path) as fd:
         data = fd.read()
     response = HttpResponse(data, content_type=guess_type(file_full_path)[0])
-    response['Content-Disposition'] = "attachment; filename={0}".format(basename(file_full_path))
+    response['Content-Disposition'] = 'attachment; filename={0}'.format(basename(file_full_path))
     response['Content-Length'] = getsize(file_full_path)
     return response
+
 
 @login_required
 def display_view(request, **kwargs):

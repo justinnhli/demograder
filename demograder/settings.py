@@ -23,7 +23,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # SECURITY WARNING: keep the secret key used in production secret!
 with open(os.path.join(BASE_DIR, 'demograder', 'secrets.json')) as fd:
     json_dict = read_json(fd)
-    SECRET_KEY = json_dict["django_secret_key"]
+    SECRET_KEY = json_dict['django_secret_key']
     SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = json_dict['google_oauth2_key']
     SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = json_dict['google_oauth2_secret']
 
@@ -35,7 +35,6 @@ ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'autograder.cc.oxy.edu']
 LOGIN_URL = 'login'
 LOGOUT_URL = 'logout'
 LOGIN_REDIRECT_URL = '/demograder/'
-
 
 # Application definition
 
@@ -145,9 +144,9 @@ AUTH_PASSWORD_VALIDATORS = [
 AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
 
+    # social authentication
     'social_core.backends.google.GoogleOAuth2',
 )
-
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.9/topics/i18n/

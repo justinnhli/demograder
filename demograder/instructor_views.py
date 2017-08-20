@@ -14,6 +14,7 @@ SubmissionDisplay = namedtuple('SubmissionDisplay', ('id', 'student', 'project',
 
 AssignmentSummaryRow = namedtuple('AssignmentSummaryRow', ('student', 'submissions', 'grade'))
 
+
 @login_required
 def instructor_view(request, **kwargs):
     context = get_context(request, **kwargs)
@@ -22,6 +23,7 @@ def instructor_view(request, **kwargs):
     context['courses'] = Course.objects.all()
     return render(request, 'demograder/instructor/index.html', context)
 
+
 @login_required
 def instructor_submissions_view(request, **kwargs):
     context = get_context(request, **kwargs)
@@ -29,6 +31,7 @@ def instructor_submissions_view(request, **kwargs):
         raise Http404
     context['submissions'] = Submission.objects.filter(project__visible=True).order_by('-timestamp')[:100]
     return render(request, 'demograder/instructor/submissions.html', context)
+
 
 @login_required
 def instructor_student_view(request, **kwargs):
@@ -40,13 +43,16 @@ def instructor_student_view(request, **kwargs):
         for project in course.projects().all():
             if project.visible:
                 try:
-                    submission = Submission.objects.filter(student=context['student'], project=project).latest('timestamp')
+                    submission = Submission.objects.filter(
+                        student=context['student'], project=project
+                    ).latest('timestamp')
                 except Submission.DoesNotExist:
                     submission = SubmissionDisplay(0, context['student'], project, 'N/A', 'N', 'A')
                 context['grades'].append(submission)
     context['grades'] = sorted(context['grades'], key=(lambda s: (s.project.assignment.name, s.project.name)))
     context['submissions'] = context['student'].submissions().order_by('-timestamp')
     return render(request, 'demograder/instructor/student.html', context)
+
 
 @login_required
 def instructor_course_view(request, **kwargs):
@@ -58,6 +64,7 @@ def instructor_course_view(request, **kwargs):
     assignments = [Assignment.objects.get(pk=id) for id in assignments]
     context['assignments'] = sorted(assignments, key=(lambda a: -a.id))
     return render(request, 'demograder/instructor/course.html', context)
+
 
 @login_required
 def instructor_assignment_view(request, **kwargs):
@@ -85,6 +92,7 @@ def instructor_assignment_view(request, **kwargs):
         context['student_scores'].append(AssignmentSummaryRow(student, submissions, '{:.2%}'.format(mean(scores))))
     return render(request, 'demograder/instructor/assignment.html', context)
 
+
 @login_required
 def instructor_project_view(request, **kwargs):
     context = get_context(request, **kwargs)
@@ -100,15 +108,19 @@ def instructor_project_view(request, **kwargs):
     context['submissions'] = sorted(submissions, key=(lambda s: s.student.user.last_name))
     return render(request, 'demograder/instructor/project.html', context)
 
+
 @login_required
 def instructor_submission_view(request, **kwargs):
     context = get_context(request, **kwargs)
     if not context['user'].is_superuser:
         raise Http404
-    context['submissions'] = Submission.objects.filter(project=context['project'], student=context['student']).order_by('-timestamp')
+    context['submissions'] = Submission.objects.filter(
+        project=context['project'], student=context['student']
+    ).order_by('-timestamp')
     if 'submission' not in context:
         context['submission'] = context['submissions'][0]
     return render(request, 'demograder/project.html', context)
+
 
 @login_required
 def instructor_project_regrade_view(request, **kwargs):
@@ -122,7 +134,10 @@ def instructor_project_regrade_view(request, **kwargs):
             enqueue_submission_dispatch(submission)
         except Submission.DoesNotExist:
             pass
-    return HttpResponseRedirect(reverse('instructor_assignment', kwargs={'assignment_id':context['project'].assignment.id}))
+    return HttpResponseRedirect(
+        reverse('instructor_assignment', kwargs={'assignment_id': context['project'].assignment.id})
+    )
+
 
 @login_required
 def instructor_submission_regrade_view(request, **kwargs):

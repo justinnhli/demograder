@@ -8,6 +8,7 @@ from os.path import basename
 from subprocess import run as run_process, PIPE
 from textwrap import dedent
 
+
 def is_different(expected, actual):
     # note: this function deliberately ignores newlines to deal with input()
     for line in expected.splitlines():
@@ -17,6 +18,7 @@ def is_different(expected, actual):
             return True
         actual = actual[len(line):]
     return actual.strip() != ''
+
 
 def syntax_test():
     submission = sys.argv[1]
@@ -28,6 +30,7 @@ def syntax_test():
         print_result('Submission is valid Python file.', True, should_exit=True)
     except SyntaxError as e:
         print_result('Submission has Python syntax errors: ' + str(e), False, should_exit=True)
+
 
 def module_test(module=None):
     if module is None:
@@ -42,13 +45,16 @@ def module_test(module=None):
     if passed:
         print_result('Module imports cleanly.', passed, should_exit=True)
     else:
-        transcript = dedent('''
+        transcript = dedent(
+            '''
         Importing module results in unexpected prints.
         Printouts are marked within '>>>' and '<<<':
 
         >>>{}<<<
-        ''').strip().format(actual_output)
+        '''
+        ).strip().format(actual_output)
         print_result(transcript, passed, should_exit=True)
+
 
 # from http://pylint-messages.wikidot.com/all-codes
 LINT_CHECKS = {
@@ -78,17 +84,20 @@ LINT_CHECKS = {
     'W0612': 'Unused variable %r',
 }
 
+
 def lint_test():
     from pylint.lint import Run as lint
     file = sys.argv[1]
     actual_output = StringIO()
     with redirect_stdout(actual_output):
         try:
-            lint([file,
+            lint([
+                file,
                 "--msg-template='Line {line}, column {column}: {msg}'",
                 '--disable=all',
-                '--enable=' + ','.join(sorted(LINT_CHECKS.keys())), '--max-line-length=150']
-            )
+                '--enable=' + ','.join(sorted(LINT_CHECKS.keys())),
+                '--max-line-length=150'
+            ])
         except SystemExit:
             pass
     actual_output = actual_output.getvalue().strip()
@@ -103,27 +112,28 @@ def lint_test():
         ''').strip().format('\n'.join(actual_output.splitlines()[1:]))
         print_result(transcript, passed, should_exit=True)
 
+
 def function_test(fn, arguments, expected_return, expected_output='', quiet=False, should_exit=True):
     template = dedent('''
-    FUNCTION CALL
-    -------------
-    {}
+        FUNCTION CALL
+        -------------
+        {}
 
-    EXPECTED RETURN VALUE
-    ---------------------
-    {}
+        EXPECTED RETURN VALUE
+        ---------------------
+        {}
 
-    ACTUAL RETURN VALUE
-    -------------------
-    {}
+        ACTUAL RETURN VALUE
+        -------------------
+        {}
 
-    EXPECTED PRINT OUTPUT
-    ---------------------
-    {}
+        EXPECTED PRINT OUTPUT
+        ---------------------
+        {}
 
-    ACTUAL PRINT OUTPUT
-    -------------------
-    {}
+        ACTUAL PRINT OUTPUT
+        -------------------
+        {}
     ''').strip()
     multiple_arguments = repr(arguments).startswith('(')
     if multiple_arguments:
@@ -146,37 +156,38 @@ def function_test(fn, arguments, expected_return, expected_output='', quiet=Fals
             error = True
     actual_output = actual_output.getvalue()
     transcript = template.format(
-            template_input,
-            template_expected_return,
-            template_actual_return,
-            expected_output,
-            actual_output)
-    passed = (not error and
-            expected_return == actual_return and
-            not is_different(expected_output, actual_output))
+        template_input, template_expected_return, template_actual_return, expected_output, actual_output
+    )
+    passed = (not error and expected_return == actual_return and not is_different(expected_output, actual_output))
     print_result(transcript, passed, quiet=quiet, should_exit=should_exit)
+
 
 def input_output_test(in_str, out_str):
     template = dedent('''
-    INPUT
-    -----
-    {}
+        INPUT
+        -----
+        {}
 
-    EXPECTED OUTPUT
-    ---------------
-    {}
+        EXPECTED OUTPUT
+        ---------------
+        {}
 
-    ACTUAL OUTPUT
-    -------------
-    {}
+        ACTUAL OUTPUT
+        -------------
+        {}
     ''').strip()
     submission = sys.argv[1]
     input_text = dedent(in_str).strip()
     expected_output = dedent(out_str).strip()
-    completed = run_process([sys.executable, '-B', submission], input=input_text, stdout=PIPE, stderr=PIPE, universal_newlines=True)
+    completed = run_process(
+        [sys.executable, '-B', submission], input=input_text, stdout=PIPE, stderr=PIPE, universal_newlines=True
+    )
     actual_output = (completed.stdout.strip() + '\n' + completed.stderr.strip()).strip()
     transcript = template.format(input_text, expected_output, actual_output)
-    print_result(transcript, completed.returncode == 0 and not is_different(expected_output, actual_output), should_exit=True)
+    print_result(
+        transcript, completed.returncode == 0 and not is_different(expected_output, actual_output), should_exit=True
+    )
+
 
 def print_result(transcript, passed, quiet=False, should_exit=False):
     if not quiet:
@@ -192,6 +203,7 @@ def print_result(transcript, passed, quiet=False, should_exit=False):
         else:
             exit(1)
 
+
 def shell_adaptor():
     args = sys.argv[1:]
     kwargs = {}
@@ -202,6 +214,7 @@ def shell_adaptor():
     module = module_from_spec(spec)
     spec.loader.exec_module(module)
     module.run(**kwargs)
+
 
 if __name__ == '__main__':
     shell_adaptor()

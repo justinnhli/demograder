@@ -21,11 +21,14 @@ DGLIB = join_path(dirname(realpath(__file__)), 'dglib.py')
 DISPATCH_QUEUE = None
 EVALUATION_QUEUE = None
 
+
 def get_dispatch_queue():
     return django_rq.get_queue('dispatch')
 
+
 def get_evaluation_queue():
     return django_rq.get_queue('evaluation')
+
 
 def recursive_chmod(path):
     chmod(path, 0o777)
@@ -34,6 +37,7 @@ def recursive_chmod(path):
             chmod(join_path(root, d), 0o777)
         for f in files:
             chmod(join_path(root, f), 0o777)
+
 
 def evaluate_submission(result_id):
     setup_django()
@@ -69,9 +73,9 @@ def evaluate_submission(result_id):
             return_code = completed_process.returncode
         except TimeoutExpired as e:
             stdout = e.stdout.decode('utf-8')
-            stdout += '\n\n' +  dedent('''
-            The program failed to complete within {}
-            seconds and was terminated.
+            stdout += '\n\n' + dedent('''
+                The program failed to complete within {}
+                seconds and was terminated.
             '''.format(timeout)).strip()
             stderr = e.stderr.decode('utf-8')
             return_code = 1
@@ -81,18 +85,20 @@ def evaluate_submission(result_id):
     result.return_code = return_code
     result.save()
 
+
 def get_relevant_submissions(person, project):
     setup_django()
     from demograder.models import Project, Submission
     try:
         if project.submission_type == Project.LATEST:
-            return (person.submissions().filter(project=project).latest(),)
+            return (person.submissions().filter(project=project).latest(), )
         elif project.submission_type == Project.ALL:
             return tuple(person.submissions().filter(project=project))
         elif project.submission_type == Project.MULTIPLE:
             return tuple() # FIXME not implemented
     except Submission.DoesNotExist:
         return tuple()
+
 
 def dispatch_submission(submission_id):
     setup_django()
@@ -106,17 +112,17 @@ def dispatch_submission(submission_id):
     dependents = defaultdict(set)
     for project_dependency in project_dependencies:
         if project_dependency.dependency_structure == ProjectDependency.SELF:
-            dependents[project_dependency].update(
-                    get_relevant_submissions(student, project_dependency.producer))
+            dependents[project_dependency].update(get_relevant_submissions(student, project_dependency.producer))
         elif project_dependency.dependency_structure == ProjectDependency.INSTRUCTOR:
             dependents[project_dependency].update(
-                    get_relevant_submissions(project.course.instructor, project_dependency.producer))
+                get_relevant_submissions(project.course.instructor, project_dependency.producer)
+            )
         elif project_dependency.dependency_structure == ProjectDependency.CLIQUE:
             dependents[project_dependency].update(
-                    get_relevant_submissions(project.course.instructor, project_dependency.producer))
+                get_relevant_submissions(project.course.instructor, project_dependency.producer)
+            )
             for classmate in project.course.enrolled_students():
-                dependents[project_dependency].update(
-                        get_relevant_submissions(classmate, project_dependency.producer))
+                dependents[project_dependency].update(get_relevant_submissions(classmate, project_dependency.producer))
         elif project_dependency.dependency_structure == ProjectDependency.CUSTOM:
             pass # FIXME not implemented
     for dependent_submissions in product(*(dependents[pd] for pd in project_dependencies)):
@@ -133,9 +139,11 @@ def dispatch_submission(submission_id):
             ).save()
         EVALUATION_QUEUE.enqueue(evaluate_submission, result.id)
 
+
 def enqueue_submission_dispatch(submission_id):
     setup_django()
     DISPATCH_QUEUE.enqueue(dispatch_submission, submission_id)
+
 
 def setup_django():
     global DISPATCH_QUEUE, EVALUATION_QUEUE
