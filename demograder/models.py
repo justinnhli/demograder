@@ -27,9 +27,9 @@ class Person(models.Model):
     def last_name(self):
         return self.user.last_name
     def instructing_courses(self):
-        return Course.objects.filter(instructor=self)
+        return Course.objects.filter(instructor=self).order_by('-year__value', '-season', 'department__catalog_code', 'course_number')
     def enrolled_courses(self):
-        return Course.objects.filter(enrollment__student=self)
+        return Course.objects.filter(enrollment__student=self).order_by('-year__value', '-season', 'department__catalog_code', 'course_number')
     def submissions(self):
         return Submission.objects.filter(student=self)
     def latest_submission(self):
