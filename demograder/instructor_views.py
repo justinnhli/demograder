@@ -6,10 +6,13 @@ from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect, Http404
 from django.shortcuts import render
 
-from .models import Course, Project, Submission
-from .views import get_context, AssignmentInfo
-from .util import SubmissionDisplay
+from .models import Course, Assignment, Project, Submission
+from .views import get_context
 from .dispatcher import enqueue_submission_dispatch
+
+SubmissionDisplay = namedtuple('SubmissionDisplay', ('id', 'student', 'project', 'isoformat', 'score', 'max_score'))
+
+AssignmentSummaryRow = namedtuple('AssignmentSummaryRow', ('student', 'submissions', 'grade'))
 
 @login_required
 def instructor_view(request, **kwargs):
@@ -33,16 +36,16 @@ def instructor_student_view(request, **kwargs):
     if not context['user'].is_superuser:
         raise Http404
     context['grades'] = []
-    for course in context['student'].enrolled_course_set.all():
-        for project in course.project_set.all():
+    for course in context['student'].enrolled_courses().all():
+        for project in course.projects().all():
             if project.visible:
                 try:
                     submission = Submission.objects.filter(student=context['student'], project=project).latest('timestamp')
                 except Submission.DoesNotExist:
                     submission = SubmissionDisplay(0, context['student'], project, 'N/A', 'N', 'A')
                 context['grades'].append(submission)
-    context['grades'] = sorted(context['grades'], key=(lambda s: (s.project.assignment, s.project.name)))
-    context['submissions'] = context['student'].submission_set.order_by('-timestamp')
+    context['grades'] = sorted(context['grades'], key=(lambda s: (s.project.assignment.name, s.project.name)))
+    context['submissions'] = context['student'].submissions().order_by('-timestamp')
     return render(request, 'demograder/instructor/student.html', context)
 
 @login_required
@@ -50,16 +53,17 @@ def instructor_course_view(request, **kwargs):
     context = get_context(request, **kwargs)
     if not context['user'].is_superuser:
         raise Http404
-    context['students'] = context['course'].student_set.order_by('user__first_name', 'user__last_name')
+    context['students'] = context['course'].enrolled_students().order_by('user__first_name', 'user__last_name')
+    '''
     assignments = []
-    for assignment in set(Project.objects.values_list('assignment', flat=True)):
+    for assignment in set(Project.objects.filter(assignment__course=context['course']).values_list('assignment', flat=True)):
         projects = Project.objects.filter(assignment=assignment).order_by('name')
-        if context['user'].is_superuser or any(p.visible for p in projects):
-            assignments.append(AssignmentInfo(assignment, max(p.id for p in projects), projects))
-    context['assignments'] = sorted(assignments, key=(lambda a: -a.max_id))
+        assignments.append(AssignmentInfo(assignment, max(p.id for p in projects), projects))
+    '''
+    assignments = set(Project.objects.filter(assignment__course=context['course']).values_list('assignment', flat=True))
+    assignments = [Assignment.objects.get(pk=id) for id in assignments]
+    context['assignments'] = sorted(assignments, key=(lambda a: -a.id))
     return render(request, 'demograder/instructor/course.html', context)
-
-AssignmentSummaryRow = namedtuple('AssignmentSummaryRow', ('student', 'submissions', 'grade'))
 
 @login_required
 def instructor_assignment_view(request, **kwargs):
@@ -93,13 +97,13 @@ def instructor_project_view(request, **kwargs):
     if not context['user'].is_superuser:
         raise Http404
     submissions = []
-    for student in context['course'].student_set.all():
+    for student in context['course'].enrolled_students().all():
         try:
             submission = Submission.objects.filter(student=student, project=context['project']).latest('timestamp')
         except Submission.DoesNotExist:
             submission = SubmissionDisplay(0, student, context['project'], 'N/A', 'N', 'A')
         submissions.append(submission)
-    context['submissions'] = sorted(submissions, key=(lambda s: s.student.name))
+    context['submissions'] = sorted(submissions, key=(lambda s: s.student.user.last_name))
     return render(request, 'demograder/instructor/project.html', context)
 
 @login_required
@@ -132,5 +136,5 @@ def instructor_submission_regrade_view(request, **kwargs):
     if not context['user'].is_superuser:
         raise Http404
     context['submission'].result_set.all().delete()
-    enqueue_submission_dispatch(context['submission'])
+    enqueue_submission_dispatch(context['submission'].id)
     return HttpResponseRedirect(reverse('submission', kwargs=kwargs))

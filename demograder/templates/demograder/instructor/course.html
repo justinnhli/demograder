@@ -8,7 +8,7 @@
 
 {% block content %}
 <!-- begin demograder/instructor/course.html:content -->
-<h2>{{ course.catalog_id }}: {{ course.title }}</h2>
+<h2>{{ course.catalog_id_str }}: {{ course.title }}</h2>
 
 <table>
 	<tr>
@@ -17,7 +17,7 @@
 			<h3>Students</h3>
 			<ul>
 				{% for student in students %}
-					<li><a href="{% url 'instructor_student' student.id %}">{{ student.name }}</a></li>
+					<li><a href="{% url 'instructor_student' student.id %}">{{ student.first_name }} {{ student.last_name }}</a></li>
 				{% endfor %}
 			</ul>
 
@@ -27,7 +27,7 @@
 			<h3>Assignments</h3>
 			{% if assignments %}
 				{% for assignment in assignments %}
-					<h4>{{ assignment.name }}</h4>
+					<h4>{{ assignment.id }}: <a href="{% url 'instructor_assignment' assignment.id %}">{{ assignment.name }}</a></h4>
 					<ul>
 						{% for project in assignment.projects %}
 							{% if not project.hidden or user.is_superuser %}

@@ -90,6 +90,8 @@ class Course(models.Model):
         return Person.objects.filter(enrollment__course=self)
     def assignments(self):
         return Assignment.objects.filter(course=self)
+    def projects(self):
+        return Project.objects.filter(assignment__course=self)
     def __str__(self):
         # human readable, used by Django admin displays
         return self.semester_str + ' ' + self.catalog_id_str

@@ -4,13 +4,13 @@
 <!-- begin demograder/instructor/student.html:breadcrumb -->
 <a href="{% url 'instructor_index' %}">Instructor Home</a>
 &gt;
-<a href="{% url 'instructor_student' student.id %}">{{ student.name }}</a>
+<a href="{% url 'instructor_student' student.id %}">{{ student.first_name }} {{ student.last_name }}</a>
 <!-- end demograder/instructor/student.html:breadcrumb -->
 {% endblock %}
 
 {% block content %}
 <!-- begin demograder/instructor/student.html:content -->
-<h2>Student: {{ student.name }}</h2>
+<h2>Student: {{ student.first_name }} {{ student.last_name }}</h2>
 
 <h3>Project Grades</h3>
 
@@ -23,13 +23,13 @@
 	{% for submission in grades %}
 		<tr>
 			<td>
-				<a href="{% url 'instructor_assignment' submission.project.id %}">{{ submission.project.assignment }}</a>:
+				<a href="{% url 'instructor_assignment' submission.project.assignment.id %}">{{ submission.project.assignment }}</a>:
 				<a href="{% url 'instructor_project' submission.project.id %}">{{ submission.project.name }}</a>
 			</td>
-			<td>{{ submission.isoformat }}</td>
+			<td>{{ submission.iso_format }}</td>
 			<td>
 				{% if submission.id %}
-					<a href="{% url 'instructor_submission' submission.id %}">{{ submission.score }}/{{ submission.max_score }}</a></td>
+					<a href="{% url 'submission' submission.id %}">{{ submission.score }}/{{ submission.max_score }}</a></td>
 				{% else %}
 					{{ submission.score }}/{{ submission.max_score }}
 				{% endif %}
@@ -53,8 +53,8 @@
 					<a href="{% url 'instructor_assignment' submission.project.id %}">{{ submission.project.assignment }}</a>:
 					<a href="{% url 'instructor_project' submission.project.id %}">{{ submission.project.name }}</a>
 				</td>
-				<td>{{ submission.isoformat }}</td>
-				<td><a href="{% url 'instructor_submission' submission.id %}">{{ submission.score }}/{{ submission.max_score }}</a></td>
+				<td>{{ submission.iso_format }}</td>
+				<td><a href="{% url 'submission' submission.id %}">{{ submission.score }}/{{ submission.max_score }}</a></td>
 			</tr>
 		{% endfor %}
 	</table>
