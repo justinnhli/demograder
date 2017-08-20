@@ -3,11 +3,10 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<meta charset="utf-8">
-		<title>Autograder</title>
 		<meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+		<title>Autograder</title>
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" type="text/css">
 		<link href="https://fonts.googleapis.com/css?family=Crimson+Text:600" rel="stylesheet" type="text/css">
 		<link href="{% static 'demograder/main.css' %}" rel="stylesheet" type="text/css">
 	</head>
@@ -60,12 +59,12 @@
 				</div>
 
 				<div id="content" class="col-md-9">
-
 					<div id="breadcrumb">
 						{% block breadcrumb %}{% endblock %}
 					</div>
 
 					{% block content %}{% endblock %}
+				</div>
 
 			</div>
 
