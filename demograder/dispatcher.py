@@ -8,16 +8,15 @@ from subprocess import run as run_process, PIPE, TimeoutExpired
 from tempfile import TemporaryDirectory
 from textwrap import dedent
 
-DGLIB = join_path(dirname(__file__), 'dglib.py')
-
-DEMOGRADER_ROOT = dirname(realpath(__file__))
-django_site_root = join_path(DEMOGRADER_ROOT, '..')
-cd(django_site_root)
-sys.path.insert(0, django_site_root)
-environ.setdefault("DJANGO_SETTINGS_MODULE", "demograder.settings")
-
 import django
+
+sys.path.append('/home/justinnhli/git/demograder')
+environ.setdefault('DJANGO_SETTINGS_MODULE', 'demograder.settings')
+django.setup()
+
 import django_rq
+
+DGLIB = join_path(dirname(__file__), 'dglib.py')
 
 DISPATCH_QUEUE = None
 EVALUATION_QUEUE = None
@@ -36,9 +35,10 @@ def recursive_chmod(path):
         for f in files:
             chmod(join_path(root, f), 0o777)
 
-def evaluate_submission(result):
+def evaluate_submission(result_id):
     setup_django()
-    from demograder.models import ResultDependency
+    from demograder.models import Result, ResultDependency
+    result = Result.objects.get(pk=result_id)
     # create temporary directory
     with TemporaryDirectory() as temp_dir:
         # copy dglib library
@@ -94,9 +94,10 @@ def get_relevant_submissions(person, project):
     except Submission.DoesNotExist:
         return tuple()
 
-def dispatch_submission(submission):
+def dispatch_submission(submission_id):
     setup_django()
-    from demograder.models import ProjectDependency, Result, ResultDependency
+    from demograder.models import ProjectDependency, Submission, Result, ResultDependency
+    submission = Submission.objects.get(pk=submission_id)
     project = submission.project
     if not project.script:
         return
@@ -130,15 +131,14 @@ def dispatch_submission(submission):
                 project_dependency=project_dependency,
                 producer=upstream_submission,
             ).save()
-        EVALUATION_QUEUE.enqueue(evaluate_submission, result)
+        EVALUATION_QUEUE.enqueue(evaluate_submission, result.id)
 
-def enqueue_submission_dispatch(submission):
+def enqueue_submission_dispatch(submission_id):
     setup_django()
-    DISPATCH_QUEUE.enqueue(dispatch_submission, submission)
+    DISPATCH_QUEUE.enqueue(dispatch_submission, submission_id)
 
 def setup_django():
     global DISPATCH_QUEUE, EVALUATION_QUEUE
     if DISPATCH_QUEUE is None:
-        django.setup()
         DISPATCH_QUEUE = get_dispatch_queue()
         EVALUATION_QUEUE = get_evaluation_queue()
