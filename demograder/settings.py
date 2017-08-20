@@ -28,7 +28,7 @@ with open(os.path.join(BASE_DIR, 'demograder', 'secrets.json')) as fd:
     SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = json_dict['google_oauth2_secret']
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'autograder.cc.oxy.edu']
 
