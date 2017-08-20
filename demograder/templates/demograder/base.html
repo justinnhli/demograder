@@ -27,7 +27,7 @@
 								<ul>
 									{% for course in user.person.instructing_courses.all %}
 										<li>
-											<a href="{% url 'course' course.id %}"><span class="catalog-code">{{ course.catalog_id_str }}</span>: {{ course.title }}</a>
+											<a href="{% url 'course' course.id %}"><span class="catalog-code">{{ course.semester_str }} {{ course.catalog_id_str }}</span>: {{ course.title }}</a>
 										</li>
 									{% endfor %}
 								</ul>
@@ -37,7 +37,7 @@
 								<ul>
 									{% for course in user.person.enrolled_courses.all %}
 										<li>
-											<a href="{% url 'course' course.id %}"><span class="catalog-code">{{ course.catalog_id_str }}</span>: {{ course.title }}</a>
+											<a href="{% url 'course' course.id %}"><span class="catalog-code">{{ course.semester_str }} {{ course.catalog_id_str }}</span>: {{ course.title }}</a>
 										</li>
 									{% endfor %}
 								</ul>
@@ -49,7 +49,7 @@
 					<hr>
 					<div id="admin">
 						{% if user.is_authenticated %}
-							Logged in as {{ user.username }} (<a href="{% url 'logout' %}">Logout</a>)
+							Logged in as {{ user.email }} (<a href="{% url 'logout' %}">Logout</a>)
 						{% else %}
 							<a href="{% url 'login' %}">Login</a>
 						{% endif %}
