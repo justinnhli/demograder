@@ -174,7 +174,7 @@ def input_output_test(in_str, out_str):
     submission = sys.argv[1]
     input_text = dedent(in_str).strip()
     expected_output = dedent(out_str).strip()
-    completed = run_process([sys.executable, submission], input=input_text, stdout=PIPE, stderr=PIPE, universal_newlines=True)
+    completed = run_process([sys.executable, '-B', submission], input=input_text, stdout=PIPE, stderr=PIPE, universal_newlines=True)
     actual_output = (completed.stdout.strip() + '\n' + completed.stderr.strip()).strip()
     transcript = template.format(input_text, expected_output, actual_output)
     print_result(transcript, completed.returncode == 0 and not is_different(expected_output, actual_output), should_exit=True)

@@ -1,7 +1,7 @@
 import sys
 from collections import defaultdict
 from itertools import product
-from os import chdir as cd, environ
+from os import chdir as cd, environ, chmod, walk
 from os.path import basename, dirname, join as join_path, realpath
 from shutil import copyfile
 from subprocess import run as run_process, PIPE, TimeoutExpired
@@ -28,6 +28,14 @@ def get_dispatch_queue():
 def get_evaluation_queue():
     return django_rq.get_queue('evaluation')
 
+def recursive_chmod(path):
+    chmod(path, 0o777)
+    for root, dirs, files in walk(path):
+        for d in dirs:
+            chmod(join_path(root, d), 0o777)
+        for f in files:
+            chmod(join_path(root, f), 0o777)
+
 def evaluate_submission(result):
     setup_django()
     from demograder.models import ResultDependency
@@ -49,13 +57,12 @@ def evaluate_submission(result):
                 filepath = upstream_submission.file.name
                 tmp_args[keyword].append(copyfile(filepath, join_path(temp_dir, basename(filepath))))
         timeout = result.project.timeout
+        recursive_chmod(temp_dir)
         try:
             args = ['--_script', tmp_script, '--_uploads', ','.join(tmp_uploads)]
             for key, files in tmp_args.items():
                 args.extend(('--{}'.format(key), ','.join(files)))
-            # FIXME switch user
-            args = [sys.executable, tmp_dglib] + args
-            print(args)
+            args = ['sudo', '-u', 'nobody', sys.executable, '-B', tmp_dglib] + args
             completed_process = run_process(args, timeout=timeout, stderr=PIPE, stdout=PIPE)
             stdout = completed_process.stdout.decode('utf-8')
             stderr = completed_process.stderr.decode('utf-8')
