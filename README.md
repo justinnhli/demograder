@@ -30,7 +30,7 @@ Demograder uses an all-Python stack:
 
 1. Copy/link the nginx configuration `nginx.conf` to `/etc/nginx/sites-enabled/`
 
-1. Create `djangosite/secret-key`
+1. Create `demograder/secrets.json`
 
 1. Set up django by running:
 

@@ -14,7 +14,7 @@ DEMOGRADER_ROOT = dirname(realpath(__file__))
 django_site_root = join_path(DEMOGRADER_ROOT, '..')
 cd(django_site_root)
 sys.path.insert(0, django_site_root)
-environ.setdefault("DJANGO_SETTINGS_MODULE", "djangosite.settings")
+environ.setdefault("DJANGO_SETTINGS_MODULE", "demograder.settings")
 
 import django
 import django_rq
