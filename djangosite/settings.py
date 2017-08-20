@@ -30,7 +30,7 @@ with open(os.path.join(BASE_DIR, 'djangosite', 'secrets.json')) as fd:
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'autograder.cc.oxy.edu']
 
 LOGIN_URL = 'login'
 LOGOUT_URL = 'logout'
