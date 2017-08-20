@@ -10,7 +10,6 @@ from textwrap import dedent
 
 def is_different(expected, actual):
     # note: this function deliberately ignores newlines to deal with input()
-    different = False
     for line in expected.splitlines():
         line = line.strip()
         actual = actual.strip()

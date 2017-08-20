@@ -54,12 +54,6 @@ def instructor_course_view(request, **kwargs):
     if not context['user'].is_superuser:
         raise Http404
     context['students'] = context['course'].enrolled_students().order_by('user__first_name', 'user__last_name')
-    '''
-    assignments = []
-    for assignment in set(Project.objects.filter(assignment__course=context['course']).values_list('assignment', flat=True)):
-        projects = Project.objects.filter(assignment=assignment).order_by('name')
-        assignments.append(AssignmentInfo(assignment, max(p.id for p in projects), projects))
-    '''
     assignments = set(Project.objects.filter(assignment__course=context['course']).values_list('assignment', flat=True))
     assignments = [Assignment.objects.get(pk=id) for id in assignments]
     context['assignments'] = sorted(assignments, key=(lambda a: -a.id))

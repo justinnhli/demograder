@@ -1,4 +1,3 @@
-from collections import namedtuple
 from mimetypes import guess_type
 from os.path import basename, getsize
 
@@ -7,13 +6,10 @@ from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render, get_object_or_404
-from django.template import RequestContext
 
 from .forms import FileUploadForm
 from .models import Course, Enrollment, Person, Assignment, Project, Submission, Upload, Result, ProjectDependency, StudentDependency
 from .dispatcher import enqueue_submission_dispatch
-
-AssignmentInfo = namedtuple('AssignmentInfo', ('name', 'max_id', 'projects'))
 
 def get_context(request, **kwargs):
     context = {}
@@ -108,7 +104,7 @@ def project_view(request, **kwargs):
     else:
         context['latest'] = None
     context['form'] = FileUploadForm()
-    return render(request, 'demograder/project.html', context, context_instance=RequestContext(request))
+    return render(request, 'demograder/project.html', context)
 
 @login_required
 def project_submit_handler(request, **kwargs):

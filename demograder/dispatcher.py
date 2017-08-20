@@ -1,7 +1,7 @@
 import sys
 from collections import defaultdict
 from itertools import product
-from os import chdir as cd, environ, chmod, walk
+from os import environ, chmod, walk
 from os.path import basename, dirname, join as join_path, realpath
 from shutil import copyfile
 from subprocess import run as run_process, PIPE, TimeoutExpired
@@ -10,13 +10,13 @@ from textwrap import dedent
 
 import django
 
-sys.path.append('/home/justinnhli/git/demograder')
+sys.path.append(join_path(dirname(realpath(__file__)), '..'))
 environ.setdefault('DJANGO_SETTINGS_MODULE', 'demograder.settings')
 django.setup()
 
 import django_rq
 
-DGLIB = join_path(dirname(__file__), 'dglib.py')
+DGLIB = join_path(dirname(realpath(__file__)), 'dglib.py')
 
 DISPATCH_QUEUE = None
 EVALUATION_QUEUE = None

@@ -257,7 +257,7 @@ class Submission(models.Model):
     def uploads(self):
         return Upload.objects.filter(submission=self)
 
-def _upload_path(instance, filename):
+def _upload_path(instance, _):
     return join_path(instance.submission.directory, instance.submission.project.filename)
 
 class Upload(models.Model):
