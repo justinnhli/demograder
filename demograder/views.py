@@ -78,7 +78,7 @@ def get_context(request, **kwargs):
 @login_required
 def index_view(request, **kwargs):
     context = get_context(request, **kwargs)
-    context['submissions'] = Submission.objects.filter(student=context['person'])[:20]
+    context['submissions'] = context['person'].submissions()[:20]
     return render(request, 'demograder/index.html', context)
 
 
@@ -95,7 +95,7 @@ def course_view(request, **kwargs):
 @login_required
 def project_view(request, **kwargs):
     context = get_context(request, **kwargs)
-    submissions = Submission.objects.filter(project=context['project'], student=context['student'])
+    submissions = context['person'].submissions(project=context['project'])
     if bool(submissions):
         context['submissions'] = submissions.order_by('-timestamp')
         if 'submission' not in context:

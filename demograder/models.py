@@ -43,11 +43,14 @@ class Person(models.Model):
             '-year__value', '-season', 'department__catalog_code', 'course_number'
         )
 
-    def submissions(self):
-        return Submission.objects.filter(student=self)
+    def submissions(self, project=None):
+        if project:
+            return Submission.objects.filter(student=self, project=project)
+        else:
+            return Submission.objects.filter(student=self)
 
-    def latest_submission(self):
-        return Submission.objects.filter(student=self).latest()
+    def latest_submission(self, project=None):
+        return self.submissions(project=project).latest()
 
     def may_submit(self, project):
         if self.user.is_superuser:

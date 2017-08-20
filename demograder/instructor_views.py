@@ -43,9 +43,7 @@ def instructor_student_view(request, **kwargs):
         for project in course.projects().all():
             if project.visible:
                 try:
-                    submission = Submission.objects.filter(
-                        student=context['student'], project=project
-                    ).latest('timestamp')
+                    submission = context['student'].latest_submission(project=project)
                 except Submission.DoesNotExist:
                     submission = SubmissionDisplay(0, context['student'], project, 'N/A', 'N', 'A')
                 context['grades'].append(submission)
@@ -80,7 +78,7 @@ def instructor_assignment_view(request, **kwargs):
             # FIXME deal with other submission types
             if project.submission_type == Project.LATEST:
                 try:
-                    submission = Submission.objects.filter(student=student, project=project).latest('timestamp')
+                    submission = student.latest_submission(project=project)
                     submissions.append(submission)
                     if submission.max_score == 0:
                         scores.append(0)
@@ -101,11 +99,11 @@ def instructor_project_view(request, **kwargs):
     submissions = []
     for student in context['course'].enrolled_students().all():
         try:
-            submission = Submission.objects.filter(student=student, project=context['project']).latest('timestamp')
+            submission = student.latest_submission(project=context['project'])
         except Submission.DoesNotExist:
             submission = SubmissionDisplay(0, student, context['project'], 'N/A', 'N', 'A')
         submissions.append(submission)
-    context['submissions'] = sorted(submissions, key=(lambda s: s.student.user.last_name))
+    context['submissions'] = sorted(submissions, key=(lambda s: s.student.last_name))
     return render(request, 'demograder/instructor/project.html', context)
 
 
@@ -114,9 +112,7 @@ def instructor_submission_view(request, **kwargs):
     context = get_context(request, **kwargs)
     if not context['user'].is_superuser:
         raise Http404
-    context['submissions'] = Submission.objects.filter(
-        project=context['project'], student=context['student']
-    ).order_by('-timestamp')
+    context['submissions'] = context['student'].submissions(project=context['project']).order_by('-timestamp')
     if 'submission' not in context:
         context['submission'] = context['submissions'][0]
     return render(request, 'demograder/project.html', context)
@@ -129,7 +125,7 @@ def instructor_project_regrade_view(request, **kwargs):
         raise Http404
     for student in context['project'].course.enrolled_students():
         try:
-            submission = Submission.objects.filter(project=context['project'], student=student).latest()
+            submission = student.latest_submission(project=context['project'])
             submission.result_set.all().delete()
             enqueue_submission_dispatch(submission)
         except Submission.DoesNotExist:
