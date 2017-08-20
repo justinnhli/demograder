@@ -1,9 +1,9 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 from os.path import basename, dirname, join as join_path
 
 from django.contrib.auth.models import User
 from django.db import models
-from pytz import timezone
+from pytz import timezone, UTC
 
 UPLOAD_PATH = 'uploads'
 
@@ -34,8 +34,20 @@ class Person(models.Model):
         return Submission.objects.filter(student=self)
     def latest_submission(self):
         return Submission.objects.filter(student=self).latest()
-    def may_submit(self):
-        return not (self.submissions() and self.latest_submission().num_tbd != 0)
+    def may_submit(self, project):
+        if self.user.is_superuser:
+            return 'yes'
+        submissions = self.submissions()
+        if not submissions:
+            return 'yes'
+        if self.latest_submission().num_tbd != 0:
+            return 'submission'
+        last_submission = Submission.objects.filter(student=self, project=project).latest()
+        current_time = UTC.normalize(datetime.now(last_submission.timestamp.tzinfo))
+        submit_time = UTC.normalize(last_submission.timestamp)
+        if last_submission and current_time - submit_time < timedelta(seconds=300):
+            return 'timeout'
+        return 'yes'
     def __str__(self):
         # human readable, used by Django admin displays
         return self.username

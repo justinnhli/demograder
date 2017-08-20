@@ -98,7 +98,7 @@ def project_view(request, **kwargs):
             context['submission'] = context['submissions'][0]
         context['project_latest'] = context['submissions'][0]
         context['results'] = context['submission'].result_set.all()
-    context['may_submit'] = context['person'].may_submit()
+    context['may_submit'] = context['person'].may_submit(context['project'])
     if context['person'].submissions():
         context['latest'] = context['person'].latest_submission()
     else:
@@ -111,7 +111,7 @@ def project_submit_handler(request, **kwargs):
     context = get_context(request, **kwargs)
     if request.method != 'POST':
         return HttpResponseRedirect(reverse('project', kwargs=kwargs))
-    if not context['person'].may_submit():
+    if not context['person'].may_submit(context['project']):
         return HttpResponseRedirect(reverse('project', kwargs=kwargs))
     # Handle file upload
     form = FileUploadForm(request.POST, request.FILES)

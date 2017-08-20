@@ -30,7 +30,7 @@
 </h2>
 <p>Due {{ project.assignment.us_format }}</p>
 
-{% if may_submit %}
+{% if may_submit == 'yes' %}
 
 <h3>Upload New Version</h3>
 <form action="{% url 'project_submit' project.id %}" method="post" enctype="multipart/form-data">
@@ -40,9 +40,13 @@
 	<p>{{ form.file }} <input type="submit" value="Upload" /></p>
 </form>
 
-{% else %}
+{% elif may_submit == 'submission' %}
 
-<p>You cannot submit until your <a href="{% url 'submission' latest.id %}">latest submission</a> has been completely evaluated.</p>
+<p>You cannot submit again until your <a href="{% url 'submission' latest.id %}">latest submission</a> has been completely evaluated.</p>
+
+{% elif may_submit == 'timeout' %}
+
+<p>You can only submit to each project once every five minutes.</p>
 
 {% endif %}
 
