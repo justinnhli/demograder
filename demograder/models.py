@@ -57,6 +57,39 @@ class Person(models.Model):
         return self.submissions(project=project).latest()
 
     def may_submit(self, project):
+        """Determines if the student is allowed to submit to a project
+
+        The motivation behind stopping student submissions is to prevent
+        overloading the system, and (in theory) to instill a more thorough
+        manual debugging process. This means there are three trivial cases when
+        the student can submit:
+
+        * they are a superuser
+        * they have not submitted anything before
+        * this project does not have testcases
+
+        If they are not a superuser, have previous submissions, and is trying to
+        submit to a project with testcases, then all of the following must be
+        true for the student to submit:
+
+        * all their previous submissions for all projects have finished running
+        * 300 seconds has passed since their last submission to this project
+
+        This function returns different string constants to reflect which of the
+        above two conditions have been violated, so that an appropriate error
+        can be displayed.
+
+        Args:
+            project (Project): the project to determine submission status for
+
+        Returns:
+            string: one of three string constants
+                'yes': the student may submit again
+                'submission': the student is blocked by their last submission
+                'timeout': it has been less than 300 seconds since their last
+                           submission to this project
+        """
+
         if self.user.is_superuser:
             return 'yes'
         submissions = self.submissions()
