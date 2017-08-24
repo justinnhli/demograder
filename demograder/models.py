@@ -11,8 +11,12 @@ UPLOAD_PATH = 'uploads'
 
 
 class Person(models.Model):
+
     class Meta:
-        ordering = ('user__last_name', 'user__first_name', )
+        ordering = (
+            'user__last_name',
+            'user__first_name',
+        )
         verbose_name_plural = 'People'
 
     user = models.OneToOneField(User, on_delete=models.CASCADE, unique=True)
@@ -85,6 +89,7 @@ class Year(models.Model):
 
 
 class Department(models.Model):
+
     class Meta:
         ordering = ('name', )
 
@@ -97,14 +102,25 @@ class Department(models.Model):
 
 
 class Course(models.Model):
+
     class Meta:
-        ordering = ('-year', '-season', 'department', 'course_number', )
+        ordering = (
+            '-year',
+            '-season',
+            'department',
+            'course_number',
+        )
 
     WINTER = 0
     SPRING = 1
     SUMMER = 2
     FALL = 3
-    SEASONS = ((WINTER, 'Winter'), (SPRING, 'Spring'), (SUMMER, 'Summer'), (FALL, 'Fall'), )
+    SEASONS = (
+        (WINTER, 'Winter'),
+        (SPRING, 'Spring'),
+        (SUMMER, 'Summer'),
+        (FALL, 'Fall'),
+    )
     year = models.ForeignKey(Year)
     season = models.IntegerField(choices=SEASONS)
     department = models.ForeignKey(Department)
@@ -139,8 +155,12 @@ class Course(models.Model):
 
 
 class Enrollment(models.Model):
+
     class Meta:
-        unique_together = ('course', 'student', )
+        unique_together = (
+            'course',
+            'student',
+        )
 
     course = models.ForeignKey(Course)
     student = models.ForeignKey(Person)
@@ -171,6 +191,7 @@ class Enrollment(models.Model):
 
 
 class Assignment(models.Model):
+
     class Meta:
         ordering = ('-deadline', )
         unique_together = ('course', 'name')
@@ -200,6 +221,7 @@ def _project_path(instance, filename):
 
 
 class Project(models.Model):
+
     class Meta:
         ordering = ('assignment', 'name')
         unique_together = ('assignment', 'name')
@@ -207,7 +229,11 @@ class Project(models.Model):
     LATEST = 0
     ALL = 1
     MULTIPLE = 2
-    SUBMISSION_TYPES = ((LATEST, 'Latest'), (ALL, 'All'), (MULTIPLE, 'Student Selected'), )
+    SUBMISSION_TYPES = (
+        (LATEST, 'Latest'),
+        (ALL, 'All'),
+        (MULTIPLE, 'Student Selected'),
+    )
     assignment = models.ForeignKey(Assignment)
     name = models.CharField(max_length=200)
     filename = models.CharField(max_length=200)
@@ -249,6 +275,7 @@ class Project(models.Model):
 
 
 class ProjectDependency(models.Model):
+
     class Meta:
         verbose_name_plural = 'ProjectDependencies'
         unique_together = ('project', 'producer')
@@ -258,7 +285,10 @@ class ProjectDependency(models.Model):
     CLIQUE = 2
     CUSTOM = 3
     DEPENDENCY_TYPES = (
-        (SELF, 'Self'), (INSTRUCTOR, 'All to Instructor'), (CLIQUE, 'All to All'), (CUSTOM, 'Custom Groups'),
+        (SELF, 'Self'),
+        (INSTRUCTOR, 'All to Instructor'),
+        (CLIQUE, 'All to All'),
+        (CUSTOM, 'Custom Groups'),
     )
     producer = models.ForeignKey(Project, related_name='downstream_set')
     project = models.ForeignKey(Project)
@@ -272,6 +302,7 @@ class ProjectDependency(models.Model):
 
 
 class Submission(models.Model):
+
     class Meta:
         get_latest_by = 'timestamp'
         ordering = ('-timestamp', )
@@ -407,6 +438,7 @@ class Result(models.Model):
 
 
 class StudentDependency(models.Model):
+
     class Meta:
         verbose_name_plural = 'StudentDependencies'
         unique_together = ('student', 'dependency', 'producer')
@@ -421,6 +453,7 @@ class StudentDependency(models.Model):
 
 
 class ResultDependency(models.Model):
+
     class Meta:
         verbose_name_plural = 'ResultDependencies'
 
