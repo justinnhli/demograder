@@ -64,6 +64,8 @@ class Person(models.Model):
             return 'yes'
         if self.latest_submission().num_tbd != 0:
             return 'submission'
+        if not project.upstream_dependencies():
+            return 'yes'
         last_submission = Submission.objects.filter(student=self, project=project).latest()
         current_time = UTC.normalize(datetime.now(last_submission.timestamp.tzinfo))
         submit_time = UTC.normalize(last_submission.timestamp)
