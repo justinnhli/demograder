@@ -110,7 +110,7 @@ class Person(models.Model):
 
     def __str__(self):
         # human readable, used by Django admin displays
-        return self.username
+        return '{} {} ({})'.format(self.first_name, self.last_name, self.username)
 
 
 def _current_year():
@@ -142,7 +142,7 @@ class Course(models.Model):
 
     class Meta:
         ordering = (
-            '-year',
+            '-year__value',
             '-season',
             'department',
             'course_number',
