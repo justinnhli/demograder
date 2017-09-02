@@ -241,7 +241,7 @@ class Assignment(models.Model):
 
     @property
     def us_format(self):
-        return self.deadline.astimezone(timezone('US/Pacific')).strftime('%b %d, %Y %I:%M %p')
+        return self.deadline.astimezone(timezone('US/Pacific')).strftime('%b %d, %Y %I:%M:%S %p').replace(' 0', ' ')
 
     def projects(self):
         return Project.objects.filter(assignment=self)
@@ -385,7 +385,7 @@ class Submission(models.Model):
 
     @property
     def us_format(self):
-        return self.timestamp.astimezone(timezone('US/Pacific')).strftime('%b %d, %Y %I:%M:%S %p')
+        return self.timestamp.astimezone(timezone('US/Pacific')).strftime('%b %d, %Y %I:%M:%S %p').replace(' 0', ' ')
 
     def uploads(self):
         return Upload.objects.filter(submission=self)
@@ -449,7 +449,7 @@ class Result(models.Model):
 
     @property
     def result_us_format(self):
-        return self.timestamp.astimezone(timezone('US/Pacific')).strftime('%b %d, %Y %I:%M:%S %p')
+        return self.timestamp.astimezone(timezone('US/Pacific')).strftime('%b %d, %Y %I:%M:%S %p').replace(' 0', ' ')
 
     @property
     def project(self):
