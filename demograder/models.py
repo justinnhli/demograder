@@ -274,7 +274,7 @@ class Project(models.Model):
     filename = models.CharField(max_length=200)
     timeout = models.IntegerField(default=5)
     submission_type = models.IntegerField(choices=SUBMISSION_TYPES)
-    script = models.FileField(upload_to=_project_path, blank=True)
+    script = models.FileField(upload_to=_project_path, blank=True, max_length=500)
     visible = models.BooleanField(default=False)
     locked = models.BooleanField(default=False)
 
@@ -397,7 +397,7 @@ def _upload_path(instance, _):
 
 class Upload(models.Model):
     submission = models.ForeignKey(Submission)
-    file = models.FileField(upload_to=_upload_path)
+    file = models.FileField(upload_to=_upload_path, max_length=500)
 
     @property
     def dirname(self):
