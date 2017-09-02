@@ -99,11 +99,13 @@ class Person(models.Model):
             return 'submission'
         if not project.upstream_dependencies():
             return 'yes'
-        last_submission = Submission.objects.filter(student=self, project=project).latest()
-        current_time = UTC.normalize(datetime.now(last_submission.timestamp.tzinfo))
-        submit_time = UTC.normalize(last_submission.timestamp)
-        if last_submission and current_time - submit_time < timedelta(seconds=300):
-            return 'timeout'
+        submissions = self.submissions(project=project)
+        if submissions:
+            last_submission = submissions.latest()
+            current_time = UTC.normalize(datetime.now(last_submission.timestamp.tzinfo))
+            submit_time = UTC.normalize(last_submission.timestamp)
+            if last_submission and current_time - submit_time < timedelta(seconds=300):
+                return 'timeout'
         return 'yes'
 
     def __str__(self):
