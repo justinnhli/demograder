@@ -95,7 +95,7 @@ def course_view(request, **kwargs):
 @login_required
 def project_view(request, **kwargs):
     context = get_context(request, **kwargs)
-    submissions = context['person'].submissions(project=context['project'])
+    submissions = context['student'].submissions(project=context['project'])
     if bool(submissions):
         context['submissions'] = submissions.order_by('-timestamp')
         if 'submission' not in context:
