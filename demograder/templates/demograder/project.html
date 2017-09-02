@@ -6,7 +6,7 @@
 &gt;
 <a href="{% url 'course' project.course.id %}">{{ project.course.catalog_id_str }}</a>
 &gt;
-{{ project.assignment.name }}
+<a href="{% url 'instructor_assignment' project.assignment.id %}">{{ project.assignment.name }}</a>
 &gt;
 <a href="{% url 'project' project.id %}">{{ project.name }}</a>
 <!-- end demograder/project.html:breadcrumb -->
