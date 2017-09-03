@@ -93,6 +93,8 @@ def instructor_project_view(request, **kwargs):
     for student in context['course'].enrolled_students().all():
         try:
             submission = student.latest_submission(project=context['project'])
+            if not submission:
+                submission = SubmissionDisplay(0, student, context['project'], 'N/A', 'N', 'A')
         except Submission.DoesNotExist:
             submission = SubmissionDisplay(0, student, context['project'], 'N/A', 'N', 'A')
         submissions.append(submission)
