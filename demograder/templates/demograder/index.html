@@ -25,7 +25,12 @@
 		{% for submission in submissions %}
 		<tr>
 			<td><a href="{% url 'course' submission.project.course.id %}">{{ submission.project.course }}</a></td>
-			<td>{{ submission.project.assignment.name }}: <a href="{% url 'project' submission.project.id %}">{{ submission.project.name }}</a></td>
+			<td>
+				{% if user.is_superuser %}
+				<a href="{% url 'instructor_assignment' submission.project.assignment.id %}">{{ submission.project.assignment.name }}</a>: <a href="{% url 'project' submission.project.id %}">{{ submission.project.name }}</a></td>
+				{% else %}
+				{{ submission.project.assignment.name }}: <a href="{% url 'project' submission.project.id %}">{{ submission.project.name }}</a></td>
+				{% endif %}
 			<td>{{ submission.us_format }}</td>
 			<td><a href="{% url 'submission' submission.id %}">{{ submission.score }}/{{ submission.max_score }}</a></td>
 		</tr>
