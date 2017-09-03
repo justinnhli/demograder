@@ -47,6 +47,16 @@ class Person(models.Model):
             '-year__value', '-season', 'department__catalog_code', 'course_number'
         )
 
+    def get_assignment_score(self, assignment):
+        total = 0
+        num_projects = 0
+        for project in Project.objects.filter(assignment=assignment, visible=True):
+            num_projects += 1
+            submission = self.latest_submission(project)
+            if submission and submission.max_score > 0:
+                total += submission.score / submission.max_score
+        return total / num_projects
+
     def submissions(self, project=None):
         if project:
             return Submission.objects.filter(student=self, project=project)
@@ -54,7 +64,11 @@ class Person(models.Model):
             return Submission.objects.filter(student=self)
 
     def latest_submission(self, project=None):
-        return self.submissions(project=project).latest()
+        submissions = self.submissions(project=project)
+        if submissions:
+            return submissions.latest()
+        else:
+            return None
 
     def may_submit(self, project):
         """Determines if the student is allowed to submit to a project

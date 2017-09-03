@@ -1,5 +1,4 @@
 from collections import namedtuple
-from statistics import mean
 
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
@@ -73,21 +72,15 @@ def instructor_assignment_view(request, **kwargs):
     context['student_scores'] = []
     for student in context['course'].enrolled_students():
         submissions = []
-        scores = []
         for project in context['projects']:
             # FIXME deal with other submission types
             if project.submission_type == Project.LATEST:
-                try:
-                    submission = student.latest_submission(project=project)
+                submission = student.latest_submission(project=project)
+                if submission and submission.max_score > 0:
                     submissions.append(submission)
-                    if submission.max_score == 0:
-                        scores.append(0)
-                    else:
-                        scores.append(submission.score / submission.max_score)
-                except Submission.DoesNotExist:
+                else:
                     submissions.append(None)
-                    scores.append(0)
-        context['student_scores'].append(AssignmentSummaryRow(student, submissions, '{:.2%}'.format(mean(scores))))
+        context['student_scores'].append(AssignmentSummaryRow(student, submissions, '{:.2%}'.format(student.get_assignment_score(context['assignment']))))
     return render(request, 'demograder/instructor/assignment.html', context)
 
 
