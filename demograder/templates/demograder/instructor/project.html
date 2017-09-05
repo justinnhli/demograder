@@ -4,6 +4,8 @@
 <!-- begin demograder/instructor/project.html:breadcrumb -->
 <a href="{% url 'instructor_index' %}">Instructor Home</a>
 &gt;
+{{ course.semester_str }}
+&gt;
 <a href="{% url 'instructor_course' project.course.id %}">{{ project.course.catalog_id_str }}</a>
 &gt;
 <a href="{% url 'instructor_assignment' project.assignment.id %}">{{ project.assignment.name }}</a>

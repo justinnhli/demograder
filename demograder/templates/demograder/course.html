@@ -4,6 +4,8 @@
 <!-- begin demograder/course.html:breadcrumb -->
 <a href="{% url 'index' %}">Home</a>
 &gt;
+{{ course.semester_str }}
+&gt;
 <a href="{% url 'course' course.id %}">{{ course.catalog_id_str }}</a>
 <!-- end demograder/course.html:breadcrumb -->
 {% endblock %}

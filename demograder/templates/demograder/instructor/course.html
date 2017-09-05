@@ -3,6 +3,10 @@
 {% block breadcrumb %}
 <!-- begin demograder/instructor/course.html:breadcrumb -->
 <a href="{% url 'instructor_index' %}">Instructor Home</a>
+&gt;
+{{ course.semester_str }}
+&gt;
+<a href="{% url 'instructor_course' course.id %}">{{ course.catalog_id_str }}</a>
 <!-- end demograder/instructor/course.html:breadcrumb -->
 {% endblock %}
 
