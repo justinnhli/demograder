@@ -16,7 +16,10 @@
 
 <ul>
 	{% for course in courses %}
-		<li><a href="{% url 'instructor_course' course.id %}">{{ course.catalog_id_str }}: {{ course.title }}</a></li>
+		<li>
+			{{ course.semester_str }}
+			<a href="{% url 'instructor_course' course.id %}">{{ course.catalog_id_str }}: {{ course.title }}</a>
+		</li>
 	{% endfor %}
 </ul>
 <!-- end demograder/instructor/index.html:content -->
