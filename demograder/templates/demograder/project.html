@@ -65,7 +65,7 @@
 {% if submission %}
 
 	<h3>
-		{% if user.is_superuser %}{{ submission.student.full_name }}'s{% endif %}
+		{% if user.is_superuser %}<a href="{% url 'instructor_student' submission.student.id %}">{{ submission.student.full_name }}</a>'s{% endif %}
 		Test Results: {{ submission.score }}/{{ submission.max_score }}
 	</h3>
 	<p>

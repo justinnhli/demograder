@@ -23,14 +23,17 @@
 	{% for submission in grades %}
 		<tr>
 			<td>
-				<a href="{% url 'instructor_assignment' submission.project.assignment.id %}">{{ submission.project.assignment }}</a>:
+				<a href="{% url 'instructor_course' submission.project.assignment.course.id %}">{{ submission.project.assignment.course }}</a>:
+				<a href="{% url 'instructor_assignment' submission.project.assignment.id %}">{{ submission.project.assignment.name }}</a>:
 				<a href="{% url 'instructor_project' submission.project.id %}">{{ submission.project.name }}</a>
 			</td>
-			<td>{{ submission.iso_format }}</td>
 			<td>
-				{% if submission.id %}
-					<a href="{% url 'submission' submission.id %}">{{ submission.score }}/{{ submission.max_score }}</a></td>
-				{% else %}
+				{% if submission %}
+					<a href="{% url 'submission' submission.id %}">{{ submission.iso_format }}</a></td>
+				{% endif %}
+			</td>
+			<td>
+				{% if submission %}
 					{{ submission.score }}/{{ submission.max_score }}
 				{% endif %}
 			</td>

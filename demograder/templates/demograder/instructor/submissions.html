@@ -22,9 +22,9 @@
 		<tr>
 			<td><a href="{% url 'course' submission.project.course.id %}">{{ submission.project.course }}</a></td>
 			<td><a href="{% url 'instructor_student' submission.student.id %}">{{ submission.student.full_name }}</a></td>
-			<td><a href="{% url 'instructor_assignment' submission.project.assignment.id %}">{{ submission.project.assignment.name }}</a>: {{ submission.project.name }}</td>
-			<td>{{ submission.iso_format }}</td>
-			<td><a href="{% url 'submission' submission.id %}">{{ submission.score }}/{{ submission.max_score }}</a></td>
+			<td><a href="{% url 'instructor_assignment' submission.project.assignment.id %}">{{ submission.project.assignment.name }}</a>: <a href="{% url 'instructor_project' submission.project.id %}">{{ submission.project.name }}</a></td>
+			<td><a href="{% url 'submission' submission.id %}">{{ submission.iso_format }}</a></td>
+			<td>{{ submission.score }}/{{ submission.max_score }}</td>
 		</tr>
 	{% endfor %}
 </table>

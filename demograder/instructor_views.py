@@ -43,6 +43,8 @@ def instructor_student_view(request, **kwargs):
             if project.visible:
                 try:
                     submission = context['student'].latest_submission(project=project)
+                    if not submission:
+                        submission = SubmissionDisplay(0, context['student'], project, 'N/A', 'N', 'A')
                 except Submission.DoesNotExist:
                     submission = SubmissionDisplay(0, context['student'], project, 'N/A', 'N', 'A')
                 context['grades'].append(submission)
