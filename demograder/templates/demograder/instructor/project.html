@@ -6,9 +6,9 @@
 &gt;
 {{ course.semester_str }}
 &gt;
-<a href="{% url 'instructor_course' project.course.id %}">{{ project.course.catalog_id_str }}</a>
+<a href="{% url 'instructor_course' course.id %}">{{ course.catalog_id_str }}</a>
 &gt;
-<a href="{% url 'instructor_assignment' project.assignment.id %}">{{ project.assignment.name }}</a>
+<a href="{% url 'instructor_assignment' assignment.id %}">{{ assignment.name }}</a>
 &gt;
 <a href="{% url 'instructor_project' project.id %}">{{ project.name }}</a>
 <!-- end demograder/instructor/project.html:breadcrumb -->

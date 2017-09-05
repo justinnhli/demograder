@@ -6,21 +6,27 @@
 &gt;
 {{ course.semester_str }}
 &gt;
-<a href="{% url 'course' project.course.id %}">{{ project.course.catalog_id_str }}</a>
+<a href="{% url 'course' course.id %}">{{ course.catalog_id_str }}</a>
+&gt;
+{% if user.is_superuser %}
+<a href="{% url 'instructor_assignment' assignment.id %}">{{ assignment.name }}</a>
+{% else %}
+{{ assignment.name }}
+{% endif %}
 &gt;
 <a href="{% url 'project' project.id %}">{{ project.name }}</a>
 &gt;
-<a href="{% url 'result' result.id %}">{{ result.submission.us_format }} Submission</a>
+<a href="{% url 'result' result.id %}">{{ submission.us_format }} Submission</a>
 <!-- end demograder/result.html:breadcrumb -->
 {% endblock %}
 
 {% block content %}
 <!-- begin demograder/result.html:content -->
-<h2>Results for {{ result.submission.us_format }} Submission</h2>
+<h2>Results for {{ submission.us_format }} Submission</h2>
 
 <h3>Files Submitted</h3>
 	<ul>
-		{% for upload in result.submission.upload_set.all %}
+		{% for upload in submission.upload_set.all %}
 			{% if user.is_superuser %}
 				<li><a href="{% url 'display' upload.id %}">{{ upload.basename }}</a></li>
 			{% else %}
