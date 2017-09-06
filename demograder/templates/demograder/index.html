@@ -18,7 +18,7 @@
 	<table>
 		<tr>
 			<th>Course</th>
-			<th>Assignment</th>
+			<th>Project</th>
 			<th>Date</th>
 			<th>Tests Passed</th>
 		</tr>
@@ -31,8 +31,8 @@
 				{% else %}
 				{{ submission.project.assignment.name }}: <a href="{% url 'project' submission.project.id %}">{{ submission.project.name }}</a></td>
 				{% endif %}
-			<td>{{ submission.us_format }}</td>
-			<td><a href="{% url 'submission' submission.id %}">{{ submission.score }}/{{ submission.max_score }}</a></td>
+			<td><a href="{% url 'submission' submission.id %}">{{ submission.us_format }}</a></td>
+			<td>{{ submission.score }}/{{ submission.max_score }}</td>
 		</tr>
 		{% endfor %}
 	</table>
