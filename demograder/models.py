@@ -392,6 +392,10 @@ class Submission(models.Model):
         return self.num_passed + self.num_failed + self.num_tbd
 
     @property
+    def score_str(self):
+        return '{}/{}'.format(self.score, self.max_score)
+
+    @property
     def uploads_str(self):
         return ', '.join(sorted(u.file.name for u in self.upload_set.all()))
 

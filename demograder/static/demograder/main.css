@@ -30,7 +30,15 @@ table tr:last-child td {border-bottom-style:none;}
 #breadcrumb a, #breadcrumb a:active, #breadcrumb a:visited {color:#FF671F;}
 #breadcrumb a:hover {color:#FF671F;}
 
-#scoreboard a.score {align-items:center; display:flex; float:left; height:5em; justify-content:center; margin:0.1em; overflow:hidden; text-align:center; width:5em;}
+#assignment-table {width:100%;}
+#assignment-table th, #assignment-table td {border-style:none;}
+#assignment-table td ul {margin-bottom:0}
+#assignment-table .project-summary {padding:0;}
+#assignment-table .summary-bar {background-color:#C0C0C0; cursor:help; height:1.5em; margin:0; position:relative; width:100%; min-width:150px;}
+#assignment-table .summary-passed {background-color:#57BB8A; float:left; height:1.5em;}
+#assignment-table .summary-failed {background-color:#E67C73; height:1.5em; position:absolute; right:0;}
+
+#scoreboard a.score {align-items:center; color:#FFFFFF; display:flex; float:left; height:5em; justify-content:center; margin:0.1em; overflow:hidden; text-align:center; width:5em;}
 #scoreboard a.score:hover {font-weight:bold;}
 #scoreboard a.score.pass {background-color:#57BB8A;}
 #scoreboard a.score.fail {background-color:#E67C73;}

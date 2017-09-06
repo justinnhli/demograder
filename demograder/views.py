@@ -1,3 +1,4 @@
+from collections import namedtuple
 from mimetypes import guess_type
 from os.path import basename, getsize
 
@@ -82,13 +83,22 @@ def index_view(request, **kwargs):
     return render(request, 'demograder/index.html', context)
 
 
+SubmissionDisplay = namedtuple('ProjectRow', ['project', 'score_str', 'num_passed', 'num_tbd', 'num_failed'])
+
 @login_required
 def course_view(request, **kwargs):
     context = get_context(request, **kwargs)
-    if context['course'].instructor == context['person']:
-        context['assignments'] = context['course'].assignments()
-    else:
-        context['assignments'] = [a for a in context['course'].assignments() if any(p.visible for p in a.projects())]
+    assignments = []
+    for assignment in context['course'].assignments():
+        submissions = []
+        for project in assignment.projects():
+            submission = context['person'].latest_submission(project)
+            if submission:
+                submissions.append(submission)
+            else:
+                submissions.append(SubmissionDisplay(project, '', 0, 0, 0))
+        assignments.append([assignment, submissions])
+    context['assignments'] = assignments
     return render(request, 'demograder/course.html', context)
 
 
