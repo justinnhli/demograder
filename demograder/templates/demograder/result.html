@@ -25,50 +25,50 @@
 <h2>Results for {{ submission.us_format }} Submission</h2>
 
 <h3>Files Submitted</h3>
-	<ul>
-		{% for upload in submission.upload_set.all %}
-			{% if user.is_superuser %}
-				<li><a href="{% url 'display' upload.id %}">{{ upload.basename }}</a></li>
-			{% else %}
-				<li><a href="{% url 'download' upload.id %}">{{ upload.basename }}</a></li>
-			{% endif %}
-		{% endfor %}
-	</ul>
+<ul>
+    {% for upload in submission.upload_set.all %}
+    {% if user.is_superuser %}
+    <li><a href="{% url 'display' upload.id %}">{{ upload.basename }}</a></li>
+    {% else %}
+    <li><a href="{% url 'download' upload.id %}">{{ upload.basename }}</a></li>
+    {% endif %}
+    {% endfor %}
+</ul>
 
 <h3>Other Files Used in Test</h3>
-	<ul>
-		{% for dependency in result.resultdependency_set.all %}
-			{% for upload in dependency.producer.upload_set.all %}
-				{% if user.is_superuser %}
-					<li>
-						<a href="{% url 'display' upload.id %}">{{ upload.basename }}</a>
-						(from <a href="{% url 'submission' upload.submission.id %}">{{ upload.submission.student.full_name }}'s submission</a>)
-					</li>
-				{% else %}
-					<li><a href="{% url 'download' upload.id %}">{{ upload.basename }}</a></li>
-				{% endif %}
-			{% endfor %}
-		{% endfor %}
-	</ul>
+<ul>
+    {% for dependency in result.resultdependency_set.all %}
+    {% for upload in dependency.producer.upload_set.all %}
+    {% if user.is_superuser %}
+    <li>
+        <a href="{% url 'display' upload.id %}">{{ upload.basename }}</a>
+        (from <a href="{% url 'submission' upload.submission.id %}">{{ upload.submission.student.full_name }}'s submission</a>)
+    </li>
+    {% else %}
+    <li><a href="{% url 'download' upload.id %}">{{ upload.basename }}</a></li>
+    {% endif %}
+    {% endfor %}
+    {% endfor %}
+</ul>
 
 {% if result.is_tbd %}
-	<h3>Result to be determined</h3>
-{% else %}
-	<h3>
-		Result: 
-		{% if result.passed %}Pass{% else %}Fail{% endif %}
-	</h3>
-	Output:
-	<pre>
-{{ result.stdout}}
-{{ result.stderr}}
 
-{% if result.passed %}
-pass
+<h3>Result to be determined</h3>
+
 {% else %}
-FAIL
-{% endif %}
-	</pre>
+
+<h3>
+    Result: 
+    {% if result.passed %}Pass{% else %}Fail{% endif %}
+</h3>
+Output:
+<pre>
+{{ result.stdout }}
+{{ result.stderr }}
+
+{% if result.passed %}pass{% else %}FAIL{% endif %}
+</pre>
+
 {% endif %}
 
 

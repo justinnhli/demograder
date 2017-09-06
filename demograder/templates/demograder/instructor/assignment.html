@@ -17,26 +17,26 @@
 <h2>{{ assignment }}</h2>
 
 <table>
-	<tr>
-		<th>Student</th>
-		{% for project in projects %}
-			<th><a href="{% url 'instructor_project' project.id %}">{{ project.name }}</a></th>
-		{% endfor %}
-		<th>Grade</th>
-	</tr>
-	{% for student, submissions, grade in student_scores %}
-		<tr>
-			<td><a href="{% url 'instructor_student' student.id %}">{{ student.full_name }}</a></td>
-			{% for submission in submissions %}
-				<td>
-					{% if submission != None %}
-						<a href="{% url 'submission' submission.id %}">{{ submission.score }}/{{ submission.max_score }}</a>
-					{% endif %}
-				</td>
-			{% endfor %}
-			<td style="text-align:right;">{{ grade }}</td>
-		</tr>
-	{% endfor %}
+    <tr>
+        <th>Student</th>
+        {% for project in projects %}
+        <th><a href="{% url 'instructor_project' project.id %}">{{ project.name }}</a></th>
+        {% endfor %}
+        <th>Grade</th>
+    </tr>
+    {% for student, submissions, grade in student_scores %}
+    <tr>
+        <td><a href="{% url 'instructor_student' student.id %}">{{ student.full_name }}</a></td>
+        {% for submission in submissions %}
+        <td>
+            {% if submission != None %}
+            <a href="{% url 'submission' submission.id %}">{{ submission.score }}/{{ submission.max_score }}</a>
+            {% endif %}
+        </td>
+        {% endfor %}
+        <td style="text-align:right;">{{ grade }}</td>
+    </tr>
+    {% endfor %}
 </table>
 <!-- end demograder/instructor/assignment.html:content -->
 {% endblock %}

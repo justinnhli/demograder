@@ -15,63 +15,63 @@
 <h3>Project Grades</h3>
 
 <table>
-	<tr>
-		<th>Project</th>
-		<th>Submission Time</th>
-		<th>Score</th>
-	</tr>
-	{% for submission in grades %}
-		<tr>
-			<td>
-				<a href="{% url 'instructor_course' submission.project.assignment.course.id %}">{{ submission.project.assignment.course }}</a>
-				<a href="{% url 'instructor_assignment' submission.project.assignment.id %}">{{ submission.project.assignment.name }}</a>:
-				<a href="{% url 'instructor_project' submission.project.id %}">{{ submission.project.name }}</a>
-			</td>
-			<td>
-				{% if submission %}
-					<a href="{% url 'submission' submission.id %}">{{ submission.iso_format }}</a></td>
-				{% endif %}
-			</td>
-			<td>
-				{% if submission %}
-					{{ submission.score }}/{{ submission.max_score }}
-				{% endif %}
-			</td>
-		</tr>
-	{% endfor %}
+    <tr>
+        <th>Project</th>
+        <th>Submission Time</th>
+        <th>Score</th>
+    </tr>
+    {% for submission in grades %}
+    <tr>
+        <td>
+            <a href="{% url 'instructor_course' submission.project.assignment.course.id %}">{{ submission.project.assignment.course }}</a>
+            <a href="{% url 'instructor_assignment' submission.project.assignment.id %}">{{ submission.project.assignment.name }}</a>:
+            <a href="{% url 'instructor_project' submission.project.id %}">{{ submission.project.name }}</a>
+        </td>
+        <td>
+            {% if submission %}
+            <a href="{% url 'submission' submission.id %}">{{ submission.iso_format }}</a></td>
+        {% endif %}
+        </td>
+        <td>
+            {% if submission %}
+            {{ submission.score }}/{{ submission.max_score }}
+            {% endif %}
+        </td>
+    </tr>
+    {% endfor %}
 </table>
 
 <h3>Submission History</h3>
 
 {% if submissions %}
-	<table>
-		<tr>
-			<th>Project</th>
-			<th>Submission Time</th>
-			<th>Score</th>
-		</tr>
-		{% for submission in submissions %}
-			<tr>
-				<td>
-					<a href="{% url 'instructor_course' submission.project.assignment.course.id %}">{{ submission.project.assignment.course }}</a>
-					<a href="{% url 'instructor_assignment' submission.project.assignment.id %}">{{ submission.project.assignment.name }}</a>:
-					<a href="{% url 'instructor_project' submission.project.id %}">{{ submission.project.name }}</a>
-				</td>
-				<td>
-					{% if submission %}
-						<a href="{% url 'submission' submission.id %}">{{ submission.iso_format }}</a></td>
-					{% endif %}
-				</td>
-				<td>
-					{% if submission %}
-						{{ submission.score }}/{{ submission.max_score }}
-					{% endif %}
-				</td>
-			</tr>
-		{% endfor %}
-	</table>
+<table>
+    <tr>
+        <th>Project</th>
+        <th>Submission Time</th>
+        <th>Score</th>
+    </tr>
+    {% for submission in submissions %}
+    <tr>
+        <td>
+            <a href="{% url 'instructor_course' submission.project.assignment.course.id %}">{{ submission.project.assignment.course }}</a>
+            <a href="{% url 'instructor_assignment' submission.project.assignment.id %}">{{ submission.project.assignment.name }}</a>:
+            <a href="{% url 'instructor_project' submission.project.id %}">{{ submission.project.name }}</a>
+        </td>
+        <td>
+            {% if submission %}
+            <a href="{% url 'submission' submission.id %}">{{ submission.iso_format }}</a></td>
+        {% endif %}
+        </td>
+        <td>
+            {% if submission %}
+            {{ submission.score }}/{{ submission.max_score }}
+            {% endif %}
+        </td>
+    </tr>
+    {% endfor %}
+</table>
 {% else %}
-	<p>This student has not submitted anything.</p>
+<p>This student has not submitted anything.</p>
 {% endif %}
 <!-- end demograder/instructor/student.html:content -->
 {% endblock %}

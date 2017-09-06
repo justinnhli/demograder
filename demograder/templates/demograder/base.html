@@ -2,80 +2,80 @@
 
 <!DOCTYPE html>
 <html>
-	<head>
-		<meta content="text/html; charset=utf-8" http-equiv="Content-Type">
-		<title>Autograder</title>
-		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" type="text/css">
-		<link href="https://fonts.googleapis.com/css?family=Crimson+Text:600" rel="stylesheet" type="text/css">
-		<link href="{% static 'demograder/main.css' %}" rel="stylesheet" type="text/css">
-	</head>
+    <head>
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <title>Autograder</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+        <link href="https://fonts.googleapis.com/css?family=Crimson+Text:600" rel="stylesheet" type="text/css">
+        <link href="{% static 'demograder/main.css' %}" rel="stylesheet" type="text/css">
+    </head>
 
-	<body>
-		<div class="container">
-			<div class="row">
+    <body>
+        <div class="container">
+            <div class="row">
 
-				<div id="sidebar" class="col-md-3 col-md-offset-0">
-					<div id="logo-container">
-						<h1 id="logo"><a href="{% url 'index' %}">DEMO<br>grader</a></h1>
-					</div>
-					<div id="menu">
-						{% if user.is_authenticated %}
-							{% if user.person.instructing_courses.all %}
-								<h3>Courses Instructing</h3>
-								<ul>
-									{% for course in user.person.instructing_courses.all %}
-										<li>
-											<a href="{% url 'course' course.id %}"><span class="catalog-code">{{ course.semester_str }} {{ course.catalog_id_str }}</span>: {{ course.title }}</a>
-										</li>
-									{% endfor %}
-								</ul>
-							{% endif %}
-							<h3>Courses Enrolled</h3>
-							{% if user.person.enrolled_courses.all %}
-								<ul>
-									{% for course in user.person.enrolled_courses.all %}
-										<li>
-											<a href="{% url 'course' course.id %}"><span class="catalog-code">{{ course.semester_str }} {{ course.catalog_id_str }}</span>: {{ course.title }}</a>
-										</li>
-									{% endfor %}
-								</ul>
-							{% else %}
-								You are not registered for any course that uses Demograder. Contact your instructor to be added to the system.
-							{% endif %}
-						{% endif %}
-					</div>
-					<hr>
-					<div id="admin">
-						{% if user.is_authenticated %}
-							Logged in as {{ user.email }} (<a href="{% url 'logout' %}">Logout</a>)
-						{% else %}
-							<a href="{% url 'login' %}">Login</a>
-						{% endif %}
-						{% if user.is_superuser %}
-						<br><br><a href="{% url 'instructor_submissions' %}">submissions</a>&nbsp;&nbsp;&nbsp;<a href="/admin">django admin</a>
-						{% endif %}
-					</div>
-				</div>
+                <div id="sidebar" class="col-md-3 col-md-offset-0">
+                    <div id="logo-container">
+                        <h1 id="logo"><a href="{% url 'index' %}">DEMO<br>grader</a></h1>
+                    </div>
+                    <div id="menu">
+                        {% if user.is_authenticated %}
+                        {% if user.person.instructing_courses.all %}
+                        <h3>Courses Instructing</h3>
+                        <ul>
+                            {% for course in user.person.instructing_courses.all %}
+                            <li>
+                                <a href="{% url 'course' course.id %}"><span class="catalog-code">{{ course.semester_str }} {{ course.catalog_id_str }}</span>: {{ course.title }}</a>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                        {% endif %}
+                        <h3>Courses Enrolled</h3>
+                        {% if user.person.enrolled_courses.all %}
+                        <ul>
+                            {% for course in user.person.enrolled_courses.all %}
+                            <li>
+                                <a href="{% url 'course' course.id %}"><span class="catalog-code">{{ course.semester_str }} {{ course.catalog_id_str }}</span>: {{ course.title }}</a>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                        {% else %}
+                        You are not registered for any course that uses Demograder. Contact your instructor to be added to the system.
+                        {% endif %}
+                        {% endif %}
+                    </div>
+                    <hr>
+                    <div id="admin">
+                        {% if user.is_authenticated %}
+                        Logged in as {{ user.email }} (<a href="{% url 'logout' %}">Logout</a>)
+                        {% else %}
+                        <a href="{% url 'login' %}">Login</a>
+                        {% endif %}
+                        {% if user.is_superuser %}
+                        <br><br><a href="{% url 'instructor_submissions' %}">submissions</a>&nbsp;&nbsp;&nbsp;<a href="/admin">django admin</a>
+                        {% endif %}
+                    </div>
+                </div>
 
-				<div id="content" class="col-md-9">
-					<div id="breadcrumb">
-						{% block breadcrumb %}{% endblock %}
-					</div>
+                <div id="content" class="col-md-9">
+                    <div id="breadcrumb">
+                        {% block breadcrumb %}{% endblock %}
+                    </div>
 
-					{% block content %}{% endblock %}
-				</div>
+                    {% block content %}{% endblock %}
+                </div>
 
-			</div>
+            </div>
 
-			<div class="row">
-				<div id="footer" class="col-md-12">
-					&copy; Justin Li
-				</div>
-			</div>
+            <div class="row">
+                <div id="footer" class="col-md-12">
+                    &copy; Justin Li
+                </div>
+            </div>
 
-		</div>
+        </div>
 
-	</body>
+    </body>
 
 </html>

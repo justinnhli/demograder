@@ -15,12 +15,12 @@
 <h3>Courses</h3>
 
 <ul>
-	{% for course in courses %}
-		<li>
-			{{ course.semester_str }}
-			<a href="{% url 'instructor_course' course.id %}">{{ course.catalog_id_str }}: {{ course.title }}</a>
-		</li>
-	{% endfor %}
+    {% for course in courses %}
+    <li>
+        {{ course.semester_str }}
+        <a href="{% url 'instructor_course' course.id %}">{{ course.catalog_id_str }}: {{ course.title }}</a>
+    </li>
+    {% endfor %}
 </ul>
 <!-- end demograder/instructor/index.html:content -->
 {% endblock %}

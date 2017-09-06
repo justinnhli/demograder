@@ -15,39 +15,39 @@
 <h2>{{ course.catalog_id_str }}: {{ course.title }}</h2>
 
 <table>
-	<tr>
-		<td style="border-style:none; vertical-align:top;">
+    <tr>
+        <td style="border-style:none; vertical-align:top;">
 
-			<h3>Students</h3>
-			<ul>
-				{% for student in students %}
-					<li><a href="{% url 'instructor_student' student.id %}">{{ student.first_name }} {{ student.last_name }}</a></li>
-				{% endfor %}
-			</ul>
+            <h3>Students</h3>
+            <ul>
+                {% for student in students %}
+                <li><a href="{% url 'instructor_student' student.id %}">{{ student.first_name }} {{ student.last_name }}</a></li>
+                {% endfor %}
+            </ul>
 
-		</td>
-		<td style="border-style:none; vertical-align:top;">
+        </td>
+        <td style="border-style:none; vertical-align:top;">
 
-			<h3>Assignments</h3>
-			{% if assignments %}
-				{% for assignment in assignments %}
-					<h4>{{ assignment.id }}: <a href="{% url 'instructor_assignment' assignment.id %}">{{ assignment.name }}</a></h4>
-					<ul>
-						{% for project in assignment.projects %}
-							{% if not project.hidden or user.is_superuser %}
-								<li>
-									<a href="{% url 'instructor_project' project.id %}">{{ project.name }}</a>
-								</li>
-							{% endif %}
-						{% endfor %}
-					</ul>
-				{% endfor %}
-			{% else %}
-				This course currently has no projects.
-			{% endif %}
+            <h3>Assignments</h3>
+            {% if assignments %}
+            {% for assignment in assignments %}
+            <h4>{{ assignment.id }}: <a href="{% url 'instructor_assignment' assignment.id %}">{{ assignment.name }}</a></h4>
+            <ul>
+                {% for project in assignment.projects %}
+                {% if not project.hidden or user.is_superuser %}
+                <li>
+                    <a href="{% url 'instructor_project' project.id %}">{{ project.name }}</a>
+                </li>
+                {% endif %}
+                {% endfor %}
+            </ul>
+            {% endfor %}
+            {% else %}
+            This course currently has no projects.
+            {% endif %}
 
-		</td>
-	</tr>
+        </td>
+    </tr>
 </table>
 <!-- end demograder/instructor/course.html:content -->
 {% endblock %}

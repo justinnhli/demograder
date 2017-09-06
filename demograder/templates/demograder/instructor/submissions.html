@@ -11,22 +11,25 @@
 <h2>Latest Submissions</h2>
 
 <table>
-	<tr>
-		<th>Course</th>
-		<th>Student</th>
-		<th>Project</th>
-		<th>Submission Time</th>
-		<th>Score</th>
-	</tr>
-	{% for submission in submissions %}
-		<tr>
-			<td><a href="{% url 'course' submission.project.course.id %}">{{ submission.project.course }}</a></td>
-			<td><a href="{% url 'instructor_student' submission.student.id %}">{{ submission.student.full_name }}</a></td>
-			<td><a href="{% url 'instructor_assignment' submission.project.assignment.id %}">{{ submission.project.assignment.name }}</a>: <a href="{% url 'instructor_project' submission.project.id %}">{{ submission.project.name }}</a></td>
-			<td><a href="{% url 'submission' submission.id %}">{{ submission.iso_format }}</a></td>
-			<td>{{ submission.score }}/{{ submission.max_score }}</td>
-		</tr>
-	{% endfor %}
+    <tr>
+        <th>Course</th>
+        <th>Student</th>
+        <th>Project</th>
+        <th>Submission Time</th>
+        <th>Score</th>
+    </tr>
+    {% for submission in submissions %}
+    <tr>
+        <td><a href="{% url 'course' submission.project.course.id %}">{{ submission.project.course }}</a></td>
+        <td><a href="{% url 'instructor_student' submission.student.id %}">{{ submission.student.full_name }}</a></td>
+        <td>
+            <a href="{% url 'instructor_assignment' submission.project.assignment.id %}">{{ submission.project.assignment.name }}</a>:
+            <a href="{% url 'instructor_project' submission.project.id %}">{{ submission.project.name }}</a>
+        </td>
+        <td><a href="{% url 'submission' submission.id %}">{{ submission.iso_format }}</a></td>
+        <td>{{ submission.score }}/{{ submission.max_score }}</td>
+    </tr>
+    {% endfor %}
 </table>
 <!-- end demograder/instructor/submissions.html:content -->
 {% endblock %}

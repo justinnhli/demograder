@@ -8,39 +8,43 @@
 
 {% block content %}
 <!-- begin demograder/index.html:content -->
-{% if user.is_authenticated %}
-	<h2>Welcome, {{ user.first_name }}!</h2>
+{% if not user.is_authenticated %}
 
-	<p>Select a course from the menu on the left to begin.</p>
+<h2>Welcome!</h2>
 
-	{% if submissions %}
-	<p>Your last {{ submissions|length }} submission(s):</p>
-	<table>
-		<tr>
-			<th>Course</th>
-			<th>Project</th>
-			<th>Date</th>
-			<th>Tests Passed</th>
-		</tr>
-		{% for submission in submissions %}
-		<tr>
-			<td><a href="{% url 'course' submission.project.course.id %}">{{ submission.project.course }}</a></td>
-			<td>
-				{% if user.is_superuser %}
-				<a href="{% url 'instructor_assignment' submission.project.assignment.id %}">{{ submission.project.assignment.name }}</a>: <a href="{% url 'project' submission.project.id %}">{{ submission.project.name }}</a></td>
-				{% else %}
-				{{ submission.project.assignment.name }}: <a href="{% url 'project' submission.project.id %}">{{ submission.project.name }}</a></td>
-				{% endif %}
-			<td><a href="{% url 'submission' submission.id %}">{{ submission.us_format }}</a></td>
-			<td>{{ submission.score }}/{{ submission.max_score }}</td>
-		</tr>
-		{% endfor %}
-	</table>
-	{% endif %}
+<a href="{% url 'login' %}">Log in</a> to begin.
+
 {% else %}
-	<h2>Welcome!</h2>
 
-	<a href="{% url 'login' %}">Log in</a> to begin.
+<h2>Welcome, {{ user.first_name }}!</h2>
+
+<p>Select a course from the menu on the left to begin.</p>
+
+{% if submissions %}
+<p>Your last {{ submissions|length }} submission(s):</p>
+<table>
+    <tr>
+        <th>Course</th>
+        <th>Project</th>
+        <th>Date</th>
+        <th>Tests Passed</th>
+    </tr>
+    {% for submission in submissions %}
+    <tr>
+        <td><a href="{% url 'course' submission.project.course.id %}">{{ submission.project.course }}</a></td>
+        <td>
+            {% if user.is_superuser %}
+            <a href="{% url 'instructor_assignment' submission.project.assignment.id %}">{{ submission.project.assignment.name }}</a>: <a href="{% url 'project' submission.project.id %}">{{ submission.project.name }}</a></td>
+        {% else %}
+        {{ submission.project.assignment.name }}: <a href="{% url 'project' submission.project.id %}">{{ submission.project.name }}</a></td>
+    {% endif %}
+    <td><a href="{% url 'submission' submission.id %}">{{ submission.us_format }}</a></td>
+    <td>{{ submission.score }}/{{ submission.max_score }}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% endif %}
+
 {% endif %}
 <!-- end demograder/index.html:content -->
 {% endblock %}

@@ -21,19 +21,19 @@
 {% block content %}
 <!-- begin demograder/project.html:content -->
 {% if user.is_superuser %}
-	<div id="admin_panel">
-		<a href="{% url 'admin:demograder_project_change' project.id %}">project admin</a>
-		<a href="{% url 'instructor_project' project.id %}">project submissions</a>
-		<a href="{% url 'instructor_project_regrade' project.id %}">regrade project</a>
-		{% if submission %}
-		<a href="{% url 'admin:demograder_submission_change' submission.id %}">submission admin</a>
-		<a href="{% url 'instructor_submission_regrade' submission.id %}">regrade submission</a>
-		{% endif %}
-	</div>
+<div id="admin_panel">
+    <a href="{% url 'admin:demograder_project_change' project.id %}">project admin</a>
+    <a href="{% url 'instructor_project' project.id %}">project submissions</a>
+    <a href="{% url 'instructor_project_regrade' project.id %}">regrade project</a>
+    {% if submission %}
+    <a href="{% url 'admin:demograder_submission_change' submission.id %}">submission admin</a>
+    <a href="{% url 'instructor_submission_regrade' submission.id %}">regrade submission</a>
+    {% endif %}
+</div>
 {% endif %}
 
 <h2>
-	{{ assignment.name }}: {{ project.name }}
+    {{ assignment.name }}: {{ project.name }}
 </h2>
 <p>Due {{ assignment.us_format }}</p>
 
@@ -41,109 +41,102 @@
 
 <h3>Upload New Version</h3>
 <form action="{% url 'project_submit' project.id %}" method="post" enctype="multipart/form-data">
-	{% csrf_token %}
-	<p>{{ form.non_field_errors }}</p>
-	<p>{{ form.file.errors }}</p>
-	<p>{{ form.file }} <input type="submit" value="Upload" /></p>
+    {% csrf_token %}
+    <p>{{ form.non_field_errors }}</p>
+    <p>{{ form.file.errors }}</p>
+    <p>{{ form.file }} <input type="submit" value="Upload" /></p>
 </form>
 
 {% elif may_submit == 'submission' %}
 
 <div class="alert alert-danger" style="text-align:center;">
-	<p>You cannot submit again until your <a href="{% url 'submission' latest.id %}">latest submission</a> has been completely evaluated.</p>
+    <p>You cannot submit again until your <a href="{% url 'submission' latest.id %}">latest submission</a> has been completely evaluated.</p>
 </div>
 
 {% elif may_submit == 'timeout' %}
 
 <div class="alert alert-danger" style="text-align:center;">
-	<p>
-		You can only submit to each project once every five minutes.<br>
-		Your last submission to this project was at {{ project_latest.us_format }}
-	</p>
+    <p>
+        You can only submit to each project once every five minutes.<br>
+        Your last submission to this project was at {{ project_latest.us_format }}
+    </p>
 </div>
 
 {% endif %}
 
 {% if submission %}
 
-	<h3>
-		{% if user.is_superuser %}<a href="{% url 'instructor_student' submission.student.id %}">{{ submission.student.full_name }}</a>'s{% endif %}
-		Test Results: {{ submission.score }}/{{ submission.max_score }}
-	</h3>
-	<p>
-		From
-		{{ submission.us_format }}
-		{% if submission == project_latest %}
-			(most recent submission)
-		{% else %}
-			(<a href="{% url 'submission' project_latest.id %}">see most recent submission</a>)
-		{% endif %}
-	</p>
-	<p>
-		Uploads:
-		{% for upload in submission.upload_set.all %}
-			{% if not forloop.first %},{% endif %}
-			{% if user.is_superuser %}
-				<a href="{% url 'display' upload.id %}">{{ upload.basename }}</a>
-			{% else %}
-				<a href="{% url 'download' upload.id %}">{{ upload.basename }}</a>
-			{% endif %}
-		{% endfor %}
-	</p>
-	{% if results %}
-		<div id="scoreboard">
-			{% for result in results %}
-				{% if result.is_tbd %}
-					<a class="score tbd" href="{% url 'result' result.id %}">TBD</a>
-				{% elif result.passed %}
-					<a class="score pass" href="{% url 'result' result.id %}">Pass</a>
-				{% else %}
-					<a class="score fail" href="{% url 'result' result.id %}">Fail</a>
-				{% endif %}
-			{% endfor %}
-		</div>
-	{% else %}
-		There are no results associated with this submission.
-	{% endif %}
+<h3>
+    {% if user.is_superuser %}<a href="{% url 'instructor_student' submission.student.id %}">{{ submission.student.full_name }}</a>'s{% endif %}
+    Test Results: {{ submission.score }}/{{ submission.max_score }}
+</h3>
+<p>
+    From {{ submission.us_format }}
+    {% if submission == project_latest %}(most recent submission){% else %}(<a href="{% url 'submission' project_latest.id %}">see most recent submission</a>){% endif %}
+</p>
+<p>
+    Uploads:
+    {% for upload in submission.upload_set.all %}
+    {% if not forloop.first %},{% endif %}
+    {% if user.is_superuser %}
+    <a href="{% url 'display' upload.id %}">{{ upload.basename }}</a>
+    {% else %}
+    <a href="{% url 'download' upload.id %}">{{ upload.basename }}</a>
+    {% endif %}
+    {% endfor %}
+</p>
+{% if results %}
+<div id="scoreboard">
+    {% for result in results %}
+    {% if result.is_tbd %}
+    <a class="score tbd" href="{% url 'result' result.id %}">TBD</a>
+    {% elif result.passed %}
+    <a class="score pass" href="{% url 'result' result.id %}">Pass</a>
+    {% else %}
+    <a class="score fail" href="{% url 'result' result.id %}">Fail</a>
+    {% endif %}
+    {% endfor %}
+</div>
+{% else %}
+There are no results associated with this submission.
+{% endif %}
 
-	<h3 id="history-heading">
-		Submission History
-	</h3>
-	<div id="history">
-		<table>
-			<tr>
-				<th>Date/Time</th>
-				<th>File(s)</th>
-				<th>Tests Passed</th>
-			</tr>
-			{% for submission in submissions %}
-			<tr>
-				<td><a href="{% url 'submission' submission.id %}">{{ submission.us_format }}</a></td>
-				<td>
-					{% for upload in submission.upload_set.all %}
-						{% if not forloop.first %},{% endif %}
-						{% if user.is_superuser %}
-							<a href="{% url 'display' upload.id %}">{{ upload.basename }}</a>
-						{% else %}
-							<a href="{% url 'download' upload.id %}">{{ upload.basename }}</a>
-						{% endif %}
-					{% endfor %}
-				</td>
-				<td>
-					{% if submission.max_score %}
-						{{ submission.score }}/{{ submission.max_score }}
-					{% else %}
-						N/A
-					{% endif %}
-				</td>
-			</tr>
-			{% endfor %}
-		</table>
-	</div>
+<h3 id="history-heading">
+    Submission History
+</h3>
+<div id="history">
+    <table>
+        <tr>
+            <th>Date/Time</th>
+            <th>File(s)</th>
+            <th>Tests Passed</th>
+        </tr>
+        {% for submission in submissions %}
+        <tr>
+            <td><a href="{% url 'submission' submission.id %}">{{ submission.us_format }}</a></td>
+            <td>
+                {% for upload in submission.upload_set.all %}
+                {% if not forloop.first %},{% endif %}
+                {% if user.is_superuser %}
+                <a href="{% url 'display' upload.id %}">{{ upload.basename }}</a>
+                {% else %}
+                <a href="{% url 'download' upload.id %}">{{ upload.basename }}</a>
+                {% endif %}
+                {% endfor %}
+            </td>
+            <td>
+                {% if submission.max_score %}
+                {{ submission.score_str }}
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+</div>
 
 {% else %}
-	<h3>Past Submissions</h3>
-	You have not submitted to this project.
+<h3>Past Submissions</h3>
+You have not submitted to this project.
 {% endif %}
 
 <!-- end demograder/project.html:content -->

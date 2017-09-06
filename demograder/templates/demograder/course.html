@@ -18,9 +18,9 @@
 <h3>Assignments</h3>
 
 {% if assignments %}
-	<table id="assignment-table">
+<table id="assignment-table">
     {% for assignment, submissions in assignments %}
-		<tr colspan="2"><td colspan="2">
+    <tr colspan="2"><td colspan="2">
             {% if user.is_superuser %}
             <h4><a href="{% url 'instructor_assignment' assignment.id %}">{{ assignment.name }}</a> (due {{ assignment.us_format }})</h4>
             {% else %}
@@ -30,29 +30,28 @@
         {% for submission in submissions %}
         {% if submission.project.visible or user.is_superuser %}
         <tr>
-			<td class="project-name">
+            <td class="project-name">
                 <ul><li>
                     <a href="{% url 'project' submission.project.id %}">{{ submission.project.name }}</a>
-					{% if submission.max_score %}(current score: {{ submission.score_str }}){% endif %}
-					{% if not submission.project.visible %}(hidden){% endif %}
+                    {% if submission.max_score %}(current score: {{ submission.score_str }}){% endif %}
+                    {% if not submission.project.visible %}(hidden){% endif %}
                 </li></ul>
             </td>
             <td class="project-summary">
-				{% if submission.max_score %}
-				<div class="summary-bar" title="{{ submission.project.name }}: {{ submission.num_tbd }} of {{ submission.max_score }} tests TBD">
-					<div class="summary-passed" style="width:{% widthratio submission.num_passed submission.max_score 100 %}%;" title="{{ submission.project.name }}: {{ submission.num_passed }} of {{ submission.max_score }} tests passed"></div>
+                {% if submission.max_score %}
+                <div class="summary-bar" title="{{ submission.project.name }}: {{ submission.num_tbd }} of {{ submission.max_score }} tests TBD">
+                    <div class="summary-passed" style="width:{% widthratio submission.num_passed submission.max_score 100 %}%;" title="{{ submission.project.name }}: {{ submission.num_passed }} of {{ submission.max_score }} tests passed"></div>
                     <div class="summary-failed" style="width:{% widthratio submission.num_failed submission.max_score 100 %}%;" title="{{ submission.project.name }}: {{ submission.num_failed }} of {{ submission.max_score }} tests failed"></div>
-                    &nbsp;
                 </div>
-				{% endif %}
+                {% endif %}
             </td>
         </tr>
         {% endif %}
         {% endfor %}
-    {% endfor %}
-    </table>
+        {% endfor %}
+</table>
 {% else %}
-    This course currently has no projects.
+This course currently has no projects.
 {% endif %}
 <!-- end demograder/course.html:content -->
 {% endblock %}
