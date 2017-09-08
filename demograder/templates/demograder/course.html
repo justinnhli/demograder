@@ -37,7 +37,7 @@
                     {% if not submission.project.visible %}(hidden){% endif %}
                 </li></ul>
             </td>
-            <td class="project-summary">
+            <td class="project-summary"{% if not submission.max_score %} style="border-style:none"{% endif %}>
                 {% if submission.max_score %}
                 <div class="summary-bar" title="{{ submission.project.name }}: {{ submission.num_tbd }} of {{ submission.max_score }} tests TBD">
                     <div class="summary-passed" style="width:{% widthratio submission.num_passed submission.max_score 100 %}%;" title="{{ submission.project.name }}: {{ submission.num_passed }} of {{ submission.max_score }} tests passed"></div>
