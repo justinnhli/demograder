@@ -12,6 +12,11 @@
 
 {% block content %}
 <!-- begin demograder/instructor/course.html:content -->
+<div id="admin_panel">
+    <a href="{% url 'admin:demograder_course_change' course.id %}">course admin</a>
+    <a href="{% url 'course' course.id %}">student view</a>
+</div>
+
 <h2>{{ course.catalog_id_str }}: {{ course.title }}</h2>
 
 <table>

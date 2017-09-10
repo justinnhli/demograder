@@ -13,6 +13,13 @@
 
 {% block content %}
 <!-- begin demograder/course.html:content -->
+{% if user.is_superuser %}
+<div id="admin_panel">
+    <a href="{% url 'admin:demograder_course_change' course.id %}">course admin</a>
+    <a href="{% url 'instructor_course' course.id %}">instructor view</a>
+</div>
+{% endif %}
+
 <h2>{{ course.catalog_id_str }}: {{ course.title }}</h2>
 
 <h3>Assignments</h3>

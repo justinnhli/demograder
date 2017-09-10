@@ -14,7 +14,11 @@
 
 {% block content %}
 <!-- begin demograder/instructor/assignment.html:content -->
-<h2>{{ assignment }}</h2>
+<div id="admin_panel">
+    <a href="{% url 'admin:demograder_assignment_change' assignment.id %}">assignment admin</a>
+</div>
+
+<h2>{{ assignment.name }}</h2>
 
 <table>
     <tr>
