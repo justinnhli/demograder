@@ -96,7 +96,8 @@ def lint_test():
                 "--msg-template='Line {line}, column {column}: {msg}'",
                 '--disable=all',
                 '--enable=' + ','.join(sorted(LINT_CHECKS.keys())),
-                '--max-line-length=150'
+                '--max-line-length=150',
+                '--persistent=n',
             ])
         except SystemExit:
             pass
