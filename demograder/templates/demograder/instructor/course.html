@@ -36,7 +36,10 @@
             <h3>Assignments</h3>
             {% if assignments %}
             {% for assignment in assignments %}
-            <h4>{{ assignment.id }}: <a href="{% url 'instructor_assignment' assignment.id %}">{{ assignment.name }}</a></h4>
+            <h4>
+                <a href="{% url 'admin:demograder_assignment_change' assignment.id %}">{{ assignment.id }}</a>:
+                <a href="{% url 'instructor_assignment' assignment.id %}">{{ assignment.name }}</a>
+            </h4>
             <ul>
                 {% for project in assignment.projects %}
                 {% if project.visible or user.is_superuser %}
