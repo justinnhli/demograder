@@ -19,6 +19,7 @@
 <div id="admin_panel">
     <a href="{% url 'admin:demograder_project_change' project.id %}">project admin</a>
     <a href="{% url 'project' project.id %}">student view</a>
+    <a href="{% url 'instructor_project_regrade' project.id %}">regrade project</a>
 </div>
 
 <h2>Project: {{ project.name }}</h2>
