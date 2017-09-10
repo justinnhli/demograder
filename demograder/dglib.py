@@ -45,14 +45,12 @@ def module_test(module=None):
     if passed:
         print_result('Module imports cleanly.', passed, should_exit=True)
     else:
-        transcript = dedent(
-            '''
-        Importing module results in unexpected prints.
-        Printouts are marked within '>>>' and '<<<':
+        transcript = dedent('''
+            Importing module results in unexpected prints.
+            Printouts are marked within '>>>' and '<<<':
 
-        >>>{}<<<
-        '''
-        ).strip().format(actual_output)
+            >>>{}<<<
+        ''').strip().format(actual_output)
         print_result(transcript, passed, should_exit=True)
 
 
@@ -107,9 +105,9 @@ def lint_test():
         print_result('Coding style okay.', passed, should_exit=True)
     else:
         transcript = dedent('''
-        There are some coding style issues:
+            There are some coding style issues:
 
-        {}
+            {}
         ''').strip().format('\n'.join(actual_output.splitlines()[1:]))
         print_result(transcript, passed, should_exit=True)
 
