@@ -27,14 +27,8 @@
     {% for submission in submissions %}
     <tr>
         <td><a href="{% url 'instructor_student' submission.student.id %}">{{ submission.student.first_name }} {{ submission.student.last_name }}</a></td>
-        <td>{{ submission.iso_format }}</td>
-        <td>
-            {% if submission.id %}
-            <a href="{% url 'submission' submission.id %}">{{ submission.score }}/{{ submission.max_score }}</a>
-            {% else %}
-            {{ submission.score }}/{{ submission.max_score }}
-            {% endif %}
-        </td>
+        <td><a href="{% url 'submission' submission.id %}">{{ submission.iso_format }}</a></td>
+        <td>{{ submission.score }}/{{ submission.max_score }}</td>
     </tr>
     {% endfor %}
 </table>
