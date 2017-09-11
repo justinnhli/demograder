@@ -262,6 +262,9 @@ class Assignment(models.Model):
     def projects(self):
         return Project.objects.filter(assignment=self)
 
+    def has_visible_projects(self):
+        return any(project.visible for project in self.projects())
+
     def __str__(self):
         # human readable, used by Django admin displays
         return '({}) {}'.format(self.course, self.name)
