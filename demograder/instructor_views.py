@@ -115,21 +115,43 @@ def instructor_submission_view(request, **kwargs):
     return render(request, 'demograder/project.html', context)
 
 
+def regrade_assignment(assignment):
+    for project in assignment.projects():
+        regrade_project(project)
+
+
+@login_required
+def instructor_assignment_regrade_view(request, **kwargs):
+    context = get_context(request, **kwargs)
+    if not context['user'].is_superuser:
+        raise Http404
+    regrade_assignment(context['assignment'])
+    return HttpResponseRedirect(
+        reverse('instructor_assignment', kwargs={'assignment_id': context['project'].assignment.id})
+    )
+
+
+def regrade_project(project):
+    for student in project.course.enrolled_students():
+        submission = student.latest_submission(project=context['project'])
+        if submission:
+            regrade_submission(submission)
+
+
 @login_required
 def instructor_project_regrade_view(request, **kwargs):
     context = get_context(request, **kwargs)
     if not context['user'].is_superuser:
         raise Http404
-    for student in context['project'].course.enrolled_students():
-        try:
-            submission = student.latest_submission(project=context['project'])
-            submission.result_set.all().delete()
-            enqueue_submission_dispatch(submission)
-        except Submission.DoesNotExist:
-            pass
+    regrade_project(context['project'])
     return HttpResponseRedirect(
         reverse('instructor_assignment', kwargs={'assignment_id': context['project'].assignment.id})
     )
+
+
+def regrade_submission(submission):
+    submission.result_set.all().delete()
+    enqueue_submission_dispatch(submission)
 
 
 @login_required
@@ -137,6 +159,5 @@ def instructor_submission_regrade_view(request, **kwargs):
     context = get_context(request, **kwargs)
     if not context['user'].is_superuser:
         raise Http404
-    context['submission'].result_set.all().delete()
-    enqueue_submission_dispatch(context['submission'].id)
+    regrade_submission(context['submission'])
     return HttpResponseRedirect(reverse('submission', kwargs=kwargs))

@@ -6,7 +6,7 @@ from django.contrib.auth import views as auth_views
 
 from .views import index_view, course_view, project_view, project_submit_handler, result_view, download_view, display_view
 from .instructor_views import instructor_view, instructor_submissions_view, instructor_student_view, instructor_course_view, instructor_assignment_view, instructor_project_view
-from .instructor_views import instructor_project_regrade_view, instructor_submission_regrade_view
+from .instructor_views import instructor_assignment_regrade_view, instructor_project_regrade_view, instructor_submission_regrade_view
 
 urlpatterns = [
     url(r'^login/$', auth_views.login, name='login'),
@@ -31,6 +31,11 @@ urlpatterns = [
         name='instructor_assignment'
     ),
     url(r'^demograder/instructor/project/(?P<project_id>[0-9]+)/$', instructor_project_view, name='instructor_project'),
+    url(
+        r'^demograder/instructor/assignment-regrade/(?P<project_id>[0-9]+)$',
+        instructor_assignment_regrade_view,
+        name='instructor_assignment_regrade',
+    ),
     url(
         r'^demograder/instructor/project-regrade/(?P<project_id>[0-9]+)$',
         instructor_project_regrade_view,

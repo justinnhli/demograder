@@ -16,6 +16,7 @@
 <!-- begin demograder/instructor/assignment.html:content -->
 <div id="admin_panel">
     <a href="{% url 'admin:demograder_assignment_change' assignment.id %}">assignment admin</a>
+    <a href="{% url 'instructor_assignment_regrade' assignment.id %}">assignment admin</a>
 </div>
 
 <h2>{{ assignment.name }}</h2>
