@@ -39,12 +39,12 @@ urlpatterns = [
     url(
         r'^demograder/instructor/project-regrade/(?P<project_id>[0-9]+)$',
         instructor_project_regrade_view,
-        name='instructor_project_regrade'
+        name='instructor_project_regrade',
     ),
     url(
         r'^demograder/instructor/submission-regrade/(?P<submission_id>[0-9]+)$',
         instructor_submission_regrade_view,
-        name='instructor_submission_regrade'
+        name='instructor_submission_regrade',
     ),
     url(r'^django-rq/', include('django_rq.urls')),
     url(r'^admin/', include(admin.site.urls)),
