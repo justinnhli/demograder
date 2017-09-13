@@ -55,7 +55,10 @@ class Person(models.Model):
             submission = self.latest_submission(project)
             if submission and submission.max_score > 0:
                 total += submission.score / submission.max_score
-        return total / num_projects
+        if num_projects == 0:
+            return 0
+        else:
+            return total / num_projects
 
     def submissions(self, project=None):
         if project:
