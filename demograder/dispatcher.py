@@ -15,6 +15,7 @@ environ.setdefault('DJANGO_SETTINGS_MODULE', 'demograder.settings')
 django.setup()
 
 import django_rq
+from rq.timeouts import JobTimeoutException
 
 DGLIB = join_path(dirname(realpath(__file__)), 'dglib.py')
 
@@ -71,13 +72,9 @@ def evaluate_submission(result_id):
             stdout = completed_process.stdout.decode('utf-8')
             stderr = completed_process.stderr.decode('utf-8')
             return_code = completed_process.returncode
-        except TimeoutExpired as e:
-            stdout = e.stdout.decode('utf-8')
-            stdout += '\n\n' + dedent('''
-                The program failed to complete within {}
-                seconds and was terminated.
-            '''.format(timeout)).strip()
-            stderr = e.stderr.decode('utf-8')
+        except JobTimeoutException:
+            stdout = ''
+            stderr = 'The program failed to complete within {} seconds and was terminated.'.format(result.project.timeout)
             return_code = 1
     # update Result
     result.stdout = stdout.strip()
@@ -137,7 +134,7 @@ def dispatch_submission(submission_id):
                 project_dependency=project_dependency,
                 producer=upstream_submission,
             ).save()
-        EVALUATION_QUEUE.enqueue(evaluate_submission, result.id)
+        EVALUATION_QUEUE.enqueue(evaluate_submission, result.id, timeout=project.timeout+1)
 
 
 def enqueue_submission_dispatch(submission_id):
