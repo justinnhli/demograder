@@ -46,8 +46,10 @@ def module_test(module=None):
         print_result('Module imports cleanly.', passed, should_exit=True)
     else:
         transcript = dedent('''
-            Importing module results in unexpected prints.
-            Printouts are marked within '>>>' and '<<<':
+            Importing module results in unexpected prints. Make sure your
+            testing code is in a `if __name__ == "__main__"` block.
+
+            Unexpected printouts are marked below within '>>>' and '<<<':
 
             >>>{}<<<
         ''').strip().format(actual_output)
