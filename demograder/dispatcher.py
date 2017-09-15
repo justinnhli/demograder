@@ -19,17 +19,6 @@ from rq.timeouts import JobTimeoutException
 
 DGLIB = join_path(dirname(realpath(__file__)), 'dglib.py')
 
-DISPATCH_QUEUE = None
-EVALUATION_QUEUE = None
-
-
-def get_dispatch_queue():
-    return django_rq.get_queue('dispatch')
-
-
-def get_evaluation_queue():
-    return django_rq.get_queue('evaluation')
-
 
 def recursive_chmod(path):
     chmod(path, 0o777)
@@ -41,7 +30,6 @@ def recursive_chmod(path):
 
 
 def evaluate_submission(result_id):
-    setup_django()
     from demograder.models import Result, ResultDependency
     result = Result.objects.get(pk=result_id)
     # create temporary directory
@@ -84,7 +72,6 @@ def evaluate_submission(result_id):
 
 
 def get_relevant_submissions(person, project):
-    setup_django()
     from demograder.models import Project, Submission
     try:
         if project.submission_type == Project.LATEST:
@@ -98,7 +85,6 @@ def get_relevant_submissions(person, project):
 
 
 def dispatch_submission(submission_id):
-    setup_django()
     from demograder.models import ProjectDependency, Submission, Result, ResultDependency
     submission = Submission.objects.get(pk=submission_id)
     project = submission.project
@@ -134,16 +120,8 @@ def dispatch_submission(submission_id):
                 project_dependency=project_dependency,
                 producer=upstream_submission,
             ).save()
-        EVALUATION_QUEUE.enqueue(evaluate_submission, result.id, timeout=project.timeout+1)
+        django_rq.get_queue('evaluation').enqueue(evaluate_submission, result.id, timeout=project.timeout + 1)
 
 
 def enqueue_submission_dispatch(submission_id):
-    setup_django()
-    DISPATCH_QUEUE.enqueue(dispatch_submission, submission_id)
-
-
-def setup_django():
-    global DISPATCH_QUEUE, EVALUATION_QUEUE
-    if DISPATCH_QUEUE is None:
-        DISPATCH_QUEUE = get_dispatch_queue()
-        EVALUATION_QUEUE = get_evaluation_queue()
+    django_rq.get_queue('dispatch').enqueue(dispatch_submission, submission_id)

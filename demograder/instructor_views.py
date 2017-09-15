@@ -151,7 +151,7 @@ def instructor_project_regrade_view(request, **kwargs):
 
 def regrade_submission(submission):
     submission.result_set.all().delete()
-    enqueue_submission_dispatch(submission)
+    enqueue_submission_dispatch(submission.id)
 
 
 @login_required
