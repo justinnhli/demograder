@@ -56,33 +56,44 @@ def module_test(module=None):
         print_result(transcript, passed, should_exit=True)
 
 
-# from http://pylint-messages.wikidot.com/all-codes
-LINT_CHECKS = {
-    'C0301': 'Line too long (%s/%s)',
-    'C0303': 'Trailing whitespace',
-    'C0325': 'Unnecessary parens after %r keyword',
-    'C0326': 'No space allowed before %s',
-    'E0001': 'Syntax error',
-    'E0102': 'Function already defined',
-    'E0104': 'Return outside function',
-    'E0107': 'Use of the non-existent %s operator',
-    'E0601': 'Using variable %r before assignment',
-    'E0602': 'Undefined variable %r',
-    'R0801': 'Similar lines in %s files',
-    'W0101': 'Unreachable code',
-    'W0102': 'Dangerous default value %s as argument',
-    'W0104': 'Statement seems to have no effect',
-    'W0120': 'Else clause on loop without a break statement',
-    'W0122': 'Use of exec',
-    'W0125': 'Using a conditional statement with a constant value',
-    'W0301': 'Unnecessary semicolon',
-    'W0311': 'Bad indentation. Found %s %s, expected %s',
-    'W0312': 'Found indentation with %ss instead of %ss',
-    'W0333': 'Use of the `` operator',
-    'W0603': 'Using the global statement',
-    'W0611': 'Unused import %s',
-    'W0612': 'Unused variable %r',
-}
+LINT_CHECKS = [
+    # redundancy
+    'duplicate-code',
+    # conventions
+    'singleton-comparison',
+    'line-too-long',
+    'trailing-whitespace',
+    'superfluous-parens',
+    'bad-whitespace',
+    # warnings
+    'unreachable',
+    'dangerous-default-value',
+    'pointless-statement',
+    'expression-not-assigned',
+    'unnecessary-pass',
+    'useless-else-on-loop',
+    'exec-used',
+    'eval-used',
+    'using-constant-test',
+    'unnecessary-semicolon',
+    'bad-indentation',
+    'mixed-indentation',
+    'reimported',
+    'global-statement',
+    'unused-import',
+    'unused-variable',
+    'unused-argument',
+    # errors
+    'syntax-error',
+    'function-redefined',
+    'not-in-loop',
+    'return-outside-function',
+    'nonexistent-operator',
+    'duplicate-argument-name',
+    'used-before-assignment',
+    'undefined-variable',
+    'assignment-from-none',
+]
 
 
 def lint_test():
@@ -95,7 +106,7 @@ def lint_test():
                 file,
                 "--msg-template='Line {line}, column {column}: {msg}'",
                 '--disable=all',
-                '--enable=' + ','.join(sorted(LINT_CHECKS.keys())),
+                '--enable=' + ','.join(sorted(LINT_CHECKS)),
                 '--max-line-length=150',
                 '--persistent=n',
             ])
