@@ -4,7 +4,8 @@ from contextlib import redirect_stdout
 from importlib import import_module
 from importlib.util import spec_from_file_location, module_from_spec
 from io import StringIO
-from os.path import basename
+from os import chdir
+from os.path import basename, dirname, expanduser, realpath
 from subprocess import run as run_process, PIPE
 from textwrap import dedent
 
@@ -98,12 +99,13 @@ LINT_CHECKS = [
 
 def lint_test():
     from pylint.lint import Run as lint
-    file = sys.argv[1]
+    filepath = realpath(expanduser(sys.argv[1]))
+    chdir(dirname(filepath))
     actual_output = StringIO()
     with redirect_stdout(actual_output):
         try:
             lint([
-                file,
+                filepath,
                 "--msg-template='Line {line}, column {column}: {msg}'",
                 '--disable=all',
                 '--enable=' + ','.join(sorted(LINT_CHECKS)),
