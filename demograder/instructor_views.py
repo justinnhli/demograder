@@ -7,7 +7,7 @@ from django.shortcuts import render
 
 from .models import Course, Assignment, Project, Submission
 from .views import get_context
-from .dispatcher import enqueue_submission_dispatch
+from .dispatcher import enqueue_submission_dispatch, enqueue_submission_evaluation
 
 SubmissionDisplay = namedtuple('SubmissionDisplay', ('id', 'student', 'project', 'isoformat', 'score', 'max_score'))
 
@@ -161,3 +161,16 @@ def instructor_submission_regrade_view(request, **kwargs):
         raise Http404
     regrade_submission(context['submission'])
     return HttpResponseRedirect(reverse('submission', kwargs=kwargs))
+
+
+def regrade_result(result):
+    enqueue_submission_evaluation(result.id, timeout=result.project.timeout + 1)
+
+
+@login_required
+def instructor_result_regrade_view(request, **kwargs):
+    context = get_context(request, **kwargs)
+    if not context['user'].is_superuser:
+        raise Http404
+    regrade_result(context['result'])
+    return HttpResponseRedirect(reverse('result', kwargs=kwargs))
