@@ -26,7 +26,7 @@ def instructor_submissions_view(request, **kwargs):
     context = get_context(request, **kwargs)
     if not context['user'].is_superuser:
         raise Http404
-    context['submissions'] = Submission.objects.filter(project__visible=True).order_by('-timestamp')[:100]
+    context['submissions'] = Submission.objects.filter(project__visible=True)[:100]
     return render(request, 'demograder/instructor/submissions.html', context)
 
 
@@ -40,8 +40,17 @@ def instructor_student_view(request, **kwargs):
         for project in course.projects().all():
             if project.visible:
                 context['grades'].append(get_last_submission_display(context['student'], project))
-    context['grades'] = sorted(context['grades'], key=(lambda s: (s.project.assignment.name, s.project.name)))
-    context['submissions'] = context['student'].submissions().order_by('-timestamp')
+    # must write long-form accessors because submission could be SubmissionDisplay
+    context['grades'] = sorted(
+        context['grades'],
+        key=(lambda s: (
+            -s.project.assignment.course.year.value,
+            -s.project.assignment.course.season,
+            s.project.course.catalog_id_str,
+            s.project.assignment.name,
+            s.project.name))
+    )
+    context['submissions'] = context['student'].submissions()
     return render(request, 'demograder/instructor/student.html', context)
 
 
@@ -50,7 +59,7 @@ def instructor_course_view(request, **kwargs):
     context = get_context(request, **kwargs)
     if not context['user'].is_superuser:
         raise Http404
-    context['students'] = context['course'].enrolled_students().order_by('user__first_name', 'user__last_name')
+    context['students'] = context['course'].enrolled_students()
     assignments = set(Project.objects.filter(assignment__course=context['course']).values_list('assignment', flat=True))
     assignments = [Assignment.objects.get(pk=id) for id in assignments]
     context['assignments'] = sorted(assignments, key=(lambda a: -a.id))
@@ -95,7 +104,7 @@ def instructor_submission_view(request, **kwargs):
     context = get_context(request, **kwargs)
     if not context['user'].is_superuser:
         raise Http404
-    context['submissions'] = context['student'].submissions(project=context['project']).order_by('-timestamp')
+    context['submissions'] = context['student'].submissions(project=context['project'])
     if 'submission' not in context:
         context['submission'] = context['submissions'][0]
     return render(request, 'demograder/project.html', context)
