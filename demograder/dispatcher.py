@@ -4,9 +4,8 @@ from itertools import product
 from os import environ, chmod, walk
 from os.path import basename, dirname, join as join_path, realpath
 from shutil import copyfile
-from subprocess import run as run_process, PIPE, TimeoutExpired
+from subprocess import run as run_process, PIPE
 from tempfile import TemporaryDirectory
-from textwrap import dedent
 
 import django
 
@@ -71,6 +70,10 @@ def evaluate_submission(result_id):
     result.save()
 
 
+def enqueue_submission_evaluation(result_id, timeout=10):
+    django_rq.get_queue('evaluation').enqueue(evaluate_submission, result_id, timeout=timeout)
+
+
 def get_relevant_submissions(person, project):
     from demograder.models import Project, Submission
     try:
@@ -120,7 +123,7 @@ def dispatch_submission(submission_id):
                 project_dependency=project_dependency,
                 producer=upstream_submission,
             ).save()
-        django_rq.get_queue('evaluation').enqueue(evaluate_submission, result.id, timeout=project.timeout + 1)
+        enqueue_submission_evaluation(result.id, timeout=project.timeout + 1)
 
 
 def enqueue_submission_dispatch(submission_id):
