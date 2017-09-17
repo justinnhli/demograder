@@ -6,10 +6,8 @@ from django.http import HttpResponseRedirect, Http404
 from django.shortcuts import render
 
 from .models import Course, Assignment, Project, Submission
-from .views import get_context
+from .views import get_context, get_last_submission_display
 from .dispatcher import enqueue_submission_dispatch, enqueue_submission_evaluation
-
-SubmissionDisplay = namedtuple('SubmissionDisplay', ('id', 'student', 'project', 'isoformat', 'score', 'max_score'))
 
 AssignmentSummaryRow = namedtuple('AssignmentSummaryRow', ('student', 'submissions', 'grade'))
 
@@ -41,13 +39,7 @@ def instructor_student_view(request, **kwargs):
     for course in context['student'].enrolled_courses().all():
         for project in course.projects().all():
             if project.visible:
-                try:
-                    submission = context['student'].latest_submission(project=project)
-                    if not submission:
-                        submission = SubmissionDisplay(0, context['student'], project, 'N/A', 'N', 'A')
-                except Submission.DoesNotExist:
-                    submission = SubmissionDisplay(0, context['student'], project, 'N/A', 'N', 'A')
-                context['grades'].append(submission)
+                context['grades'].append(get_last_submission_display(context['student'], project))
     context['grades'] = sorted(context['grades'], key=(lambda s: (s.project.assignment.name, s.project.name)))
     context['submissions'] = context['student'].submissions().order_by('-timestamp')
     return render(request, 'demograder/instructor/student.html', context)
@@ -77,12 +69,12 @@ def instructor_assignment_view(request, **kwargs):
         for project in context['projects']:
             # FIXME deal with other submission types
             if project.submission_type == Project.LATEST:
-                submission = student.latest_submission(project=project)
-                if submission and submission.max_score > 0:
-                    submissions.append(submission)
-                else:
-                    submissions.append(None)
-        context['student_scores'].append(AssignmentSummaryRow(student, submissions, '{:.2%}'.format(student.get_assignment_score(context['assignment']))))
+                submissions.append(get_last_submission_display(student, project))
+        context['student_scores'].append(AssignmentSummaryRow(
+            student,
+            submissions,
+            '{:.2%}'.format(student.get_assignment_score(context['assignment']))
+        ))
     return render(request, 'demograder/instructor/assignment.html', context)
 
 
@@ -93,13 +85,7 @@ def instructor_project_view(request, **kwargs):
         raise Http404
     submissions = []
     for student in context['course'].enrolled_students().all():
-        try:
-            submission = student.latest_submission(project=context['project'])
-            if not submission:
-                submission = SubmissionDisplay(0, student, context['project'], 'N/A', 'N', 'A')
-        except Submission.DoesNotExist:
-            submission = SubmissionDisplay(0, student, context['project'], 'N/A', 'N', 'A')
-        submissions.append(submission)
+        submissions.append(get_last_submission_display(student, context['project']))
     context['submissions'] = sorted(submissions, key=(lambda s: s.student.last_name))
     return render(request, 'demograder/instructor/project.html', context)
 
@@ -133,7 +119,7 @@ def instructor_assignment_regrade_view(request, **kwargs):
 
 def regrade_project(project):
     for student in project.course.enrolled_students():
-        submission = student.latest_submission(project=context['project'])
+        submission = student.latest_submission(project=project)
         if submission:
             regrade_submission(submission)
 

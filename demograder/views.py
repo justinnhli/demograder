@@ -83,7 +83,27 @@ def index_view(request, **kwargs):
     return render(request, 'demograder/index.html', context)
 
 
-SubmissionDisplay = namedtuple('ProjectRow', ['project', 'score_str', 'num_passed', 'num_tbd', 'num_failed'])
+SubmissionDisplay = namedtuple(
+    'SubmissionDisplay',
+    [
+        'student',
+        'project',
+        'iso_format',
+        'num_passed',
+        'num_tbd',
+        'num_failed',
+        'max_score',
+        'score_str',
+    ],
+)
+
+
+def get_last_submission_display(submitter, project):
+    submission = submitter.latest_submission(project)
+    if submission:
+        return submission
+    else:
+        return SubmissionDisplay(submitter, project, '', 0, 0, 0, 0, '')
 
 @login_required
 def course_view(request, **kwargs):
@@ -94,11 +114,7 @@ def course_view(request, **kwargs):
             submissions = []
             for project in assignment.projects():
                 if project.visible or context['user'].is_superuser:
-                    submission = context['person'].latest_submission(project)
-                    if submission:
-                        submissions.append(submission)
-                    else:
-                        submissions.append(SubmissionDisplay(project, '', 0, 0, 0))
+                    submissions.append(get_last_submission_display(context['person'], project))
             assignments.append([
                 assignment,
                 '{:.2%}'.format(context['person'].get_assignment_score(assignment)),

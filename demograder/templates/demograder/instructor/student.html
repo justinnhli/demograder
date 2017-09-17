@@ -28,13 +28,13 @@
             <a href="{% url 'instructor_project' submission.project.id %}">{{ submission.project.name }}</a>
         </td>
         <td>
-            {% if submission %}
-            <a href="{% url 'submission' submission.id %}">{{ submission.iso_format }}</a></td>
-        {% endif %}
+            {% if submission.max_score %}
+            <a href="{% url 'submission' submission.id %}">{{ submission.iso_format }}</a>
+            {% endif %}
         </td>
         <td>
-            {% if submission %}
-            {{ submission.score }}/{{ submission.max_score }}
+            {% if submission.max_score %}
+            {{ submission.num_passed }}/{{ submission.max_score }}
             {% endif %}
         </td>
     </tr>
@@ -58,13 +58,13 @@
             <a href="{% url 'instructor_project' submission.project.id %}">{{ submission.project.name }}</a>
         </td>
         <td>
-            {% if submission %}
-            <a href="{% url 'submission' submission.id %}">{{ submission.iso_format }}</a></td>
-        {% endif %}
+            {% if submission.max_score %}
+            <a href="{% url 'submission' submission.id %}">{{ submission.iso_format }}</a>
+            {% endif %}
         </td>
         <td>
-            {% if submission %}
-            {{ submission.score }}/{{ submission.max_score }}
+            {% if submission.max_score %}
+            {{ submission.num_passed }}/{{ submission.max_score }}
             {% endif %}
         </td>
     </tr>
