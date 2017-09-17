@@ -97,7 +97,11 @@ def course_view(request, **kwargs):
                 submissions.append(submission)
             else:
                 submissions.append(SubmissionDisplay(project, '', 0, 0, 0))
-        assignments.append([assignment, submissions])
+        assignments.append([
+            assignment,
+            '{:.2%}'.format(context['person'].get_assignment_score(assignment)),
+            submissions,
+        ])
     context['assignments'] = assignments
     return render(request, 'demograder/course.html', context)
 

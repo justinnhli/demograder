@@ -26,22 +26,29 @@
 
 {% if assignments %}
 <table id="assignment-table">
-    {% for assignment, submissions in assignments %}
+    {% for assignment, assignment_score, submissions in assignments %}
     {% if assignment.has_visible_projects or user.is_superuser %}
-    <tr colspan="2"><td colspan="2">
-        {% if user.is_superuser %}
-        <h4><a href="{% url 'instructor_assignment' assignment.id %}">{{ assignment.name }}</a> (due {{ assignment.us_format }})</h4>
-        {% else %}
-        <h4>{{ assignment.name }} (due {{ assignment.us_format }})</h4>
-        {% endif %}
-    </td></tr>
+    <tr>
+        <td>
+            <h4>
+                {% if user.is_superuser %}
+                <a href="{% url 'instructor_assignment' assignment.id %}">{{ assignment.name }}</a>
+                {% else %}
+                {{ assignment.name }}
+                {% endif %}
+                (current score: {{ assignment_score }})
+            </h4>
+        </td>
+        <td class="due-date">
+            due {{ assignment.us_format }}
+        </td>
+    </tr>
     {% for submission in submissions %}
     {% if submission.project.visible or user.is_superuser %}
     <tr>
         <td class="project-name">
             <ul><li>
                 <a href="{% url 'project' submission.project.id %}">{{ submission.project.name }}</a>
-                {% if submission.max_score %}(current score: {{ submission.score_str }}){% endif %}
                 {% if not submission.project.visible %}(hidden){% endif %}
             </li></ul>
         </td>

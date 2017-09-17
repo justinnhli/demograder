@@ -33,6 +33,7 @@ table tr:last-child td {border-bottom-style:none;}
 #assignment-table {width:100%;}
 #assignment-table th, #assignment-table td {border-style:none;}
 #assignment-table td ul {margin-bottom:0}
+#assignment-table .due-date {text-align:right;}
 #assignment-table .project-summary {border:1px #000000 solid; padding:0;}
 #assignment-table .summary-bar {background-color:#C0C0C0; cursor:help; height:1.5em; margin:0; position:relative; width:100%; min-width:150px;}
 #assignment-table .summary-passed {background-color:#57BB8A; float:left; height:1.5em;}
