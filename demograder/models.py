@@ -369,6 +369,14 @@ class Submission(models.Model):
     timestamp = models.DateTimeField(auto_now_add=True)
 
     @property
+    def course(self):
+        return self.project.assignment.course
+
+    @property
+    def assignment(self):
+        return self.project.assignment
+
+    @property
     def directory(self):
         return join_path(
             self.project.directory,
@@ -462,6 +470,22 @@ class Result(models.Model):
     return_code = models.IntegerField(null=True, blank=True)
 
     @property
+    def course(self):
+        return self.submission.project.assignment.course
+
+    @property
+    def assignment(self):
+        return self.submission.project.assignment
+
+    @property
+    def project(self):
+        return self.submission.project
+
+    @property
+    def student(self):
+        return self.submission.student
+
+    @property
     def submission_iso_format(self):
         return self.submission.iso_format
 
@@ -476,14 +500,6 @@ class Result(models.Model):
     @property
     def result_us_format(self):
         return self.timestamp.astimezone(timezone('US/Pacific')).strftime('%b %d, %Y %I:%M:%S %p').replace(' 0', ' ')
-
-    @property
-    def project(self):
-        return self.submission.project
-
-    @property
-    def student(self):
-        return self.submission.student
 
     @property
     def is_tbd(self):
