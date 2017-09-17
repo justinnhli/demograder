@@ -90,18 +90,20 @@ def course_view(request, **kwargs):
     context = get_context(request, **kwargs)
     assignments = []
     for assignment in context['course'].assignments():
-        submissions = []
-        for project in assignment.projects():
-            submission = context['person'].latest_submission(project)
-            if submission:
-                submissions.append(submission)
-            else:
-                submissions.append(SubmissionDisplay(project, '', 0, 0, 0))
-        assignments.append([
-            assignment,
-            '{:.2%}'.format(context['person'].get_assignment_score(assignment)),
-            submissions,
-        ])
+        if assignment.has_visible_projects or context['user'].is_superuser:
+            submissions = []
+            for project in assignment.projects():
+                if project.visible or context['user'].is_superuser:
+                    submission = context['person'].latest_submission(project)
+                    if submission:
+                        submissions.append(submission)
+                    else:
+                        submissions.append(SubmissionDisplay(project, '', 0, 0, 0))
+            assignments.append([
+                assignment,
+                '{:.2%}'.format(context['person'].get_assignment_score(assignment)),
+                submissions,
+            ])
     context['assignments'] = assignments
     return render(request, 'demograder/course.html', context)
 

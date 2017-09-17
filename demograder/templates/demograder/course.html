@@ -27,7 +27,6 @@
 {% if assignments %}
 <table id="assignment-table">
     {% for assignment, assignment_score, submissions in assignments %}
-    {% if assignment.has_visible_projects or user.is_superuser %}
     <tr>
         <td>
             <h4>
@@ -44,12 +43,11 @@
         </td>
     </tr>
     {% for submission in submissions %}
-    {% if submission.project.visible or user.is_superuser %}
     <tr>
         <td class="project-name">
             <ul><li>
                 <a href="{% url 'project' submission.project.id %}">{{ submission.project.name }}</a>
-                {% if not submission.project.visible %}(hidden){% endif %}
+                {% if user.is_superuser and not submission.project.visible %}(hidden){% endif %}
             </li></ul>
         </td>
         <td class="project-summary"{% if not submission.max_score %} style="border-style:none"{% endif %}>
@@ -61,13 +59,11 @@
             {% endif %}
         </td>
     </tr>
-    {% endif %}
     {% endfor %}
-    {% endif %}
     {% endfor %}
 </table>
 {% else %}
-This course currently has no projects.
+This course currently has no assignments.
 {% endif %}
 <!-- end demograder/course.html:content -->
 {% endblock %}
