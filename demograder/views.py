@@ -105,6 +105,7 @@ def get_last_submission_display(submitter, project):
     else:
         return SubmissionDisplay(submitter, project, '', 0, 0, 0, 0, '')
 
+
 @login_required
 def course_view(request, **kwargs):
     context = get_context(request, **kwargs)

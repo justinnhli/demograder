@@ -112,9 +112,7 @@ def dispatch_submission(submission_id):
         elif project_dependency.dependency_structure == ProjectDependency.CUSTOM:
             pass # FIXME not implemented
     for dependent_submissions in product(*(dependents[pd] for pd in project_dependencies)):
-        result = Result(
-            submission=submission,
-        )
+        result = Result(submission=submission)
         result.save()
         kwargs = dict(zip(project_dependencies, dependent_submissions))
         for project_dependency, upstream_submission in kwargs.items():

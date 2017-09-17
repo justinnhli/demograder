@@ -44,7 +44,7 @@ class UploadAdmin(admin.ModelAdmin):
 
 
 class ResultAdmin(admin.ModelAdmin):
-    list_display = ('id', 'submission_iso_format', 'project', 'student', 'return_code', )
+    list_display = ('id', 'submission_iso_format', 'project', 'student', 'return_code')
 
 
 class ProjectDependencyAdmin(admin.ModelAdmin):
