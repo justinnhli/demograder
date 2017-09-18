@@ -7,6 +7,7 @@ from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render, get_object_or_404
+import django_rq
 
 from .forms import FileUploadForm
 from .models import Course, Enrollment, Person, Assignment, Project, Submission, Upload, Result, ProjectDependency, StudentDependency
@@ -141,6 +142,7 @@ def project_view(request, **kwargs):
     else:
         context['latest'] = None
     context['form'] = FileUploadForm()
+    context['queue_size'] = django_rq.get_queue('evaluation').count
     return render(request, 'demograder/project.html', context)
 
 
