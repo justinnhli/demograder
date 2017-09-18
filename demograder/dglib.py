@@ -154,6 +154,8 @@ def function_test(fn, arguments, expected_return, expected_output='', quiet=Fals
         template_input = '{}{}'.format(fn.__name__, repr(arguments))
     else:
         template_input = '{}({})'.format(fn.__name__, repr(arguments))
+    if template_input.endswith(',)'):
+        template_input = template_input[:-2] + ')'
     template_expected_return = repr(expected_return)
     actual_output = StringIO()
     with redirect_stdout(actual_output):
