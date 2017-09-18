@@ -294,7 +294,7 @@ class Project(models.Model):
     assignment = models.ForeignKey(Assignment)
     name = models.CharField(max_length=200)
     filename = models.CharField(max_length=200)
-    timeout = models.IntegerField(default=5)
+    timeout = models.IntegerField(default=10)
     submission_type = models.IntegerField(choices=SUBMISSION_TYPES)
     script = models.FileField(upload_to=_project_path, blank=True, max_length=500)
     visible = models.BooleanField(default=False)
