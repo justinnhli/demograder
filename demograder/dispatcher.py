@@ -30,7 +30,11 @@ def recursive_chmod(path):
 
 def evaluate_submission(result_id):
     from demograder.models import Result, ResultDependency
-    result = Result.objects.get(pk=result_id)
+    try:
+        result = Result.objects.get(pk=result_id)
+    except JobTimeoutException:
+        enqueue_submission_evaluation(result_id)
+        return
     # create temporary directory
     with TemporaryDirectory() as temp_dir:
         # copy dglib library
