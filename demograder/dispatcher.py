@@ -4,7 +4,7 @@ from itertools import product
 from os import environ, chmod, walk
 from os.path import basename, dirname, join as join_path, realpath
 from shutil import copyfile
-from subprocess import run as run_process, PIPE
+from subprocess import run as run_process, PIPE, TimeoutExpired
 from tempfile import TemporaryDirectory
 
 import django
@@ -59,6 +59,10 @@ def evaluate_submission(result_id):
             stdout = completed_process.stdout.decode('utf-8')
             stderr = completed_process.stderr.decode('utf-8')
             return_code = completed_process.returncode
+        except TimeoutExpired as e:
+            stdout = e.stdout.decode('utf-8')
+            stdout += '\n\n' + 'The program failed to complete within {} seconds and was terminated.'.format(result.project.timeout)
+            stderr = e.stderr.decode('utf-8')
         except JobTimeoutException:
             stdout = ''
             stderr = 'The program failed to complete within {} seconds and was terminated.'.format(result.project.timeout)
