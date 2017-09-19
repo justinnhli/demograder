@@ -1,3 +1,4 @@
 web: gunicorn -c /home/justinnhli/git/demograder/gunicorn.conf demograder.wsgi:application
 redis: redis-server
-rqworker: DJANGO_SETTINGS_MODULE=demograder.settings rqworker dispatch evaluation
+evaluation_rqworker: DJANGO_SETTINGS_MODULE=demograder.settings rqworker evaluation
+dispatch_rqworker: DJANGO_SETTINGS_MODULE=demograder.settings rqworker dispatch
