@@ -1,0 +1,41 @@
+{% extends "demograder/base.html" %}
+
+{% block breadcrumb %}
+<!-- begin demograder/instructor/submissions.html:breadcrumb -->
+<a href="{% url 'instructor_index' %}">Instructor Home</a>
+<!-- end demograder/instructor/submissions.html:breadcrumb -->
+{% endblock %}
+
+{% block content %}
+<!-- begin demograder/instructor/submissions.html:content -->
+<h2>Latest Submissions</h2>
+
+<p>{{ queue_size }} test cases are waiting to be evaluated.</p>
+
+{% if tbd_results %}
+<table>
+    <tr>
+        <th>Student</th>
+        <th>Course</th>
+        <th>Project</th>
+        <th>Submission</th>
+        <th>Result</th>
+    </tr>
+    {% for result in tbd_results %}
+    <tr>
+        <td><a href="{% url 'instructor_student' result.student.id %}">{{ result.student.full_name }}</a></td>
+        <td><a href="{% url 'course' result.course.id %}">{{ result.course }}</a></td>
+        <td>
+            <a href="{% url 'instructor_assignment' result.assignment.id %}">{{ result.assignment.name }}</a>:
+            <a href="{% url 'instructor_project' result.project.id %}">{{ result.project.name }}</a>
+        </td>
+        <td><a href="{% url 'submission' result.submission.id %}">{{ result.submission.iso_format }}</a></td>
+        <td><a href="{% url 'result' result.id %}">{{ result.result_iso_format }}</a></td>
+    </tr>
+    {% endfor %}
+</table>
+{% else %}
+<p>There are no TBD results.</p>
+{% endif %}
+<!-- end demograder/instructor/submissions.html:content -->
+{% endblock %}

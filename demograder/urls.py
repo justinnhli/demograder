@@ -5,7 +5,7 @@ from django.views.generic import RedirectView
 from django.contrib.auth import views as auth_views
 
 from .views import index_view, course_view, project_view, project_submit_handler, result_view, download_view, display_view
-from .instructor_views import instructor_view, instructor_submissions_view, instructor_student_view, instructor_course_view, instructor_assignment_view, instructor_project_view
+from .instructor_views import instructor_view, instructor_tbd_view, instructor_submissions_view, instructor_student_view, instructor_course_view, instructor_assignment_view, instructor_project_view
 from .instructor_views import instructor_assignment_regrade_view, instructor_project_regrade_view, instructor_submission_regrade_view, instructor_result_regrade_view
 
 urlpatterns = [
@@ -23,6 +23,7 @@ urlpatterns = [
     url(r'^demograder/display/(?P<upload_id>[0-9]+)/$', display_view, name='display'),
     url(r'^demograder/instructor/$', instructor_view, name='instructor_index'),
     url(r'^demograder/instructor/submissions/$', instructor_submissions_view, name='instructor_submissions'),
+    url(r'^demograder/instructor/tbd/$', instructor_tbd_view, name='instructor_tbd'),
     url(r'^demograder/instructor/student/(?P<student_id>[0-9]+)/$', instructor_student_view, name='instructor_student'),
     url(r'^demograder/instructor/course/(?P<course_id>[0-9]+)/$', instructor_course_view, name='instructor_course'),
     url(

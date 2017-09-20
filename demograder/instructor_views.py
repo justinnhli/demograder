@@ -6,7 +6,7 @@ from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect, Http404
 from django.shortcuts import render
 
-from .models import Course, Assignment, Project, Submission
+from .models import Course, Assignment, Project, Submission, Result
 from .views import get_context, get_last_submission_display
 from .dispatcher import enqueue_submission_dispatch, enqueue_submission_evaluation
 
@@ -30,6 +30,16 @@ def instructor_submissions_view(request, **kwargs):
     context['queue_size'] = django_rq.get_queue('evaluation').count
     context['submissions'] = Submission.objects.filter(project__visible=True)[:100]
     return render(request, 'demograder/instructor/submissions.html', context)
+
+
+@login_required
+def instructor_tbd_view(request, **kwargs):
+    context = get_context(request, **kwargs)
+    if not context['user'].is_superuser:
+        raise Http404
+    context['queue_size'] = django_rq.get_queue('evaluation').count
+    context['tbd_results'] = Result.objects.filter(return_code=None)
+    return render(request, 'demograder/instructor/tbd.html', context)
 
 
 @login_required

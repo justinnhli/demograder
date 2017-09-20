@@ -10,7 +10,10 @@
 <!-- begin demograder/instructor/submissions.html:content -->
 <h2>Latest Submissions</h2>
 
-<p>{{ queue_size }} test cases are waiting to be evaluated.</p>
+<p>
+    {{ queue_size }} test cases are waiting to be evaluated.
+    See all <a href="{% url 'instructor_tbd' %}">TBD results</a>.
+</p>
 
 <table>
     <tr>
