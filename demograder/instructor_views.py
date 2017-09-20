@@ -1,5 +1,6 @@
 from collections import namedtuple
 
+import django_rq
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect, Http404
@@ -26,6 +27,7 @@ def instructor_submissions_view(request, **kwargs):
     context = get_context(request, **kwargs)
     if not context['user'].is_superuser:
         raise Http404
+    context['queue_size'] = django_rq.get_queue('evaluation').count
     context['submissions'] = Submission.objects.filter(project__visible=True)[:100]
     return render(request, 'demograder/instructor/submissions.html', context)
 
