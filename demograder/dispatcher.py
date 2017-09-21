@@ -17,6 +17,8 @@ django.setup()
 import django_rq
 from rq.timeouts import JobTimeoutException
 
+from demograder.models import Project, ProjectDependency, Submission, Result, ResultDependency
+
 DGLIB = join_path(dirname(realpath(__file__)), 'dglib.py')
 
 
@@ -29,54 +31,60 @@ def recursive_chmod(path):
             chmod(join_path(root, f), 0o777)
 
 
+def prepare_files(result, temp_dir):
+    # copy dglib library
+    tmp_dglib = copyfile(DGLIB, join_path(temp_dir, basename(DGLIB)))
+    # copy the submission script
+    tmp_script = copyfile(result.project.script.name, join_path(temp_dir, basename(result.project.script.name)))
+    # copy the submission
+    tmp_uploads = []
+    for upload in result.submission.uploads():
+        tmp_uploads.append(copyfile(upload.file.name, join_path(temp_dir, basename(upload.file.name))))
+    # copy all dependency files
+    tmp_args = defaultdict(list)
+    for result_dependency in ResultDependency.objects.filter(result=result):
+        keyword = result_dependency.project_dependency.keyword
+        for upstream_submission in result_dependency.producer.uploads():
+            filepath = upstream_submission.file.name
+            tmp_args[keyword].append(copyfile(filepath, join_path(temp_dir, basename(filepath))))
+    recursive_chmod(temp_dir)
+    cmd = ['sudo', '-u', 'nobody', sys.executable, '-B', tmp_dglib]
+    cmd.extend(['--_script', tmp_script, '--_uploads', ','.join(tmp_uploads)])
+    for key, files in tmp_args.items():
+        cmd.extend(['--{}'.format(key), ','.join(files)])
+    return cmd
+
+
 def evaluate_submission(result_id):
-    from demograder.models import Result, ResultDependency
     try:
         result = Result.objects.get(pk=result_id)
+        # create temporary directory
+        with TemporaryDirectory() as temp_dir:
+            cmd = prepare_files(result, temp_dir)
+            try:
+                completed_process = run_process(cmd, timeout=result.project.timeout, stderr=PIPE, stdout=PIPE)
+                stdout = completed_process.stdout.decode('utf-8')
+                stderr = completed_process.stderr.decode('utf-8')
+                return_code = completed_process.returncode
+            except TimeoutExpired as e:
+                stdout = e.stdout.decode('utf-8')
+                stdout += '\n\n'
+                stdout += 'The program failed to complete within {} seconds and was terminated.'.format(result.project.timeout)
+                stderr = e.stderr.decode('utf-8')
+                return_code = 1
+            except JobTimeoutException:
+                stdout = ''
+                stderr = 'The program failed to complete within {} seconds and was terminated.'.format(result.project.timeout)
+                return_code = 1
+            finally:
+                # update Result
+                result.stdout = stdout.strip()
+                result.stderr = stderr.strip()
+                result.return_code = return_code
+                result.save()
     except (JobTimeoutException, OperationalError):
         enqueue_submission_evaluation(result_id)
         return
-    # create temporary directory
-    with TemporaryDirectory() as temp_dir:
-        # copy dglib library
-        tmp_dglib = copyfile(DGLIB, join_path(temp_dir, basename(DGLIB)))
-        # copy the submission script
-        tmp_script = copyfile(result.project.script.name, join_path(temp_dir, basename(result.project.script.name)))
-        # copy the submission
-        tmp_uploads = []
-        for upload in result.submission.uploads():
-            tmp_uploads.append(copyfile(upload.file.name, join_path(temp_dir, basename(upload.file.name))))
-        # copy all dependency files
-        tmp_args = defaultdict(list)
-        for result_dependency in ResultDependency.objects.filter(result=result):
-            keyword = result_dependency.project_dependency.keyword
-            for upstream_submission in result_dependency.producer.uploads():
-                filepath = upstream_submission.file.name
-                tmp_args[keyword].append(copyfile(filepath, join_path(temp_dir, basename(filepath))))
-        timeout = result.project.timeout
-        recursive_chmod(temp_dir)
-        try:
-            args = ['--_script', tmp_script, '--_uploads', ','.join(tmp_uploads)]
-            for key, files in tmp_args.items():
-                args.extend(('--{}'.format(key), ','.join(files)))
-            args = ['sudo', '-u', 'nobody', sys.executable, '-B', tmp_dglib] + args
-            completed_process = run_process(args, timeout=timeout, stderr=PIPE, stdout=PIPE)
-            stdout = completed_process.stdout.decode('utf-8')
-            stderr = completed_process.stderr.decode('utf-8')
-            return_code = completed_process.returncode
-        except TimeoutExpired as e:
-            stdout = e.stdout.decode('utf-8')
-            stdout += '\n\n' + 'The program failed to complete within {} seconds and was terminated.'.format(result.project.timeout)
-            stderr = e.stderr.decode('utf-8')
-        except JobTimeoutException:
-            stdout = ''
-            stderr = 'The program failed to complete within {} seconds and was terminated.'.format(result.project.timeout)
-            return_code = 1
-    # update Result
-    result.stdout = stdout.strip()
-    result.stderr = stderr.strip()
-    result.return_code = return_code
-    result.save()
 
 
 def enqueue_submission_evaluation(result_id, timeout=10):
@@ -84,7 +92,6 @@ def enqueue_submission_evaluation(result_id, timeout=10):
 
 
 def get_relevant_submissions(person, project):
-    from demograder.models import Project, Submission
     try:
         if project.submission_type == Project.LATEST:
             return (person.submissions().filter(project=project).latest(), )
@@ -97,7 +104,6 @@ def get_relevant_submissions(person, project):
 
 
 def dispatch_submission(submission_id):
-    from demograder.models import ProjectDependency, Submission, Result, ResultDependency
     submission = Submission.objects.get(pk=submission_id)
     project = submission.project
     if not project.script:
