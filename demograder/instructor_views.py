@@ -28,6 +28,7 @@ def instructor_submissions_view(request, **kwargs):
     if not context['user'].is_superuser:
         raise Http404
     context['queue_size'] = django_rq.get_queue('evaluation').count
+    context['tbd_size'] = Result.objects.filter(return_code=None).count
     context['submissions'] = Submission.objects.filter(project__visible=True)[:100]
     return render(request, 'demograder/instructor/submissions.html', context)
 
