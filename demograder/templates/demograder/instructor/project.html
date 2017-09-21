@@ -24,6 +24,30 @@
 
 <h2>Project: {{ project.name }}</h2>
 
+<h3>Current Scores</h3>
+
+<table>
+    <tr>
+        <th>Student</th>
+        <th>Submission Time</th>
+        <th>Score</th>
+    </tr>
+    {% for submission in scores %}
+    <tr>
+        <td><a href="{% url 'instructor_student' submission.student.id %}">{{ submission.student.first_name }} {{ submission.student.last_name }}</a></td>
+        <td>
+            {% if submission.max_score %}
+            <a href="{% url 'submission' submission.id %}">{{ submission.iso_format }}</a>
+            {% endif %}
+        </td>
+        <td>{{ submission.num_passed }}/{{ submission.max_score }}</td>
+    </tr>
+    {% endfor %}
+</table>
+
+<h3>Submission History</h3>
+
+{% if submissions %}
 <table>
     <tr>
         <th>Student</th>
@@ -32,16 +56,13 @@
     </tr>
     {% for submission in submissions %}
     <tr>
-        <td><a href="{% url 'instructor_student' submission.student.id %}">{{ submission.student.first_name }} {{ submission.student.last_name }}</a></td>
-        <td>
-            {% if submission.max_score %}
-            <a href="{% url 'submission' submission.id %}">{{ submission.iso_format }}</a>
-            {% endif %}
-        </td>
-        <td>{{ submission.score }}/{{ submission.max_score }}</td>
+        <td><a href="{% url 'instructor_student' submission.student.id %}">{{ submission.student.full_name }}</a></td>
+        <td><a href="{% url 'submission' submission.id %}">{{ submission.iso_format }}</a></td>
+        <td>{{ submission.num_passed }}/{{ submission.max_score }}</td>
     </tr>
     {% endfor %}
 </table>
+{% endif %}
 
 <!-- end demograder/instructor/project.html:content -->
 {% endblock %}

@@ -108,7 +108,8 @@ def instructor_project_view(request, **kwargs):
     submissions = []
     for student in context['course'].enrolled_students().all():
         submissions.append(get_last_submission_display(student, context['project']))
-    context['submissions'] = sorted(submissions, key=(lambda s: s.student.last_name))
+    context['scores'] = sorted(submissions, key=(lambda s: s.student.last_name))
+    context['submissions'] = Submission.objects.filter(project=context['project'])
     return render(request, 'demograder/instructor/project.html', context)
 
 
