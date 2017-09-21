@@ -4,6 +4,7 @@ from itertools import product
 from os import environ, chmod, walk
 from os.path import basename, dirname, join as join_path, realpath
 from shutil import copyfile
+from sqlite3 import OperationalError
 from subprocess import run as run_process, PIPE, TimeoutExpired
 from tempfile import TemporaryDirectory
 
@@ -32,7 +33,7 @@ def evaluate_submission(result_id):
     from demograder.models import Result, ResultDependency
     try:
         result = Result.objects.get(pk=result_id)
-    except JobTimeoutException:
+    except (JobTimeoutException, OperationalError):
         enqueue_submission_evaluation(result_id)
         return
     # create temporary directory
