@@ -77,12 +77,11 @@ def evaluate_submission(result_id):
                 stdout = ''
                 stderr = 'The program failed to complete within {} seconds and was terminated.'.format(result.project.timeout)
                 return_code = 1
-            finally:
-                # update Result
-                result.stdout = stdout.strip()
-                result.stderr = stderr.strip()
-                result.return_code = return_code
-                result.save()
+        # update Result
+        result.stdout = stdout.strip()
+        result.stderr = stderr.strip()
+        result.return_code = return_code
+        result.save()
     except (JobTimeoutException, SQLiteOperationalError, DjangoOperationalError):
         enqueue_submission_evaluation(result_id)
         return
