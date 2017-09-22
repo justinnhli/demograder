@@ -4,11 +4,12 @@ from itertools import product
 from os import environ, chmod, walk
 from os.path import basename, dirname, join as join_path, realpath
 from shutil import copyfile
-from sqlite3 import OperationalError
+from sqlite3 import OperationalError as SQLiteOperationalError
 from subprocess import run as run_process, PIPE, TimeoutExpired
 from tempfile import TemporaryDirectory
 
 import django
+from django.db.utils import OperationalError as DjangoOperationalError
 
 sys.path.append(join_path(dirname(realpath(__file__)), '..'))
 environ.setdefault('DJANGO_SETTINGS_MODULE', 'demograder.settings')
@@ -82,7 +83,7 @@ def evaluate_submission(result_id):
                 result.stderr = stderr.strip()
                 result.return_code = return_code
                 result.save()
-    except (JobTimeoutException, OperationalError):
+    except (JobTimeoutException, SQLiteOperationalError, DjangoOperationalError):
         enqueue_submission_evaluation(result_id)
         return
 
