@@ -73,9 +73,7 @@ def instructor_course_view(request, **kwargs):
     if not context['user'].is_superuser:
         raise Http404
     context['students'] = context['course'].enrolled_students()
-    assignments = set(Project.objects.filter(assignment__course=context['course']).values_list('assignment', flat=True))
-    assignments = [Assignment.objects.get(pk=id) for id in assignments]
-    context['assignments'] = sorted(assignments, key=(lambda a: -a.id))
+    context['assignments'] = Assignments.objects.filter(course=context['course'])
     return render(request, 'demograder/instructor/course.html', context)
 
 
