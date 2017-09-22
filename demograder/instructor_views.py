@@ -44,6 +44,16 @@ def instructor_tbd_view(request, **kwargs):
 
 
 @login_required
+def instructor_tbd_regrade_view(request, **kwargs):
+    context = get_context(request, **kwargs)
+    if not context['user'].is_superuser:
+        raise Http404
+    for result in Result.objects.filter(return_code=None):
+        enqueue_submission_evaluation(result.id)
+    return HttpResponseRedirect(reverse('instructor_tbd'))
+
+
+@login_required
 def instructor_student_view(request, **kwargs):
     context = get_context(request, **kwargs)
     if not context['user'].is_superuser:
