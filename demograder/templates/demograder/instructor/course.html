@@ -43,6 +43,7 @@
             <ul>
                 {% for project in assignment.projects %}
                 <li>
+                    <a href="{% url 'admin:demograder_project_change' project.id %}">{{ project.id }}</a>:
                     <a href="{% url 'instructor_project' project.id %}">{{ project.name }}</a>
                     {% if not project.visible %}(hidden){% endif %}
                 </li>
