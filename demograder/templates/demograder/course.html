@@ -51,7 +51,7 @@
             </li></ul>
         </td>
         <td class="project-summary" style="border-style:none">
-            {% if submission.max_score %}
+            {% if submission.score_str %}
             <div class="summary-bar" title="{{ submission.project.name }}: {{ submission.num_tbd }} of {{ submission.max_score }} tests TBD">
                 <div class="summary-passed" style="width:{% widthratio submission.num_passed submission.max_score 100 %}%;" title="{{ submission.project.name }}: {{ submission.num_passed }} of {{ submission.max_score }} tests passed"></div>
                 <div class="summary-failed" style="width:{% widthratio submission.num_failed submission.max_score 100 %}%;" title="{{ submission.project.name }}: {{ submission.num_failed }} of {{ submission.max_score }} tests failed"></div>

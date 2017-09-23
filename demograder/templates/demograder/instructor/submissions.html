@@ -32,7 +32,7 @@
             <a href="{% url 'instructor_project' submission.project.id %}">{{ submission.project.name }}</a>
         </td>
         <td><a href="{% url 'submission' submission.id %}">{{ submission.iso_format }}</a></td>
-        <td>{{ submission.score }}/{{ submission.max_score }}</td>
+        <td>{{ submission.score_str }}</td>
     </tr>
     {% endfor %}
 </table>

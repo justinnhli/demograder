@@ -14,7 +14,11 @@
 {{ assignment.name }}
 {% endif %}
 &gt;
+{% if person.id == student.id %}
 <a href="{% url 'project' project.id %}">{{ project.name }}</a>
+{% else %}
+<a href="{% url 'instructor_project' project.id %}">{{ project.name }}</a>
+{% endif %}
 &gt;
 <a href="{% url 'submission' submission.id %}">{{ submission.us_format }} Submission</a>
 <!-- end demograder/result.html:breadcrumb -->
@@ -29,7 +33,12 @@
 </div>
 {% endif %}
 
-<h2>Results for {{ submission.us_format }} Submission</h2>
+<h2>
+    Test Result for
+    {% if user.is_superuser %}<a href="{% url 'instructor_student' student.id %}">{{ student.full_name }}</a>'s{% endif %}
+    <a href="{% url 'submission' submission.id %}">{{ project.name }}</a>
+</h2>
+<p>Submitted {{ submission.us_format }}</p>
 
 <h3>Files Submitted</h3>
 <ul>
@@ -52,7 +61,9 @@
         (from <a href="{% url 'submission' upload.submission.id %}">{{ upload.submission.student.full_name }}'s submission</a>)
     </li>
     {% else %}
-    <li><a href="{% url 'download' upload.id %}">{{ upload.basename }}</a></li>
+    <li>
+        <a href="{% url 'download' upload.id %}">{{ upload.basename }}</a>
+    </li>
     {% endif %}
     {% endfor %}
     {% endfor %}

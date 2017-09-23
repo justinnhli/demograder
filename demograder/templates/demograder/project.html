@@ -32,7 +32,14 @@
 </div>
 {% endif %}
 
-<h2>{{ assignment.name }}: {{ project.name }}</h2>
+<h2>
+    {% if user.is_superuser %}
+    <a href="{% url 'instructor_assignment' assignment.id %}">{{ assignment.name }}</a>:
+    {% else %}
+    {{ assignment.name }}:
+    {% endif %}
+    {{ project.name }}
+</h2>
 <p>Due {{ assignment.us_format }}</p>
 
 {% if may_submit == 'yes' %}
@@ -67,7 +74,7 @@
 
 <h3>
     {% if user.is_superuser %}<a href="{% url 'instructor_student' submission.student.id %}">{{ submission.student.full_name }}</a>'s{% endif %}
-    Test Results: {{ submission.score }}/{{ submission.max_score }}
+    Test Results: {{ submission.score_str }}
 </h3>
 <p>
     From {{ submission.us_format }}
@@ -124,7 +131,7 @@ There are no results associated with this submission.
                 {% endfor %}
             </td>
             <td>
-                {% if submission.max_score %}
+                {% if submission.score_str %}
                 {{ submission.score_str }}
                 {% endif %}
             </td>

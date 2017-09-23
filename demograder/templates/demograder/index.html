@@ -39,7 +39,7 @@
         {{ submission.project.assignment.name }}: <a href="{% url 'project' submission.project.id %}">{{ submission.project.name }}</a></td>
     {% endif %}
     <td><a href="{% url 'submission' submission.id %}">{{ submission.us_format }}</a></td>
-    <td>{{ submission.score }}/{{ submission.max_score }}</td>
+    <td>{{ submission.score_str }}</td>
     </tr>
     {% endfor %}
 </table>
