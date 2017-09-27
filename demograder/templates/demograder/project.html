@@ -42,6 +42,7 @@
 </h2>
 <p>Due {{ assignment.us_format }}</p>
 
+{% if person.id == student.id %}
 {% if may_submit == 'yes' %}
 
 <h3>Upload New Version</h3>
@@ -53,21 +54,20 @@
     <p>{{ form.file }} <input type="submit" value="Upload" /></p>
 </form>
 
-{% elif may_submit == 'submission' %}
+{% else %}
 
 <div class="alert alert-danger" style="text-align:center;">
+    {% if may_submit == 'submission' %}
     <p>You cannot submit again until your <a href="{% url 'submission' latest.id %}">latest submission</a> has been completely evaluated.</p>
-</div>
-
-{% elif may_submit == 'timeout' %}
-
-<div class="alert alert-danger" style="text-align:center;">
+    {% elif may_submit == 'timeout' %}
     <p>
         You can only submit to each project once every five minutes.<br>
         Your last submission to this project was at {{ project_latest.us_format }}
     </p>
+    {% endif %}
 </div>
 
+{% endif %}
 {% endif %}
 
 {% if submission %}
