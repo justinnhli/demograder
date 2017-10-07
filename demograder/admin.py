@@ -6,7 +6,7 @@ from .models import Year
 from .models import Department, Course
 from .models import Person
 from .models import Enrollment
-from .models import Assignment, Project
+from .models import Assignment, Project, ProjectFile
 from .models import Submission, Upload, Result
 from .models import ProjectDependency, StudentDependency, ResultDependency
 
@@ -33,6 +33,10 @@ class AssignmentAdmin(admin.ModelAdmin):
 
 class ProjectAdmin(admin.ModelAdmin):
     list_display = ('id', 'assignment', 'name', 'visible', 'locked')
+
+
+class ProjectFileAdmin(admin.ModelAdmin):
+    list_display = ('id', 'project', 'filename')
 
 
 class SubmissionAdmin(admin.ModelAdmin):
@@ -66,6 +70,7 @@ admin.site.register(Person, PersonAdmin)
 admin.site.register(Enrollment, EnrollmentAdmin)
 admin.site.register(Assignment, AssignmentAdmin)
 admin.site.register(Project, ProjectAdmin)
+admin.site.register(ProjectFile, ProjectFileAdmin)
 admin.site.register(Submission, SubmissionAdmin)
 admin.site.register(Upload, UploadAdmin)
 admin.site.register(Result, ResultAdmin)

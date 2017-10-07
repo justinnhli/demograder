@@ -293,8 +293,7 @@ class Project(models.Model):
     )
     assignment = models.ForeignKey(Assignment)
     name = models.CharField(max_length=200)
-    filename = models.CharField(max_length=200)
-    timeout = models.IntegerField(default=10)
+    timeout = models.IntegerField(default=5)
     submission_type = models.IntegerField(choices=SUBMISSION_TYPES)
     script = models.FileField(upload_to=_project_path, blank=True, max_length=500)
     visible = models.BooleanField(default=False)
@@ -319,6 +318,18 @@ class Project(models.Model):
             str(self.id), # project
         )
         return join_path(*context)
+
+    @property
+    def files(self):
+        return ProjectFile.objects.filter(project=self)
+
+    @property
+    def file_fields(self):
+        return ['file_{}'.format(i) for i in range(ProjectFile.objects.filter(project=self).count())]
+
+    @property
+    def filenames(self):
+        return [project_file.filename for project_file in ProjectFile.objects.filter(project=self)]
 
     def upstream_dependencies(self):
         return ProjectDependency.objects.filter(project=self)
@@ -356,6 +367,19 @@ class ProjectDependency(models.Model):
         return '({} {}) {} --> {}'.format(
             self.project.assignment.course, self.project.assignment.name, self.producer.name, self.project.name
         )
+
+
+class ProjectFile(models.Model):
+
+    class Meta:
+        unique_together = ('project', 'filename')
+        ordering = ('filename', )
+
+    project = models.ForeignKey(Project)
+    filename = models.CharField(max_length=50)
+
+    def __str__(self):
+        return self.filename
 
 
 class Submission(models.Model):
@@ -425,12 +449,13 @@ class Submission(models.Model):
         return Upload.objects.filter(submission=self)
 
 
-def _upload_path(instance, _):
-    return join_path(instance.submission.directory, instance.submission.project.filename)
+def _upload_path(instance, filename):
+    return join_path(instance.submission.directory, filename)
 
 
 class Upload(models.Model):
     submission = models.ForeignKey(Submission)
+    project_file = models.ForeignKey(ProjectFile)
     file = models.FileField(upload_to=_upload_path, max_length=500)
 
     @property

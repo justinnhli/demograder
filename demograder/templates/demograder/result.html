@@ -43,11 +43,14 @@
 <h3>Files Submitted</h3>
 <ul>
     {% for upload in submission.upload_set.all %}
-    {% if user.is_superuser %}
-    <li><a href="{% url 'display' upload.id %}">{{ upload.basename }}</a></li>
-    {% else %}
-    <li><a href="{% url 'download' upload.id %}">{{ upload.basename }}</a></li>
-    {% endif %}
+    <li>
+        {% if user.is_superuser %}
+        <a href="{% url 'display' upload.id %}"><code>{{ upload.project_file.filename }}</code></a>
+        {% else %}
+        <a href="{% url 'download' upload.id %}"><code>{{ upload.project_file.filename }}</code></a>
+        {% endif %}
+        (originally named <code>{{ upload.basename }}</code>)
+    </li>
     {% endfor %}
 </ul>
 
@@ -57,12 +60,12 @@
     {% for upload in dependency.producer.upload_set.all %}
     {% if user.is_superuser %}
     <li>
-        <a href="{% url 'display' upload.id %}">{{ upload.basename }}</a>
+        <a href="{% url 'display' upload.id %}"><code>{{ upload.project_file.filename }}</code></a>
         (from <a href="{% url 'submission' upload.submission.id %}">{{ upload.submission.student.full_name }}'s submission</a>)
     </li>
     {% else %}
     <li>
-        <a href="{% url 'download' upload.id %}">{{ upload.basename }}</a>
+        <a href="{% url 'download' upload.id %}"><code>{{ upload.project_file.filename }}</code></a>
     </li>
     {% endif %}
     {% endfor %}

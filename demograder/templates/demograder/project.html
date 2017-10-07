@@ -51,7 +51,8 @@
     {% csrf_token %}
     <p>{{ form.non_field_errors }}</p>
     <p>{{ form.file.errors }}</p>
-    <p>{{ form.file }} <input type="submit" value="Upload" /></p>
+    <p>{{ form }}</p>
+    <p><input type="submit" value="Upload" /></p>
 </form>
 
 {% else %}
@@ -82,14 +83,18 @@
 </p>
 <p>
     Uploads:
-    {% for upload in submission.upload_set.all %}
-    {% if not forloop.first %},{% endif %}
-    {% if user.is_superuser %}
-    <a href="{% url 'display' upload.id %}">{{ upload.basename }}</a>
-    {% else %}
-    <a href="{% url 'download' upload.id %}">{{ upload.basename }}</a>
-    {% endif %}
-    {% endfor %}
+    <ul>
+        {% for upload in submission.upload_set.all %} <!-- FIXME remove all *_set references -->
+        <li>
+            {% if user.is_superuser %}
+            <a href="{% url 'display' upload.id %}"><code>{{ upload.project_file.filename }}</code></a>
+            {% else %}
+            <a href="{% url 'download' upload.id %}"><code>{{ upload.project_file.filename }}</code></a>
+            {% endif %}
+            (originally named <code>{{ upload.basename }}</code>)
+        </li>
+        {% endfor %}
+    </ul>
 </p>
 {% if results %}
 <div id="scoreboard">
@@ -124,9 +129,9 @@ There are no results associated with this submission.
                 {% for upload in submission.upload_set.all %}
                 {% if not forloop.first %},{% endif %}
                 {% if user.is_superuser %}
-                <a href="{% url 'display' upload.id %}">{{ upload.basename }}</a>
+                <a href="{% url 'display' upload.id %}"><code>{{ upload.basename }}</code></a>
                 {% else %}
-                <a href="{% url 'download' upload.id %}">{{ upload.basename }}</a>
+                <a href="{% url 'download' upload.id %}"><code>{{ upload.basename }}</code></a>
                 {% endif %}
                 {% endfor %}
             </td>

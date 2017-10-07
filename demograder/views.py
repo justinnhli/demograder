@@ -9,7 +9,7 @@ from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render, get_object_or_404
 
-from .forms import FileUploadForm
+from .forms import SubmissionUploadForm
 from .models import Course, Enrollment, Person, Assignment, Project, Submission, Upload, Result, ProjectDependency, StudentDependency
 from .dispatcher import enqueue_submission_dispatch
 
@@ -145,7 +145,7 @@ def project_view(request, **kwargs):
         context['latest'] = context['person'].latest_submission()
     else:
         context['latest'] = None
-    context['form'] = FileUploadForm()
+    context['form'] = SubmissionUploadForm(project=context['project'])
     context['queue_size'] = django_rq.get_queue('evaluation').count
     return render(request, 'demograder/project.html', context)
 
@@ -157,8 +157,7 @@ def project_submit_handler(request, **kwargs):
         return HttpResponseRedirect(reverse('project', kwargs=kwargs))
     if context['person'].may_submit(context['project']) != 'yes':
         return HttpResponseRedirect(reverse('project', kwargs=kwargs))
-    # Handle file upload
-    form = FileUploadForm(request.POST, request.FILES)
+    form = SubmissionUploadForm(request.POST, request.FILES)
     if form.is_valid():
         submission = Submission(
             project=context['project'],
@@ -166,11 +165,14 @@ def project_submit_handler(request, **kwargs):
         )
         submission.save()
         # TODO handle multiple files per submission
-        upload = Upload(
-            submission=submission,
-            file=request.FILES['file'],
-        )
-        upload.save()
+        project_files = context['project'].files
+        for file_field, project_file in zip(context['project'].file_fields, context['project'].files):
+            upload = Upload(
+                submission=submission,
+                project_file=project_file,
+                file=request.FILES[file_field],
+            )
+            upload.save()
         enqueue_submission_dispatch(submission.id)
     return HttpResponseRedirect(reverse('project', kwargs=kwargs))
 
