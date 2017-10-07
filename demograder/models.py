@@ -319,6 +319,14 @@ class Project(models.Model):
         )
         return join_path(*context)
 
+    @property
+    def files(self):
+        return ProjectFile.objects.filter(project=self)
+
+    @property
+    def filenames(self):
+        return [project_file.filename for project_file in ProjectFile.objects.filter(project=self)]
+
     def upstream_dependencies(self):
         return ProjectDependency.objects.filter(project=self)
 
