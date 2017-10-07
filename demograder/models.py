@@ -324,6 +324,10 @@ class Project(models.Model):
         return ProjectFile.objects.filter(project=self)
 
     @property
+    def file_fields(self):
+        return ['file_{}'.format(i) for i in range(ProjectFile.objects.filter(project=self).count())]
+
+    @property
     def filenames(self):
         return [project_file.filename for project_file in ProjectFile.objects.filter(project=self)]
 

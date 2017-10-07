@@ -145,7 +145,7 @@ def project_view(request, **kwargs):
         context['latest'] = context['person'].latest_submission()
     else:
         context['latest'] = None
-    context['form'] = SubmissionUploadForm(filenames=context['project'].filenames)
+    context['form'] = SubmissionUploadForm(project=context['project'])
     context['queue_size'] = django_rq.get_queue('evaluation').count
     return render(request, 'demograder/project.html', context)
 
@@ -166,8 +166,7 @@ def project_submit_handler(request, **kwargs):
         submission.save()
         # TODO handle multiple files per submission
         project_files = context['project'].files
-        for i, project_file in enumerate(project_files):
-            file_field = 'file_{}'.format(i)
+        for file_field, project_file in zip(context['project'].file_fields, context['project'].files):
             upload = Upload(
                 submission=submission,
                 project_file=project_file,
