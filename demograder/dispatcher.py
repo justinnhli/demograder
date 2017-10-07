@@ -40,14 +40,14 @@ def prepare_files(result, temp_dir):
     # copy the submission
     tmp_uploads = []
     for upload in result.submission.uploads():
-        tmp_uploads.append(copyfile(upload.file.name, join_path(temp_dir, basename(upload.file.name))))
+        tmp_uploads.append(copyfile(upload.file.name, join_path(temp_dir, upload.project_file.filename)))
     # copy all dependency files
     tmp_args = defaultdict(list)
     for result_dependency in ResultDependency.objects.filter(result=result):
         keyword = result_dependency.project_dependency.keyword
-        for upstream_submission in result_dependency.producer.uploads():
-            filepath = upstream_submission.file.name
-            tmp_args[keyword].append(copyfile(filepath, join_path(temp_dir, basename(filepath))))
+        for upstream_upload in result_dependency.producer.uploads():
+            filepath = upstream_upload.file.name
+            tmp_args[keyword].append(copyfile(filepath, join_path(temp_dir, upstream_upload.project_file.filename)))
     recursive_chmod(temp_dir)
     cmd = ['sudo', '-u', 'nobody', sys.executable, '-B', tmp_dglib]
     cmd.extend(['--_script', tmp_script, '--_uploads', ','.join(tmp_uploads)])
