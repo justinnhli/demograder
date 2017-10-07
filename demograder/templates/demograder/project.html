@@ -51,7 +51,8 @@
     {% csrf_token %}
     <p>{{ form.non_field_errors }}</p>
     <p>{{ form.file.errors }}</p>
-    <p>{{ form.file }} <input type="submit" value="Upload" /></p>
+    <p>{{ form }}</p>
+    <p><input type="submit" value="Upload" /></p>
 </form>
 
 {% else %}
