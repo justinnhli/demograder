@@ -359,8 +359,12 @@ class ProjectDependency(models.Model):
 
 class ProjectFile(models.Model):
 
+    class Meta:
+        unique_together = ('project', 'filename')
+        ordering = ('filename', )
+
     project = models.ForeignKey(Project)
-    filename = models.CharField(max_length=200)
+    filename = models.CharField(max_length=50)
 
     def __str__(self):
         return self.filename
