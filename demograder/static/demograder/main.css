@@ -45,6 +45,8 @@ table tr:last-child td {border-bottom-style:none;}
 #scoreboard a.score.fail {background-color:#E67C73;}
 #scoreboard a.score.tbd {background-color:#808080;}
 
+code {background-color:transparent;}
+
 #history-heading {clear:both; padding-top:0.5em;}
 
 #footer {padding:1em; text-align:center;}
