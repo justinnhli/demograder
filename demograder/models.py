@@ -89,6 +89,7 @@ class Person(models.Model):
         submit to a project with testcases, then all of the following must be
         true for the student to submit:
 
+        * the project is not locked
         * all their previous submissions for all projects have finished running
         * 300 seconds has passed since their last submission to this project
 
@@ -102,6 +103,7 @@ class Person(models.Model):
         Returns:
             string: one of three string constants
                 'yes': the student may submit again
+                'locked': the project is locked
                 'submission': the student is blocked by their last submission
                 'timeout': it has been less than 300 seconds since their last
                            submission to this project
@@ -109,6 +111,8 @@ class Person(models.Model):
 
         if self.user.is_superuser:
             return 'yes'
+        if project.locked:
+            return 'locked'
         submissions = self.submissions()
         if not submissions:
             return 'yes'

@@ -58,7 +58,9 @@
 {% else %}
 
 <div class="alert alert-danger" style="text-align:center;">
-    {% if may_submit == 'submission' %}
+    {% if may_submit == 'locked' %}
+    <p>Submissions have been disabled for this project.</p>
+    {% elif may_submit == 'submission' %}
     <p>You cannot submit again until your <a href="{% url 'submission' latest.id %}">latest submission</a> has been completely evaluated.</p>
     {% elif may_submit == 'timeout' %}
     <p>
