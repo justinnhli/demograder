@@ -1,7 +1,7 @@
 import sys
 from collections import defaultdict
 from itertools import product
-from os import environ, chmod, walk
+from os import chdir, chmod, environ, getcwd, walk
 from os.path import basename, dirname, join as join_path, realpath
 from shutil import copyfile
 from sqlite3 import OperationalError as SQLiteOperationalError
@@ -62,6 +62,8 @@ def evaluate_submission(result_id):
         # create temporary directory
         with TemporaryDirectory() as temp_dir:
             cmd = prepare_files(result, temp_dir)
+            old_cwd = getcwd()
+            chdir(temp_dir)
             try:
                 completed_process = run_process(cmd, timeout=result.project.timeout, stderr=PIPE, stdout=PIPE)
                 stdout = completed_process.stdout.decode('utf-8')
@@ -77,6 +79,7 @@ def evaluate_submission(result_id):
                 stdout = ''
                 stderr = 'The program failed to complete within {} seconds and was terminated.'.format(result.project.timeout)
                 return_code = 1
+            chdir(old_cwd)
         # update Result
         result.stdout = stdout.strip()
         result.stderr = stderr.strip()
