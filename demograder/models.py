@@ -149,7 +149,7 @@ class Year(models.Model):
 class Department(models.Model):
 
     class Meta:
-        ordering = ('name', )
+        ordering = ('name',)
 
     name = models.CharField(max_length=200)
     catalog_code = models.CharField(max_length=10, unique=True)
@@ -251,7 +251,7 @@ class Enrollment(models.Model):
 class Assignment(models.Model):
 
     class Meta:
-        ordering = ('-deadline', )
+        ordering = ('-deadline',)
         unique_together = ('course', 'name')
 
     course = models.ForeignKey(Course)
@@ -349,8 +349,8 @@ class Project(models.Model):
 class ProjectDependency(models.Model):
 
     class Meta:
-        verbose_name_plural = 'ProjectDependencies'
         unique_together = ('project', 'producer')
+        verbose_name_plural = 'ProjectDependencies'
 
     SELF = 0
     INSTRUCTOR = 1
@@ -376,8 +376,9 @@ class ProjectDependency(models.Model):
 class ProjectFile(models.Model):
 
     class Meta:
+        ordering = ('project', 'filename')
         unique_together = ('project', 'filename')
-        ordering = ('filename', )
+        verbose_name_plural = 'ProjectFiles'
 
     project = models.ForeignKey(Project)
     filename = models.CharField(max_length=50)
@@ -390,7 +391,7 @@ class Submission(models.Model):
 
     class Meta:
         get_latest_by = 'timestamp'
-        ordering = ('-timestamp', )
+        ordering = ('-timestamp',)
 
     project = models.ForeignKey(Project)
     student = models.ForeignKey(Person)
@@ -546,8 +547,8 @@ class Result(models.Model):
 class StudentDependency(models.Model):
 
     class Meta:
-        verbose_name_plural = 'StudentDependencies'
         unique_together = ('student', 'dependency', 'producer')
+        verbose_name_plural = 'StudentDependencies'
 
     student = models.ForeignKey(Person)
     dependency = models.ForeignKey(ProjectDependency)
