@@ -3,24 +3,25 @@ from collections import defaultdict
 from itertools import product
 from os import chdir, chmod, environ, getcwd, walk
 from os.path import basename, dirname, join as join_path, realpath
-from shutil import copyfile
+from shutil import copyfile, chown
 from sqlite3 import OperationalError as SQLiteOperationalError
 from subprocess import run as run_process, PIPE, TimeoutExpired
 from tempfile import TemporaryDirectory
 
 import django
 from django.db.utils import OperationalError as DjangoOperationalError
+from rq.timeouts import JobTimeoutException
 
 sys.path.append(join_path(dirname(realpath(__file__)), '..'))
 environ.setdefault('DJANGO_SETTINGS_MODULE', 'demograder.settings')
+
+DGLIB = join_path(dirname(realpath(__file__)), 'dglib.py')
+
+
 django.setup()
 
 import django_rq
-from rq.timeouts import JobTimeoutException
-
 from demograder.models import Project, ProjectDependency, Submission, Result, ResultDependency
-
-DGLIB = join_path(dirname(realpath(__file__)), 'dglib.py')
 
 
 def recursive_chmod(path):
@@ -31,28 +32,35 @@ def recursive_chmod(path):
         for f in files:
             chmod(join_path(root, f), 0o777)
 
+def recursive_chown(path):
+    chown(path, user='justinnhli', group='justinnhli')
+    for root, dirs, files in walk(path):
+        for d in dirs:
+            chown(join_path(root, d), user='justinnhli', group='justinnhli')
+        for f in files:
+            chown(join_path(root, f), user='justinnhli', group='justinnhli')
+
 
 def prepare_files(result, temp_dir):
     # copy dglib library
-    tmp_dglib = copyfile(DGLIB, join_path(temp_dir, basename(DGLIB)))
-    # copy the submission script
-    tmp_script = copyfile(result.project.script.name, join_path(temp_dir, basename(result.project.script.name)))
-    # copy the submission
-    tmp_uploads = []
-    for upload in result.submission.uploads():
-        tmp_uploads.append(copyfile(upload.file.name, join_path(temp_dir, upload.project_file.filename)))
-    # copy all dependency files
-    tmp_args = defaultdict(list)
-    for result_dependency in ResultDependency.objects.filter(result=result):
-        keyword = result_dependency.project_dependency.keyword
-        for upstream_upload in result_dependency.producer.uploads():
-            filepath = upstream_upload.file.name
-            tmp_args[keyword].append(copyfile(filepath, join_path(temp_dir, upstream_upload.project_file.filename)))
+    # FIXME solution is to put dglib on pythonpath, not to copy it
+    copyfile(DGLIB, join_path(temp_dir, basename(DGLIB)))
+    # breadth first search and copy submission and all dependencies
+    result_queue = [result]
+    visited = set()
+    while result_queue:
+        dependency = result_queue.pop(0)
+        visited.add(dependency.id)
+        # copy files from this dependency
+        for upload in dependency.submission.uploads():
+            filename = upload.project_file.filename
+            # not sure what to do if filenames conflict
+            copyfile(upload.file.name, join_path(temp_dir, filename))
+        # add dependencies to the queue
+        for result_dependency in ResultDependency.objects.filter(result=dependency):
+            if result_dependency.producer not in visited:
+                result_queue.append(result_dependency.producer)
     recursive_chmod(temp_dir)
-    cmd = ['sudo', '-u', 'nobody', sys.executable, '-B', tmp_dglib]
-    cmd.extend(['--_script', tmp_script, '--_uploads', ','.join(tmp_uploads)])
-    for key, files in tmp_args.items():
-        cmd.extend(['--{}'.format(key), ','.join(files)])
     return cmd
 
 
@@ -80,6 +88,8 @@ def evaluate_submission(result_id):
                 stderr = 'The program failed to complete within {} seconds and was terminated.'.format(result.project.timeout)
                 return_code = 1
             chdir(old_cwd)
+            recursive_chown(temp_dir)
+            recursive_chmod(temp_dir)
         # update Result
         result.stdout = stdout.strip()
         result.stderr = stderr.strip()
