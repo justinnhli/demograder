@@ -1,6 +1,6 @@
-Django==1.11.4
+Django==1.11.15
 django-rq==0.9.6
-gunicorn==19.7.1
+gunicorn==19.9.0
 honcho==1.0.1
 pylint==1.7.2
 pytz==2017.2
