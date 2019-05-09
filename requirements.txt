@@ -1,9 +1,9 @@
-Django==1.11.15
-django-rq==0.9.6
+Django==2.2.1
+django-rq==2.0
 gunicorn==19.9.0
 honcho==1.0.1
-pylint==1.7.2
-pytz==2017.2
-redis==2.10.6
-rq==0.8.1
-social-auth-app-django==1.2.0
+pylint==2.3.1
+pytz==2019.1
+redis==3.2.1
+rq==1.0
+social-auth-app-django==3.1.0
