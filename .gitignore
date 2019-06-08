@@ -1,6 +1,9 @@
 # Python environment
 venv*
 
+# secrets
+demograder/secrets.json
+
 # backend files
 db.sqlite3
 dump.rdb
@@ -9,3 +12,4 @@ demograder/migrations
 # uploads
 projects
 uploads
+
