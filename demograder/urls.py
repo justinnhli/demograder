@@ -2,15 +2,15 @@ from django.conf.urls import include, url
 from django.contrib import admin
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.views.generic import RedirectView
-from django.contrib.auth import views as auth_views
+from django.contrib.auth.views import LoginView, LogoutView
 
 from .views import index_view, course_view, project_view, project_submit_handler, result_view, download_view, display_view
 from .instructor_views import instructor_view, instructor_tbd_view, instructor_submissions_view, instructor_student_view, instructor_course_view, instructor_assignment_view, instructor_project_view
 from .instructor_views import instructor_assignment_regrade_view, instructor_project_regrade_view, instructor_submission_regrade_view, instructor_result_regrade_view
 
 urlpatterns = [
-    url(r'^login/$', auth_views.login, name='login'),
-    url(r'^logout/$', auth_views.logout, {'next_page': '/login'}, name='logout'),
+    url(r'^login/$', LoginView.as_view(), name='login'),
+    url(r'^logout/$', LogoutView.as_view(next_page='/login'), name='logout'),
     url(r'^oauth/', include('social_django.urls', namespace='social')),
     url(r'^$', RedirectView.as_view(url='demograder/')),
     url(r'^demograder/$', index_view, name='index'),
@@ -54,7 +54,7 @@ urlpatterns = [
     ),
     url(r'^django-rq/', include('django_rq.urls')),
     url(r'^admin/', include(admin.site.urls)),
-    url(r'^accounts/login/$', auth_views.login, name='admin_login'),
-    url(r'^accounts/logout/$', auth_views.logout, {'next_page': '/demograder/'}, name='admin_logout'),
+    url(r'^accounts/login/$', LoginView.as_view(), name='admin_login'),
+    url(r'^accounts/logout/$', LogoutView.as_view(next_page='/login'), name='admin_logout'),
 ]
 urlpatterns += staticfiles_urlpatterns()
