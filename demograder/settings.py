@@ -93,6 +93,8 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'demograder.wsgi.application'
 
+SOCIAL_AUTH_GOOGLE_OAUTH2_AUTH_EXTRA_ARGUMENTS = {'prompt': 'select_account'}
+
 # Database
 # https://docs.djangoproject.com/en/1.9/ref/settings/#databases
 
