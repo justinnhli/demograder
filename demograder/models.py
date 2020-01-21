@@ -179,12 +179,12 @@ class Course(models.Model):
         (SUMMER, 'Summer'),
         (FALL, 'Fall'),
     )
-    year = models.ForeignKey(Year)
+    year = models.ForeignKey(Year, on_delete=models.CASCADE)
     season = models.IntegerField(choices=SEASONS)
-    department = models.ForeignKey(Department)
+    department = models.ForeignKey(Department, on_delete=models.CASCADE)
     course_number = models.IntegerField()
     title = models.CharField(max_length=200)
-    instructor = models.ForeignKey(Person)
+    instructor = models.ForeignKey(Person, on_delete=models.CASCADE)
 
     @property
     def season_str(self):
@@ -220,8 +220,8 @@ class Enrollment(models.Model):
             'student',
         )
 
-    course = models.ForeignKey(Course)
-    student = models.ForeignKey(Person)
+    course = models.ForeignKey(Course, on_delete=models.CASCADE)
+    student = models.ForeignKey(Person, on_delete=models.CASCADE)
 
     @property
     def semester_str(self):
@@ -254,7 +254,7 @@ class Assignment(models.Model):
         ordering = ('-deadline',)
         unique_together = ('course', 'name')
 
-    course = models.ForeignKey(Course)
+    course = models.ForeignKey(Course, on_delete=models.CASCADE)
     name = models.CharField(max_length=200)
     deadline = models.DateTimeField()
 
@@ -295,7 +295,7 @@ class Project(models.Model):
         (ALL, 'All'),
         (MULTIPLE, 'Student Selected'),
     )
-    assignment = models.ForeignKey(Assignment)
+    assignment = models.ForeignKey(Assignment, on_delete=models.CASCADE)
     name = models.CharField(max_length=200)
     timeout = models.IntegerField(default=5)
     submission_type = models.IntegerField(choices=SUBMISSION_TYPES)
@@ -362,8 +362,8 @@ class ProjectDependency(models.Model):
         (CLIQUE, 'All to All'),
         (CUSTOM, 'Custom Groups'),
     )
-    producer = models.ForeignKey(Project, related_name='downstream_set')
-    project = models.ForeignKey(Project)
+    producer = models.ForeignKey(Project, related_name='downstream_set', on_delete=models.CASCADE)
+    project = models.ForeignKey(Project, on_delete=models.CASCADE)
     dependency_structure = models.IntegerField(choices=DEPENDENCY_TYPES)
     keyword = models.CharField(max_length=20)
 
@@ -380,7 +380,7 @@ class ProjectFile(models.Model):
         unique_together = ('project', 'filename')
         verbose_name_plural = 'ProjectFiles'
 
-    project = models.ForeignKey(Project)
+    project = models.ForeignKey(Project, on_delete=models.CASCADE)
     filename = models.CharField(max_length=50)
 
     def __str__(self):
@@ -393,8 +393,8 @@ class Submission(models.Model):
         get_latest_by = 'timestamp'
         ordering = ('-timestamp',)
 
-    project = models.ForeignKey(Project)
-    student = models.ForeignKey(Person)
+    project = models.ForeignKey(Project, on_delete=models.CASCADE)
+    student = models.ForeignKey(Person, on_delete=models.CASCADE)
     timestamp = models.DateTimeField(auto_now_add=True)
 
     @property
@@ -459,8 +459,8 @@ def _upload_path(instance, filename):
 
 
 class Upload(models.Model):
-    submission = models.ForeignKey(Submission)
-    project_file = models.ForeignKey(ProjectFile)
+    submission = models.ForeignKey(Submission, on_delete=models.CASCADE)
+    project_file = models.ForeignKey(ProjectFile, on_delete=models.CASCADE)
     file = models.FileField(upload_to=_upload_path, max_length=500)
 
     @property
@@ -493,7 +493,7 @@ class Upload(models.Model):
 
 
 class Result(models.Model):
-    submission = models.ForeignKey(Submission)
+    submission = models.ForeignKey(Submission, on_delete=models.CASCADE)
     timestamp = models.DateTimeField(auto_now_add=True)
     stdout = models.TextField(blank=True)
     stderr = models.TextField(blank=True)
@@ -550,9 +550,9 @@ class StudentDependency(models.Model):
         unique_together = ('student', 'dependency', 'producer')
         verbose_name_plural = 'StudentDependencies'
 
-    student = models.ForeignKey(Person)
-    dependency = models.ForeignKey(ProjectDependency)
-    producer = models.ForeignKey(Person, related_name='downstream_set')
+    student = models.ForeignKey(Person, on_delete=models.CASCADE)
+    dependency = models.ForeignKey(ProjectDependency, on_delete=models.CASCADE)
+    producer = models.ForeignKey(Person, related_name='downstream_set', on_delete=models.CASCADE)
 
     @property
     def project(self):
@@ -564,6 +564,6 @@ class ResultDependency(models.Model):
     class Meta:
         verbose_name_plural = 'ResultDependencies'
 
-    result = models.ForeignKey(Result)
-    project_dependency = models.ForeignKey(ProjectDependency)
-    producer = models.ForeignKey(Submission, related_name='downstream_set')
+    result = models.ForeignKey(Result, on_delete=models.CASCADE)
+    project_dependency = models.ForeignKey(ProjectDependency, on_delete=models.CASCADE)
+    producer = models.ForeignKey(Submission, related_name='downstream_set', on_delete=models.CASCADE)
