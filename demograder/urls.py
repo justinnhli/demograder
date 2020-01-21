@@ -53,7 +53,7 @@ urlpatterns = [
         name='instructor_result_regrade',
     ),
     url(r'^django-rq/', include('django_rq.urls')),
-    url(r'^admin/', include(admin.site.urls)),
+    url(r'^admin/', admin.site.urls),
     url(r'^accounts/login/$', LoginView.as_view(), name='admin_login'),
     url(r'^accounts/logout/$', LogoutView.as_view(next_page='/login'), name='admin_logout'),
 ]
