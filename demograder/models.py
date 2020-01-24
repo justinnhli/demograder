@@ -247,6 +247,10 @@ class Enrollment(models.Model):
     def last_name(self):
         return self.student.last_name
 
+    def __str__(self):
+        # human readable, used by Django admin displays
+        return str(self.student) + ' in ' + str(self.course)
+
 
 class Assignment(models.Model):
 
