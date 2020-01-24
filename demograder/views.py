@@ -58,16 +58,11 @@ def get_context(request, **kwargs):
     )
     if not (context['user'].is_superuser or context['is_instructor']):
         if 'course' in context:
-            try:
-                Enrollment.objects.get(student=context['person'], course=context['course'])
-            except Enrollment.DoesNotExist:
+            if Enrollment.objects.filter(student=context['person'], course=context['course']).count() == 0:
                 raise PermissionDenied
         if 'upload' in context:
             if context['person'] != context['student']:
-                try:
-                    # FIXME update for new dependency shortcuts
-                    ProjectDependency.objects.filter(producer=context['project'], project__visible=True)
-                except StudentDependency.DoesNotExist:
+                if ProjectDependency.objects.filter(producer=context['project'], project__visible=True).count() == 0:
                     raise PermissionDenied
         else:
             if 'project' in context:
