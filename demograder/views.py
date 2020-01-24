@@ -56,7 +56,7 @@ def get_context(request, **kwargs):
         'course' in context
         and context['course'].instructor == context['person']
     )
-    if not context['user'].is_superuser:
+    if not (context['user'].is_superuser or context['is_instructor']):
         if 'course' in context:
             try:
                 Enrollment.objects.get(student=context['person'], course=context['course'])
