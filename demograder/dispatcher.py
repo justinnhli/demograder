@@ -49,11 +49,7 @@ def prepare_files(result, temp_dir):
             filepath = upstream_upload.file.name
             tmp_args[keyword].append(copyfile(filepath, join_path(temp_dir, upstream_upload.project_file.filename)))
     recursive_chmod(temp_dir)
-    cmd = ['sudo', '-u', 'nobody', sys.executable, '-B', tmp_dglib]
-    cmd.extend(['--_script', tmp_script, '--_uploads', ','.join(tmp_uploads)])
-    for key, files in tmp_args.items():
-        cmd.extend(['--{}'.format(key), ','.join(files)])
-    return cmd
+    return ['sudo', '-u', 'nobody', tmp_script]
 
 
 def evaluate_submission(result_id, timeout=None):
