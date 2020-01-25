@@ -33,7 +33,7 @@ urlpatterns = [
     ),
     url(r'^demograder/instructor/project/(?P<project_id>[0-9]+)/$', instructor_project_view, name='instructor_project'),
     url(
-        r'^demograder/instructor/assignment-regrade/(?P<project_id>[0-9]+)$',
+        r'^demograder/instructor/assignment-regrade/(?P<assignment_id>[0-9]+)$',
         instructor_assignment_regrade_view,
         name='instructor_assignment_regrade',
     ),
