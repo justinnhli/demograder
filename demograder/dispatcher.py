@@ -56,28 +56,30 @@ def prepare_files(result, temp_dir):
     return cmd
 
 
-def evaluate_submission(result_id):
+def evaluate_submission(result_id, timeout=None):
     try:
         result = Result.objects.get(pk=result_id)
+        if timeout is None:
+            timeout = result.project.timeout
         # create temporary directory
         with TemporaryDirectory() as temp_dir:
             cmd = prepare_files(result, temp_dir)
             old_cwd = getcwd()
             chdir(temp_dir)
             try:
-                completed_process = run_process(cmd, timeout=result.project.timeout, stderr=PIPE, stdout=PIPE)
+                completed_process = run_process(cmd, timeout=timeout, stderr=PIPE, stdout=PIPE)
                 stdout = completed_process.stdout.decode('utf-8')
                 stderr = completed_process.stderr.decode('utf-8')
                 return_code = completed_process.returncode
             except TimeoutExpired as e:
                 stdout = e.stdout.decode('utf-8')
                 stdout += '\n\n'
-                stdout += 'The program failed to complete within {} seconds and was terminated.'.format(result.project.timeout)
+                stdout += 'The program failed to complete within {} seconds and was terminated.'.format(timeout)
                 stderr = e.stderr.decode('utf-8')
                 return_code = 1
             except JobTimeoutException:
                 stdout = ''
-                stderr = 'The program failed to complete within {} seconds and was terminated.'.format(result.project.timeout)
+                stderr = 'The program failed to complete within {} seconds and was terminated.'.format(timeout)
                 return_code = 1
             chdir(old_cwd)
         # update Result
