@@ -164,12 +164,12 @@ def project_submit_handler(request, **kwargs):
         # TODO handle multiple files per submission
         project_files = context['project'].files
         for file_field, project_file in zip(context['project'].file_fields, context['project'].files):
-            upload = Upload(
-                submission=submission,
-                project_file=project_file,
-                file=request.FILES[file_field],
-            )
-            upload.save()
+            if field_field in request.FILES:
+                Upload(
+                    submission=submission,
+                    project_file=project_file,
+                    file=request.FILES[file_field],
+                ).save()
         enqueue_submission_dispatch(submission.id)
     return HttpResponseRedirect(reverse('project', kwargs=kwargs))
 

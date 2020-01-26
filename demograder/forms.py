@@ -7,4 +7,4 @@ class SubmissionUploadForm(forms.Form):
         project = kwargs.pop('project')
         super().__init__(*args, **kwargs)
         for file_field, filename in zip(project.file_fields, project.filenames):
-            self.fields[file_field] = forms.FileField(label=filename)
+            self.fields[file_field] = forms.FileField(label=filename, required=False)
