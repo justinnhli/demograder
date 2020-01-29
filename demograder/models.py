@@ -200,7 +200,7 @@ class Course(models.Model):
         return '{} {}'.format(self.department.catalog_code, self.course_number)
 
     def enrolled_students(self):
-        return Person.objects.filter(enrollment__course=self).order_by(Lower('last_name'))
+        return Person.objects.filter(enrollment__course=self).order_by(Lower('user__last_name'))
 
     def assignments(self):
         return Assignment.objects.filter(course=self)
