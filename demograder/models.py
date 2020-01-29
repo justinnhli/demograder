@@ -116,7 +116,7 @@ class Person(models.Model):
         submissions = self.submissions()
         if not submissions:
             return 'yes'
-        if self.latest_submission().num_tbd != 0:
+        if self.latest_submission(project=project).num_tbd != 0:
             return 'submission'
         if not project.upstream_dependencies():
             return 'yes'
