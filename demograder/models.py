@@ -3,6 +3,7 @@ from os.path import basename, dirname, join as join_path
 
 from django.contrib.auth.models import User
 from django.db import models
+from django.db.models.functions import Lower
 from pytz import timezone, UTC
 
 UPLOAD_PATH = 'uploads'
@@ -199,7 +200,7 @@ class Course(models.Model):
         return '{} {}'.format(self.department.catalog_code, self.course_number)
 
     def enrolled_students(self):
-        return Person.objects.filter(enrollment__course=self)
+        return Person.objects.filter(enrollment__course=self).order_by(Lower('last_name'))
 
     def assignments(self):
         return Assignment.objects.filter(course=self)
