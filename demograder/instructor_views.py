@@ -105,6 +105,7 @@ def instructor_assignment_view(request, **kwargs):
             submissions,
             '{:.2%}'.format(student.get_assignment_score(context['assignment']))
         ))
+    context['submissions'] = Submission.objects.filter(project__assignment=context['assignment'])
     return render(request, 'demograder/instructor/assignment.html', context)
 
 
