@@ -164,7 +164,7 @@ def project_submit_handler(request, **kwargs):
         # TODO handle multiple files per submission
         project_files = context['project'].files
         for file_field, project_file in zip(context['project'].file_fields, context['project'].files):
-            if field_field in request.FILES:
+            if file_field in request.FILES:
                 Upload(
                     submission=submission,
                     project_file=project_file,
