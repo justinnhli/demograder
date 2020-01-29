@@ -109,7 +109,6 @@ class Person(models.Model):
                 'timeout': it has been less than 300 seconds since their last
                            submission to this project
         """
-
         if self.user.is_superuser:
             return 'yes'
         if project.locked:
