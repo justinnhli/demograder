@@ -57,7 +57,7 @@
     {% for submission in submissions %}
     <tr>
         <td><a href="{% url 'instructor_student' submission.student.id %}">{{ submission.student.full_name }}</a></td>
-        <td><a href="{% url 'project' submission.project %}">{{ submission.project.name }}</a></td>
+        <td><a href="{% url 'instructor_project' submission.project.id %}">{{ submission.project.name }}</a></td>
         <td><a href="{% url 'submission' submission.id %}">{{ submission.iso_format }}</a></td>
         <td>{{ submission.score_str }}</td>
     </tr>
