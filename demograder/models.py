@@ -98,7 +98,7 @@ class Person(models.Model):
         above two conditions have been violated, so that an appropriate error
         can be displayed.
 
-        Args:
+        Parameters:
             project (Project): the project to determine submission status for
 
         Returns:
