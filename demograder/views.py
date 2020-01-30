@@ -132,12 +132,12 @@ def project_view(request, **kwargs):
         if 'submission' not in context:
             context['submission'] = context['submissions'][0]
         # FIXME select the latest submission using the django last filter instead
-        # see https://docs.djangoproject.com/en/1.11/ref/templates/builtins/#last
+        # see https://docs.djangoproject.com/en/3.0/ref/models/querysets/#last
         context['project_latest'] = context['submissions'][0]
         context['results'] = context['submission'].result_set.all()
     context['may_submit'] = context['person'].may_submit(context['project'])
     # FIXME select the latest submission using the django last filter instead
-    # see https://docs.djangoproject.com/en/1.11/ref/templates/builtins/#last
+    # see https://docs.djangoproject.com/en/3.0/ref/models/querysets/#last
     if context['person'].submissions():
         context['latest'] = context['person'].latest_submission()
     else:
