@@ -41,7 +41,9 @@ def instructor_submissions_view(request, **kwargs):
         raise Http404
     context['queue_size'] = django_rq.get_queue('evaluation').count
     context['tbd_size'] = Result.objects.filter(return_code=None).count
-    context['submissions'] = Submission.objects.filter(project__visible=True)[:100]
+    num_submissions = 100
+    context['num_submissions'] = num_submissions
+    context['submissions'] = Submission.objects.filter(project__visible=True)[:num_submissions]
     return render(request, 'demograder/instructor/submissions.html', context)
 
 
