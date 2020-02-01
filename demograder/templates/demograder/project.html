@@ -15,6 +15,10 @@
 {% endif %}
 &gt;
 <a href="{% url 'project' project.id %}">{{ project.name }}</a>
+{% if submission != project_latest %}
+&gt;
+<a href="{% url 'submission' submission.id %}">{{ submission.iso_format }} submission</a>
+{% endif %}
 <!-- end demograder/project.html:breadcrumb -->
 {% endblock %}
 
