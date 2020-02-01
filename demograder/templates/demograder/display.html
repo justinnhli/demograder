@@ -24,6 +24,18 @@
 
 {% block content %}
 <!-- begin demograder/display.html:content -->
+<h2><code>{{ upload.basename }}</code></h2>
+<p>
+    From
+    {% if user.is_superuser %}
+    <a href="{% url 'instructor_student' submission.student.id %}">{{ submission.student.full_name }}</a>'s
+    {% else %}
+    your
+    {% endif %}
+    <a href="{% url 'submission' submission.id %}">submission on {{ submission.us_format }}</a>
+    to <a href="{% url 'project' submission.project.id %}">{{ submission.project.name }}</a>
+</p>
+<p style="text-align:right;"><a href="{% url 'download' upload.id %}">Download</a></p>
 <style>
     .prettyprinted ol {counter-reset:decimalOnly;}
     .prettyprinted li {counter-increment:decimalOnly; position:relative;}
