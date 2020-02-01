@@ -92,11 +92,7 @@
     <ul>
         {% for upload in submission.upload_set.all %} <!-- FIXME remove all *_set references -->
         <li>
-            {% if user.is_superuser %}
             <a href="{% url 'display' upload.id %}"><code>{{ upload.project_file.filename }}</code></a>
-            {% else %}
-            <a href="{% url 'download' upload.id %}"><code>{{ upload.project_file.filename }}</code></a>
-            {% endif %}
             (originally named <code>{{ upload.basename }}</code>)
         </li>
         {% endfor %}
@@ -134,11 +130,7 @@ There are no results associated with this submission.
             <td>
                 {% for upload in submission.upload_set.all %}
                 {% if not forloop.first %},{% endif %}
-                {% if user.is_superuser %}
                 <a href="{% url 'display' upload.id %}"><code>{{ upload.basename }}</code></a>
-                {% else %}
-                <a href="{% url 'download' upload.id %}"><code>{{ upload.basename }}</code></a>
-                {% endif %}
                 {% endfor %}
             </td>
             <td>
