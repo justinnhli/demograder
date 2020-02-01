@@ -16,7 +16,7 @@
 &gt;
 <a href="{% url 'project' project.id %}">{{ project.name }}</a>
 &gt;
-<a href="{% url 'display' upload.id %}">{{ upload.file.name }}</a>
+<a href="{% url 'display' upload.id %}">{{ upload.basename }}</a>
 <!-- end demograder/display.html:breadcrumb -->
 {% endblock %}
 
