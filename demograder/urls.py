@@ -21,7 +21,6 @@ urlpatterns = [
     url(r'^demograder/result/(?P<result_id>[0-9]+)/$', result_view, name='result'),
     url(r'^demograder/download/(?P<upload_id>[0-9]+)/$', download_view, name='download'),
     url(r'^demograder/display/(?P<upload_id>[0-9]+)/$', display_view, name='display'),
-    url(r'^demograder/display_test/(?P<upload_id>[0-9]+)/$', display_test_view, name='display_test'),
     url(r'^demograder/instructor/$', instructor_view, name='instructor_index'),
     url(r'^demograder/instructor/submissions/$', instructor_submissions_view, name='instructor_submissions'),
     url(r'^demograder/instructor/tbd/$', instructor_tbd_view, name='instructor_tbd'),

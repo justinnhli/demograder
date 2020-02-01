@@ -197,14 +197,5 @@ def display_view(request, **kwargs):
     context = get_context(request, **kwargs)
     file_full_path = context['upload'].file.name
     with open(file_full_path) as fd:
-        data = fd.read()
-    return HttpResponse(data, content_type='text/plain')
-
-
-@login_required
-def display_test_view(request, **kwargs):
-    context = get_context(request, **kwargs)
-    file_full_path = context['upload'].file.name
-    with open(file_full_path) as fd:
         context['contents'] = fd.read()
     return render(request, 'demograder/display.html', context)
