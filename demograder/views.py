@@ -6,7 +6,7 @@ import django_rq
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
 from django.urls import reverse
-from django.http import HttpResponseRedirect, HttpResponse
+from django.http import HttpResponseRedirect, FileResponse
 from django.shortcuts import render, get_object_or_404
 
 from .forms import SubmissionUploadForm
@@ -183,13 +183,10 @@ def result_view(request, **kwargs):
 @login_required
 def download_view(request, **kwargs):
     context = get_context(request, **kwargs)
-    file_full_path = context['upload'].file.name
-    with open(file_full_path) as fd:
-        data = fd.read()
-    response = HttpResponse(data, content_type=guess_type(file_full_path)[0])
-    response['Content-Disposition'] = 'attachment; filename={0}'.format(basename(file_full_path))
-    response['Content-Length'] = getsize(file_full_path)
-    return response
+    return FileResponse(
+        open(context['upload'].file.name, 'rb'),
+        as_attachment=True,
+    )
 
 
 @login_required
