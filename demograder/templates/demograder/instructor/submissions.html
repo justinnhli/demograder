@@ -11,8 +11,7 @@
 <h2>Most Recent {{ num_submissions }} Submissions</h2>
 
 <p>
-    {{ queue_size }} test cases are waiting to be evaluated.
-    See all {{ tbd_size }} <a href="{% url 'instructor_tbd' %}">TBD result(s)</a>.
+    <a href="{% url 'instructor_tbd' %}">{{ queue_size }} test cases</a> are waiting to be evaluated.
 </p>
 
 <table>
