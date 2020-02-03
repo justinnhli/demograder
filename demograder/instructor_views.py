@@ -61,11 +61,11 @@ def instructor_tbd_regrade_view(request, **kwargs):
 @login_required
 def instructor_student_view(request, **kwargs):
     context = get_context(request, **kwargs)
-    if not context['is_instructor']:
+    if not (context['user'].is_superuser or Course.objects.filter(instructor=context['person']).count()):
         raise Http404
     context['grades'] = []
     for course in context['student'].enrolled_courses():
-        if course.instructor != context['user'] and not context['user'].is_superuser:
+        if course.instructor != context['person'] and not context['user'].is_superuser:
             continue
         for project in course.projects().all():
             if project.visible:
@@ -80,7 +80,7 @@ def instructor_student_view(request, **kwargs):
             s.project.assignment.name,
             s.project.name))
     )
-    context['submissions'] = context['student'].submissions()
+    context['submissions'] = context['student'].submissions().filter(project__assignment__course__instructor=context['person'])
     return render(request, 'demograder/instructor/student.html', context)
 
 
