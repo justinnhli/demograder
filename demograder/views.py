@@ -58,7 +58,7 @@ def get_context(request, **kwargs):
             and context['course'].instructor == context['person']
         )
     )
-    if not (context['user'].is_superuser or context['is_instructor']):
+    if not context['is_instructor']:
         if 'course' in context:
             if Enrollment.objects.filter(student=context['person'], course=context['course']).count() == 0:
                 raise PermissionDenied
@@ -111,10 +111,10 @@ def course_view(request, **kwargs):
     context = get_context(request, **kwargs)
     assignments = []
     for assignment in context['course'].assignments():
-        if assignment.has_visible_projects or context['user'].is_superuser:
+        if assignment.has_visible_projects or context['is_instructor']:
             submissions = []
             for project in assignment.projects():
-                if project.visible or context['user'].is_superuser:
+                if project.visible or context['is_instructor']:
                     submissions.append(get_last_submission_display(context['person'], project))
             assignments.append([
                 assignment,
