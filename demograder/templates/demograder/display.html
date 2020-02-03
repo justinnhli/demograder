@@ -27,10 +27,8 @@
 <h2><code>{{ upload.basename }}</code></h2>
 <p>
     From
-    {% if user.is_superuser %}
+    {% if is_instructor %}
     <a href="{% url 'instructor_student' submission.student.id %}">{{ submission.student.full_name }}</a>'s
-    {% elif is_instructor %}
-    {{ submission.student.full_name }}'s
     {% else %}
     your
     {% endif %}

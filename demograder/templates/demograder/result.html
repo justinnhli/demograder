@@ -35,7 +35,7 @@
 
 <h2>
     Test Result for
-    {% if user.is_superuser %}<a href="{% url 'instructor_student' student.id %}">{{ student.full_name }}</a>'s{% endif %}
+    {% if is_instructor %}<a href="{% url 'instructor_student' student.id %}">{{ student.full_name }}</a>'s{% endif %}
     <a href="{% url 'submission' submission.id %}">{{ project.name }}</a>
 </h2>
 <p>Submitted {{ submission.us_format }}</p>

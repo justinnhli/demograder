@@ -61,11 +61,12 @@ def instructor_tbd_regrade_view(request, **kwargs):
 @login_required
 def instructor_student_view(request, **kwargs):
     context = get_context(request, **kwargs)
-    # FIXME instructor should only see submissions for their courses
-    if context['user'].is_superuser:
+    if not context['is_instructor']:
         raise Http404
     context['grades'] = []
-    for course in context['student'].enrolled_courses().all():
+    for course in context['student'].enrolled_courses():
+        if course.instructor != context['user'] and not context['user'].is_superuser:
+            continue
         for project in course.projects().all():
             if project.visible:
                 context['grades'].append(get_last_submission_display(context['student'], project))
