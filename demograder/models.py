@@ -8,8 +8,6 @@ from pytz import timezone, UTC
 
 UPLOAD_PATH = 'uploads'
 
-# Create your models here.
-
 
 class Person(models.Model):
 
