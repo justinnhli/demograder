@@ -13,15 +13,6 @@ from .dispatcher import enqueue_submission_dispatch, enqueue_submission_evaluati
 AssignmentSummaryRow = namedtuple('AssignmentSummaryRow', ('student', 'submissions', 'grade'))
 
 
-def is_superuser_or_instructor(context):
-    if context['user'].is_superuser:
-        return True
-    if 'course' in context:
-        return context['course'].instructor == context['user']
-    else:
-        return bool(Course.objects.filter(instructor=context['user']).count())
-
-
 @login_required
 def instructor_view(request, **kwargs):
     context = get_context(request, **kwargs)
@@ -71,7 +62,7 @@ def instructor_tbd_regrade_view(request, **kwargs):
 def instructor_student_view(request, **kwargs):
     context = get_context(request, **kwargs)
     # FIXME instructor should only see submissions for their courses
-    if not context['user'].is_superuser:
+    if context['user'].is_superuser:
         raise Http404
     context['grades'] = []
     for course in context['student'].enrolled_courses().all():
@@ -95,7 +86,7 @@ def instructor_student_view(request, **kwargs):
 @login_required
 def instructor_course_view(request, **kwargs):
     context = get_context(request, **kwargs)
-    if not is_superuser_or_instructor(context):
+    if not context['is_instructor']:
         raise Http404
     context['students'] = context['course'].enrolled_students()
     context['assignments'] = Assignment.objects.filter(course=context['course'])
@@ -106,7 +97,7 @@ def instructor_course_view(request, **kwargs):
 @login_required
 def instructor_assignment_view(request, **kwargs):
     context = get_context(request, **kwargs)
-    if not is_superuser_or_instructor(context):
+    if not context['is_instructor']:
         raise Http404
     context['projects'] = context['assignment'].projects().filter(visible=True)
     context['student_scores'] = []
@@ -128,7 +119,7 @@ def instructor_assignment_view(request, **kwargs):
 @login_required
 def instructor_project_view(request, **kwargs):
     context = get_context(request, **kwargs)
-    if not is_superuser_or_instructor(context):
+    if not context['is_instructor']:
         raise Http404
     context['scores'] = [
         get_last_submission_display(student, context['project'])
@@ -141,7 +132,7 @@ def instructor_project_view(request, **kwargs):
 @login_required
 def instructor_submission_view(request, **kwargs):
     context = get_context(request, **kwargs)
-    if not is_superuser_or_instructor(context):
+    if not context['is_instructor']:
         raise Http404
     context['submissions'] = context['student'].submissions(project=context['project'])
     if 'submission' not in context:
@@ -157,7 +148,7 @@ def regrade_assignment(assignment):
 @login_required
 def instructor_assignment_regrade_view(request, **kwargs):
     context = get_context(request, **kwargs)
-    if not is_superuser_or_instructor(context):
+    if not context['is_instructor']:
         raise Http404
     regrade_assignment(context['assignment'])
     return HttpResponseRedirect(
@@ -175,7 +166,7 @@ def regrade_project(project):
 @login_required
 def instructor_project_regrade_view(request, **kwargs):
     context = get_context(request, **kwargs)
-    if not is_superuser_or_instructor(context):
+    if not context['is_instructor']:
         raise Http404
     regrade_project(context['project'])
     return HttpResponseRedirect(
@@ -191,7 +182,7 @@ def regrade_submission(submission):
 @login_required
 def instructor_submission_regrade_view(request, **kwargs):
     context = get_context(request, **kwargs)
-    if not is_superuser_or_instructor(context):
+    if not context['is_instructor']:
         raise Http404
     regrade_submission(context['submission'])
     return HttpResponseRedirect(reverse('submission', kwargs=kwargs))
@@ -204,7 +195,7 @@ def regrade_result(result):
 @login_required
 def instructor_result_regrade_view(request, **kwargs):
     context = get_context(request, **kwargs)
-    if not is_superuser_or_instructor(context):
+    if not context['is_instructor']:
         raise Http404
     regrade_result(context['result'])
     return HttpResponseRedirect(reverse('result', kwargs=kwargs))
