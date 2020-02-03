@@ -97,7 +97,7 @@ def get_relevant_submissions(person, project):
         if project.submission_type == Project.LATEST:
             return (person.submissions().filter(project=project).latest(), )
         elif project.submission_type == Project.ALL:
-            return tuple(person.submissions().filter(project=project))
+            return tuple(person.submissions().filter(project=project).order_by('timestamp'))
         elif project.submission_type == Project.MULTIPLE:
             return tuple() # FIXME not implemented
     except Submission.DoesNotExist:
