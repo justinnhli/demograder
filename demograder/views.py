@@ -53,8 +53,10 @@ def get_context(request, **kwargs):
     elif 'course_id' in kwargs:
         context['course'] = get_object_or_404(Course, id=kwargs['course_id'])
     context['is_instructor'] = (
-        'course' in context
-        and context['course'].instructor == context['person']
+        context['user'].is_superuser or (
+            'course' in context
+            and context['course'].instructor == context['person']
+        )
     )
     if not (context['user'].is_superuser or context['is_instructor']):
         if 'course' in context:

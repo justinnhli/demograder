@@ -8,7 +8,7 @@
 &gt;
 <a href="{% url 'course' course.id %}">{{ course.catalog_id_str }}</a>
 &gt;
-{% if user.is_superuser %}
+{% if is_instructor %}
 <a href="{% url 'instructor_assignment' assignment.id %}">{{ assignment.name }}</a>
 {% else %}
 {{ assignment.name }}
@@ -24,20 +24,20 @@
 
 {% block content %}
 <!-- begin demograder/project.html:content -->
-{% if user.is_superuser %}
+{% if is_instructor %}
 <div id="admin_panel">
-    <a href="{% url 'admin:demograder_project_change' project.id %}">project admin</a>
+    {% if user.is_superuser %}<a href="{% url 'admin:demograder_project_change' project.id %}">project admin</a>{% endif %}
     <a href="{% url 'instructor_project' project.id %}">instructor view</a>
     <a href="{% url 'instructor_project_regrade' project.id %}">regrade project</a>
     {% if submission %}
-    <a href="{% url 'admin:demograder_submission_change' submission.id %}">submission admin</a>
+    {% if user.is_superuser %}<a href="{% url 'admin:demograder_submission_change' submission.id %}">submission admin</a>{% endif %}
     <a href="{% url 'instructor_submission_regrade' submission.id %}">regrade submission</a>
     {% endif %}
 </div>
 {% endif %}
 
 <h2>
-    {% if user.is_superuser %}
+    {% if is_instructor %}
     <a href="{% url 'instructor_assignment' assignment.id %}">{{ assignment.name }}</a>:
     {% else %}
     {{ assignment.name }}:
@@ -80,7 +80,11 @@
 {% if submission %}
 
 <h3>
-    {% if user.is_superuser %}<a href="{% url 'instructor_student' submission.student.id %}">{{ submission.student.full_name }}</a>'s{% endif %}
+    {% if user.is_superuser %}
+    <a href="{% url 'instructor_student' submission.student.id %}">{{ submission.student.full_name }}</a>'s
+    {% elif is_instructor %}
+    {{ submission.student.full_name }}'s
+    {% endif %}
     Test Results: {{ submission.score_str }}
 </h3>
 <p>

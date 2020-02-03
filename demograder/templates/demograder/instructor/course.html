@@ -13,7 +13,7 @@
 {% block content %}
 <!-- begin demograder/instructor/course.html:content -->
 <div id="admin_panel">
-    <a href="{% url 'admin:demograder_course_change' course.id %}">course admin</a>
+    {% if user.is_superuser %}<a href="{% url 'admin:demograder_course_change' course.id %}">course admin</a>{% endif %}
     <a href="{% url 'course' course.id %}">student view</a>
 </div>
 
@@ -37,13 +37,13 @@
             {% if assignments %}
             {% for assignment in assignments %}
             <h4>
-                <a href="{% url 'admin:demograder_assignment_change' assignment.id %}">{{ assignment.id }}</a>:
+                {% if user.is_superuser %}<a href="{% url 'admin:demograder_assignment_change' assignment.id %}">{{ assignment.id }}</a>:{% endif %}
                 <a href="{% url 'instructor_assignment' assignment.id %}">{{ assignment.name }}</a>
             </h4>
             <ul>
                 {% for project in assignment.projects %}
                 <li>
-                    <a href="{% url 'admin:demograder_project_change' project.id %}">{{ project.id }}</a>:
+                    {% if user.is_superuser %}<a href="{% url 'admin:demograder_project_change' project.id %}">{{ project.id }}</a>:{% endif %}
                     <a href="{% url 'instructor_project' project.id %}">{{ project.name }}</a>
                     {% if not project.visible %}(hidden){% endif %}
                 </li>

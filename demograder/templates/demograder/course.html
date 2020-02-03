@@ -13,9 +13,9 @@
 
 {% block content %}
 <!-- begin demograder/course.html:content -->
-{% if user.is_superuser %}
+{% if is_instructor %}
 <div id="admin_panel">
-    <a href="{% url 'admin:demograder_course_change' course.id %}">course admin</a>
+    {% user.is_superuser %}<a href="{% url 'admin:demograder_course_change' course.id %}">course admin</a>{% endif %}
     <a href="{% url 'instructor_course' course.id %}">instructor view</a>
 </div>
 {% endif %}
@@ -30,7 +30,7 @@
     <tr>
         <td>
             <h4>
-                {% if user.is_superuser %}
+                {% if is_instructor %}
                 <a href="{% url 'instructor_assignment' assignment.id %}">{{ assignment.name }}</a>
                 {% else %}
                 {{ assignment.name }}
@@ -47,7 +47,7 @@
         <td class="project-name">
             <ul><li>
                 <a href="{% url 'project' submission.project.id %}">{{ submission.project.name }}</a>
-                {% if user.is_superuser and not submission.project.visible %}(hidden){% endif %}
+                {% if is_instructor and not submission.project.visible %}(hidden){% endif %}
             </li></ul>
         </td>
         <td class="project-summary" style="border-style:none">

@@ -8,7 +8,7 @@
 &gt;
 <a href="{% url 'course' course.id %}">{{ course.catalog_id_str }}</a>
 &gt;
-{% if user.is_superuser %}
+{% if is_instructor %}
 <a href="{% url 'instructor_assignment' assignment.id %}">{{ assignment.name }}</a>
 {% else %}
 {{ assignment.name }}
@@ -29,6 +29,8 @@
     From
     {% if user.is_superuser %}
     <a href="{% url 'instructor_student' submission.student.id %}">{{ submission.student.full_name }}</a>'s
+    {% elif is_instructor %}
+    {{ submission.student.full_name }}'s
     {% else %}
     your
     {% endif %}
