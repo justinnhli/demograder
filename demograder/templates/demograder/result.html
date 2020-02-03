@@ -28,7 +28,7 @@
 <!-- begin demograder/result.html:content -->
 {% if is_instructor %}
 <div id="admin_panel">
-    {% user.is_superuser %}<a href="{% url 'admin:demograder_result_change' result.id %}">result admin</a>{% endif %}
+    {% if user.is_superuser %}<a href="{% url 'admin:demograder_result_change' result.id %}">result admin</a>{% endif %}
     <a href="{% url 'instructor_result_regrade' result.id %}">regrade result</a>
 </div>
 {% endif %}
