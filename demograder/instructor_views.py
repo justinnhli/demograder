@@ -80,7 +80,10 @@ def instructor_student_view(request, **kwargs):
             s.project.assignment.name,
             s.project.name))
     )
-    context['submissions'] = context['student'].submissions().filter(project__assignment__course__instructor=context['person'])
+    if context['user'].is_superuser:
+        context['submissions'] = context['student'].submissions()
+    else:
+        context['submissions'] = context['student'].submissions().filter(project__assignment__course__instructor=context['person'])
     return render(request, 'demograder/instructor/student.html', context)
 
 
