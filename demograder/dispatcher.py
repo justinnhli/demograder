@@ -97,7 +97,7 @@ def get_relevant_submissions(person, project):
         if project.submission_type == Project.LATEST:
             return (person.submissions().filter(project=project).latest(), )
         elif project.submission_type == Project.ALL:
-            return tuple(person.submissions().filter(project=project).order_by('timestamp'))
+            return tuple(person.submissions().filter(project=project))
         elif project.submission_type == Project.MULTIPLE:
             return tuple() # FIXME not implemented
     except Submission.DoesNotExist:
@@ -127,6 +127,8 @@ def dispatch_submission(submission_id):
                 dependents[project_dependency].update(get_relevant_submissions(classmate, project_dependency.producer))
         elif project_dependency.dependency_structure == ProjectDependency.CUSTOM:
             pass # FIXME not implemented
+    for dependency, submissions in dependents.items():
+        dependents[dependency] = sorted(submissions, key=(lambda submission: submission.timestamp))
     for dependent_submissions in product(*(dependents[pd] for pd in project_dependencies)):
         result = Result(submission=submission)
         result.save()
