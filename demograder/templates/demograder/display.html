@@ -24,7 +24,12 @@
 
 {% block content %}
 <!-- begin demograder/display.html:content -->
-<h2><code>{{ upload.basename }}</code></h2>
+<h2>
+    <code>{{ upload.project_file.filename }}</code>
+    {% if upload.project_file.filename != upload.basename %}
+    (originally <code>{{ upload.basename }}</code>)
+    {% endif %}
+</h2>
 <p>
     From
     {% if is_instructor %}
