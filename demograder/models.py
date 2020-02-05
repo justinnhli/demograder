@@ -77,23 +77,22 @@ class Person(models.Model):
 
         The motivation behind stopping student submissions is to prevent
         overloading the system, and (in theory) to instill a more thorough
-        manual debugging process. This means there are three trivial cases when
-        the student can submit:
+        manual debugging process. There are three trivial cases when a user can
+        submit:
 
         * they are a superuser
-        * they have not submitted anything before
-        * this project does not have testcases
+        * they are the instructor for the course
+        * they have not submitted to this project before
 
-        If they are not a superuser, have previous submissions, and is trying to
-        submit to a project with testcases, then all of the following must be
-        true for the student to submit:
+        If they are not the instructor and have previous submissions, then all
+        of the following must be true for the student to submit:
 
         * the project is not locked
-        * all their previous submissions for all projects have finished running
+        * all their previous submissions for this project have finished running
         * 300 seconds has passed since their last submission to this project
 
         This function returns different string constants to reflect which of the
-        above two conditions have been violated, so that an appropriate error
+        above three conditions have been violated, so that an appropriate error
         can be displayed.
 
         Parameters:
@@ -101,31 +100,27 @@ class Person(models.Model):
 
         Returns:
             string: one of three string constants
-                'yes': the student may submit again
+                'yes': the student may submit
                 'locked': the project is locked
                 'submission': the student is blocked by their last submission
                 'timeout': it has been less than 300 seconds since their last
                            submission to this project
         """
-        if self.user.is_superuser:
+        if self.user.is_superuser or project.course.instructor == self:
             return 'yes'
         if project.locked:
             return 'locked'
-        submissions = self.submissions()
-        if not submissions:
+        last_submission = self.latest_submission(project)
+        if not last_submission:
             return 'yes'
-        if self.latest_submission().num_tbd != 0:
+        if last_submission.num_tbd != 0:
             return 'submission'
-        if not project.upstream_dependencies():
+        current_time = UTC.normalize(datetime.now(last_submission.timestamp.tzinfo))
+        submit_time = UTC.normalize(last_submission.timestamp)
+        if current_time - submit_time < timedelta(seconds=300):
+            return 'timeout'
+        else:
             return 'yes'
-        submissions = self.submissions(project=project)
-        if submissions:
-            last_submission = submissions.latest()
-            current_time = UTC.normalize(datetime.now(last_submission.timestamp.tzinfo))
-            submit_time = UTC.normalize(last_submission.timestamp)
-            if last_submission and current_time - submit_time < timedelta(seconds=300):
-                return 'timeout'
-        return 'yes'
 
     def __str__(self):
         # human readable, used by Django admin displays
