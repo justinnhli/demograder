@@ -93,7 +93,9 @@
         {% for upload in submission.upload_set.all %} <!-- FIXME remove all *_set references -->
         <li>
             <a href="{% url 'display' upload.id %}"><code>{{ upload.project_file.filename }}</code></a>
-            (originally named <code>{{ upload.basename }}</code>)
+            {% if upload.project_file.filename != upload.basename %}
+            (originally <code>{{ upload.basename }}</code>)
+            {% endif %}
         </li>
         {% endfor %}
     </ul>
