@@ -10,6 +10,13 @@
 
 {% block content %}
 <!-- begin demograder/instructor/student.html:content -->
+{% if user.is_superuser %}
+<div id="admin_panel">
+    <a href="{% url 'admin:auth_user_change' student.user.id %}">user admin</a>
+    <a href="{% url 'admin:demograder_person_change' student.id %}">person admin</a>
+</div>
+{% endif %}
+
 <h2>Student: {{ student.first_name }} {{ student.last_name }}</h2>
 
 <h3>Project Grades</h3>
