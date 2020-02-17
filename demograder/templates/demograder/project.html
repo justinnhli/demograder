@@ -57,7 +57,17 @@
     <p>{{ form.non_field_errors }}</p>
     <p>{{ form.file.errors }}</p>
     <p>{{ form }}</p>
-    <p><input type="submit" value="Upload" /></p>
+    <p>
+        <input type="submit" value="Upload" onclick="
+            for (var i = 0; i < {{ project.num_files }}; i++) {
+                if (document.getElementById('id_file_' + i).files.length != 0) {
+                    return true;
+                }
+            }
+            alert('No files have been uploaded.');
+            return false;
+        ">
+    </p>
 </form>
 {% endif %}
 
