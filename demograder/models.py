@@ -321,6 +321,10 @@ class Project(models.Model):
         return join_path(*context)
 
     @property
+    def num_files(self):
+        return ProjectFile.objects.filter(project=self).count()
+
+    @property
     def files(self):
         return ProjectFile.objects.filter(project=self)
 

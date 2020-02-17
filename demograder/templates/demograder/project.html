@@ -51,7 +51,7 @@
 
 <h3>Upload New Version</h3>
 <p>{{ queue_size }} test cases are waiting to be evaluated.</p>
-{% if project.filenames %}
+{% if project.num_files %}
 <form action="{% url 'project_submit' project.id %}" method="post" enctype="multipart/form-data">
     {% csrf_token %}
     <p>{{ form.non_field_errors }}</p>
