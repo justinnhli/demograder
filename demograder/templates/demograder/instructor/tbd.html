@@ -8,9 +8,13 @@
 
 {% block content %}
 <!-- begin demograder/instructor/submissions.html:content -->
+<div id="admin_panel">
+    <a href="{% url 'instructor_tbd_regrade' %}">regrade TBDs</a>
+</div>
+
 <h2>Latest Submissions</h2>
 
-<p>{{ queue_size }} test cases are waiting to be evaluated.</p>
+<p>{{ tbd_size }} TBD ({{ queue_size }} in queue)</p>
 
 {% if tbd_results %}
 <table>
