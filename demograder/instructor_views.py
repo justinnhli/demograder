@@ -44,6 +44,7 @@ def instructor_tbd_view(request, **kwargs):
     if not context['user'].is_superuser:
         raise Http404
     context['queue_size'] = django_rq.get_queue('evaluation').count
+    context['tbd_size'] = Result.objects.filter(return_code=None).count()
     context['tbd_results'] = Result.objects.filter(return_code=None)
     return render(request, 'demograder/instructor/tbd.html', context)
 
