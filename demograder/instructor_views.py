@@ -197,5 +197,5 @@ def instructor_result_regrade_view(request, **kwargs):
     if not context['is_instructor']:
         raise Http404
     result = context['result']
-    enqueue_submission_evaluation(result.id, timeout=result.project.timeout + 1)
+    enqueue_submission_evaluation(result.id)
     return HttpResponseRedirect(reverse('result', kwargs=kwargs))

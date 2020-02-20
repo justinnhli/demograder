@@ -5,7 +5,7 @@ from os import chdir, chmod, environ, getcwd, walk
 from os.path import basename, dirname, join as join_path, realpath
 from shutil import copyfile
 from sqlite3 import OperationalError as SQLiteOperationalError
-from subprocess import run as run_process, PIPE, TimeoutExpired
+from subprocess import run as run_process, PIPE
 from tempfile import TemporaryDirectory
 
 import django
@@ -16,7 +16,6 @@ environ.setdefault('DJANGO_SETTINGS_MODULE', 'demograder.settings')
 django.setup()
 
 import django_rq
-from rq.timeouts import JobTimeoutException
 
 from demograder.models import Assignment, Project, ProjectDependency, Submission, Result, ResultDependency
 
@@ -52,44 +51,36 @@ def prepare_files(result, temp_dir, timeout):
     return ['sudo', '-u', 'nobody', 'timeout', '-s', 'KILL', str(timeout), tmp_script]
 
 
-def evaluate_submission(result_id, timeout=None):
+def evaluate_submission(result_id):
     try:
         result = Result.objects.get(pk=result_id)
-        if timeout is None:
-            timeout = result.project.timeout
+        timeout = result.project.timeout
         # create temporary directory
         with TemporaryDirectory() as temp_dir:
             cmd = prepare_files(result, temp_dir, timeout)
             old_cwd = getcwd()
             chdir(temp_dir)
-            try:
-                completed_process = run_process(cmd, timeout=timeout + 2, stderr=PIPE, stdout=PIPE)
-                stdout = completed_process.stdout.decode('utf-8')
-                stderr = completed_process.stderr.decode('utf-8')
-                return_code = completed_process.returncode
-            except TimeoutExpired as e:
-                stdout = e.stdout.decode('utf-8')
-                stdout += '\n\n'
-                stdout += 'The program failed to complete within {} seconds and was terminated.'.format(timeout)
-                stderr = e.stderr.decode('utf-8')
-                return_code = 1
-            except JobTimeoutException:
-                stdout = ''
-                stderr = 'The program failed to complete within {} seconds and was terminated.'.format(timeout)
-                return_code = 1
+            completed_process = run_process(cmd, stderr=PIPE, stdout=PIPE, check=False)
+            stdout = completed_process.stdout.decode('utf-8')
+            stderr = completed_process.stderr.decode('utf-8')
+            return_code = completed_process.returncode
+            if return_code == -9: # from timeout
+                stderr += '\n\n'
+                stderr += 'The program failed to complete within {} seconds and was terminated.'.format(timeout)
+                stderr = stderr.strip()
             chdir(old_cwd)
         # update Result
         result.stdout = stdout.strip()
         result.stderr = stderr.strip()
         result.return_code = return_code
         result.save()
-    except (JobTimeoutException, SQLiteOperationalError, DjangoOperationalError):
+    except (SQLiteOperationalError, DjangoOperationalError):
         enqueue_submission_evaluation(result_id)
         return
 
 
-def enqueue_submission_evaluation(result_id, timeout=10):
-    django_rq.get_queue('evaluation').enqueue(evaluate_submission, result_id, timeout=timeout)
+def enqueue_submission_evaluation(result_id):
+    django_rq.get_queue('evaluation').enqueue(evaluate_submission, result_id)
 
 
 def get_relevant_submissions(person, project):
@@ -140,7 +131,7 @@ def dispatch_submission(submission_id):
                 project_dependency=project_dependency,
                 producer=upstream_submission,
             ).save()
-        enqueue_submission_evaluation(result.id, timeout=project.timeout + 1)
+        enqueue_submission_evaluation(result.id)
         count += 1
         # TODO 200 was arbitrarily chosen; in the future this should be a project property
         if count == 200:
