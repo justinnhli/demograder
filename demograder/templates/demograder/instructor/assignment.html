@@ -16,7 +16,7 @@
 <!-- begin demograder/instructor/assignment.html:content -->
 <div id="admin_panel">
     {% if user.is_superuser %}<a href="{% url 'admin:demograder_assignment_change' assignment.id %}">assignment admin</a>{% endif %}
-    <a href="{% url 'instructor_assignment_regrade' assignment.id %}">regrade assignment</a>
+    <a href="{% url 'instructor_assignment_regrade' assignment.id %}" onclick="confirm('Are you sure you want to regrade all submissions in this assignment?');">regrade assignment</a>
 </div>
 
 <h2>{{ assignment.name }}</h2>
