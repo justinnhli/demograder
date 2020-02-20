@@ -32,7 +32,7 @@ def recursive_chmod(path):
             chmod(join_path(root, f), 0o777)
 
 
-def prepare_files(result, temp_dir):
+def prepare_files(result, temp_dir, timeout):
     # copy dglib library
     tmp_dglib = copyfile(DGLIB, join_path(temp_dir, basename(DGLIB)))
     # copy the submission script
@@ -49,7 +49,7 @@ def prepare_files(result, temp_dir):
             filepath = upstream_upload.file.name
             tmp_args[keyword].append(copyfile(filepath, join_path(temp_dir, upstream_upload.project_file.filename)))
     recursive_chmod(temp_dir)
-    return ['sudo', '-u', 'nobody', tmp_script]
+    return ['sudo', '-u', 'nobody', 'timeout', '-s', 'KILL', str(timeout), tmp_script]
 
 
 def evaluate_submission(result_id, timeout=None):
@@ -59,11 +59,11 @@ def evaluate_submission(result_id, timeout=None):
             timeout = result.project.timeout
         # create temporary directory
         with TemporaryDirectory() as temp_dir:
-            cmd = prepare_files(result, temp_dir)
+            cmd = prepare_files(result, temp_dir, timeout)
             old_cwd = getcwd()
             chdir(temp_dir)
             try:
-                completed_process = run_process(cmd, timeout=timeout, stderr=PIPE, stdout=PIPE)
+                completed_process = run_process(cmd, timeout=timeout + 2, stderr=PIPE, stdout=PIPE)
                 stdout = completed_process.stdout.decode('utf-8')
                 stderr = completed_process.stderr.decode('utf-8')
                 return_code = completed_process.returncode
