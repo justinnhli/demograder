@@ -8,7 +8,7 @@ from django.shortcuts import render
 
 from .models import Course, Assignment, Project, Submission, Result
 from .views import get_context, get_last_submission_display
-from .dispatcher import enqueue_submission_dispatch, enqueue_submission_evaluation, clear_evaluation_queue
+from .dispatcher import enqueue_assignment_dispatch, enqueue_project_dispatch, enqueue_submission_dispatch, enqueue_submission_evaluation, clear_evaluation_queue
 
 AssignmentSummaryRow = namedtuple('AssignmentSummaryRow', ('student', 'submissions', 'grade'))
 
@@ -158,27 +158,15 @@ def instructor_submission_view(request, **kwargs):
     return render(request, 'demograder/project.html', context)
 
 
-def regrade_assignment(assignment):
-    for project in assignment.projects():
-        regrade_project(project)
-
-
 @login_required
 def instructor_assignment_regrade_view(request, **kwargs):
     context = get_context(request, **kwargs)
     if not context['is_instructor']:
         raise Http404
-    regrade_assignment(context['assignment'])
+    enqueue_assignment_dispatch(context['assignment'].id)
     return HttpResponseRedirect(
         reverse('instructor_assignment', kwargs={'assignment_id': context['project'].assignment.id})
     )
-
-
-def regrade_project(project):
-    for student in project.course.enrolled_students():
-        submission = student.latest_submission(project=project)
-        if submission:
-            regrade_submission(submission)
 
 
 @login_required
@@ -186,15 +174,10 @@ def instructor_project_regrade_view(request, **kwargs):
     context = get_context(request, **kwargs)
     if not context['is_instructor']:
         raise Http404
-    regrade_project(context['project'])
+    enqueue_project_dispatch(context['project'].id)
     return HttpResponseRedirect(
         reverse('instructor_assignment', kwargs={'assignment_id': context['project'].assignment.id})
     )
-
-
-def regrade_submission(submission):
-    submission.result_set.all().delete()
-    enqueue_submission_dispatch(submission.id)
 
 
 @login_required
@@ -202,12 +185,8 @@ def instructor_submission_regrade_view(request, **kwargs):
     context = get_context(request, **kwargs)
     if not context['is_instructor']:
         raise Http404
-    regrade_submission(context['submission'])
+    enqueue_submission_dispatch(context['submission'].id)
     return HttpResponseRedirect(reverse('submission', kwargs=kwargs))
-
-
-def regrade_result(result):
-    enqueue_submission_evaluation(result.id, timeout=result.project.timeout + 1)
 
 
 @login_required
@@ -215,5 +194,6 @@ def instructor_result_regrade_view(request, **kwargs):
     context = get_context(request, **kwargs)
     if not context['is_instructor']:
         raise Http404
-    regrade_result(context['result'])
+    result = context['result']
+    enqueue_submission_evaluation(result.id, timeout=result.project.timeout + 1)
     return HttpResponseRedirect(reverse('result', kwargs=kwargs))

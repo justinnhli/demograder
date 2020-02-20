@@ -18,7 +18,7 @@ django.setup()
 import django_rq
 from rq.timeouts import JobTimeoutException
 
-from demograder.models import Project, ProjectDependency, Submission, Result, ResultDependency
+from demograder.models import Assignment, Project, ProjectDependency, Submission, Result, ResultDependency
 
 DGLIB = join_path(dirname(realpath(__file__)), 'dglib.py')
 
@@ -149,6 +149,36 @@ def dispatch_submission(submission_id):
 
 def enqueue_submission_dispatch(submission_id):
     django_rq.get_queue('dispatch').enqueue(dispatch_submission, submission_id)
+
+
+def dispatch_project(project_id):
+    project = Project.objects.get(pk=project_id)
+    for student in project.course.enrolled_students():
+        submission = student.latest_submission(project=project)
+        if submission:
+            enqueue_submission_dispatch(submission.id)
+
+
+def enqueue_project_dispatch(project_id):
+    django_rq.get_queue('dispatch').enqueue(dispatch_project, project_id)
+
+
+def dispatch_assignment(assignment_id):
+    for project in Assignment.objects.get(pk=assignment_id).projects():
+        enqueue_project_dispatch(project.id)
+
+
+def enqueue_assignment_dispatch(assignment_id):
+    django_rq.get_queue('dispatch').enqueue(dispatch_assignment, assignment_id)
+
+
+def dispatch_tbd():
+    for result in Result.objects.filter(return_code=None):
+        enqueue_submission_evaluation(result.id)
+
+
+def enqueue_tbd_dispatch():
+    django_rq.get_queue('dispatch').enqueue(dispatch_tbd)
 
 
 def clear_evaluation_queue():
