@@ -148,6 +148,8 @@ def dispatch_submission(submission_id):
 
 
 def enqueue_submission_dispatch(submission_id):
+    submission = Submission.objects.get(pk=submission_id)
+    submission.result_set.all().delete()
     django_rq.get_queue('dispatch').enqueue(dispatch_submission, submission_id)
 
 
