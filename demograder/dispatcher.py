@@ -129,6 +129,7 @@ def dispatch_submission(submission_id):
             pass # FIXME not implemented
     for dependency, submissions in dependents.items():
         dependents[dependency] = sorted(submissions, key=(lambda submission: submission.timestamp))
+    count = 0
     for dependent_submissions in product(*(dependents[pd] for pd in project_dependencies)):
         result = Result(submission=submission)
         result.save()
@@ -140,6 +141,10 @@ def dispatch_submission(submission_id):
                 producer=upstream_submission,
             ).save()
         enqueue_submission_evaluation(result.id, timeout=project.timeout + 1)
+        count += 1
+        # TODO 200 was arbitrarily chosen; in the future this should be a project property
+        if count == 200:
+            break
 
 
 def enqueue_submission_dispatch(submission_id):
