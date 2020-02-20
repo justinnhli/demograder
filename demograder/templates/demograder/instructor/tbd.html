@@ -10,6 +10,7 @@
 <!-- begin demograder/instructor/submissions.html:content -->
 <div id="admin_panel">
     <a href="{% url 'instructor_tbd_regrade' %}">regrade TBDs</a>
+    <a href="{% url 'instructor_clear_queue' %}" onclick="confirm('Are you sure you want to clear the evaluation queue?');">clear queue</a>
 </div>
 
 <h2>Latest Submissions</h2>

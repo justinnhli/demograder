@@ -144,3 +144,7 @@ def dispatch_submission(submission_id):
 
 def enqueue_submission_dispatch(submission_id):
     django_rq.get_queue('dispatch').enqueue(dispatch_submission, submission_id)
+
+
+def clear_evaluation_queue():
+    django_rq.get_queue('evaluation').empty()

@@ -8,7 +8,7 @@ from django.shortcuts import render
 
 from .models import Course, Assignment, Project, Submission, Result
 from .views import get_context, get_last_submission_display
-from .dispatcher import enqueue_submission_dispatch, enqueue_submission_evaluation
+from .dispatcher import enqueue_submission_dispatch, enqueue_submission_evaluation, clear_evaluation_queue
 
 AssignmentSummaryRow = namedtuple('AssignmentSummaryRow', ('student', 'submissions', 'grade'))
 
@@ -56,6 +56,15 @@ def instructor_tbd_regrade_view(request, **kwargs):
         raise Http404
     for result in Result.objects.filter(return_code=None):
         enqueue_submission_evaluation(result.id)
+    return HttpResponseRedirect(reverse('instructor_tbd'))
+
+
+@login_required
+def instructor_clear_queue_view(request, **kwargs):
+    context = get_context(request, **kwargs)
+    if not context['user'].is_superuser:
+        raise Http404
+    clear_evaluation_queue()
     return HttpResponseRedirect(reverse('instructor_tbd'))
 
 

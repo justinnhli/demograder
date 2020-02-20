@@ -6,7 +6,7 @@ from django.contrib.auth.views import LoginView, LogoutView
 
 from .views import index_view, course_view, project_view, project_submit_handler, result_view, download_view, display_view
 from .instructor_views import instructor_view, instructor_tbd_view, instructor_submissions_view, instructor_student_view, instructor_course_view, instructor_assignment_view, instructor_project_view
-from .instructor_views import instructor_tbd_regrade_view, instructor_assignment_regrade_view, instructor_project_regrade_view, instructor_submission_regrade_view, instructor_result_regrade_view
+from .instructor_views import instructor_clear_queue_view, instructor_tbd_regrade_view, instructor_assignment_regrade_view, instructor_project_regrade_view, instructor_submission_regrade_view, instructor_result_regrade_view
 
 urlpatterns = [
     url(r'^login/$', LoginView.as_view(), name='login'),
@@ -25,6 +25,7 @@ urlpatterns = [
     url(r'^demograder/instructor/submissions/$', instructor_submissions_view, name='instructor_submissions'),
     url(r'^demograder/instructor/tbd/$', instructor_tbd_view, name='instructor_tbd'),
     url(r'^demograder/instructor/tbd-regrade/$', instructor_tbd_regrade_view, name='instructor_tbd_regrade'),
+    url(r'^demograder/instructor/clear-queue/$', instructor_clear_queue_view, name='instructor_clear_queue'),
     url(r'^demograder/instructor/student/(?P<student_id>[0-9]+)/$', instructor_student_view, name='instructor_student'),
     url(r'^demograder/instructor/course/(?P<course_id>[0-9]+)/$', instructor_course_view, name='instructor_course'),
     url(
