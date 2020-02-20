@@ -19,7 +19,7 @@
 <div id="admin_panel">
     {% if user.is_superuser %}<a href="{% url 'admin:demograder_project_change' project.id %}">project admin</a>{% endif %}
     <a href="{% url 'project' project.id %}">student view</a>
-    <a href="{% url 'instructor_project_regrade' project.id %}">regrade project</a>
+    <a href="{% url 'instructor_project_regrade' project.id %}" onclick="confirm('Are you sure you want to regrade all submissions in this project?');">regrade project</a>
 </div>
 
 <h2>Project: {{ project.name }}</h2>
