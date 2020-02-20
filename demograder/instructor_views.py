@@ -111,8 +111,10 @@ def instructor_assignment_view(request, **kwargs):
     for student in context['course'].enrolled_students():
         submissions = []
         for project in context['projects']:
-            # FIXME deal with other submission types
             if project.submission_type == Project.LATEST:
+                submissions.append(get_last_submission_display(student, project))
+            else:
+                # FIXME deal with other submission types
                 submissions.append(get_last_submission_display(student, project))
         context['student_scores'].append(AssignmentSummaryRow(
             student,
