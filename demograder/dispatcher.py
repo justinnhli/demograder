@@ -34,7 +34,7 @@ def recursive_chmod(path):
 
 def prepare_files(result, temp_dir, timeout):
     # copy dglib library
-    tmp_dglib = copyfile(DGLIB, join_path(temp_dir, basename(DGLIB)))
+    copyfile(DGLIB, join_path(temp_dir, basename(DGLIB)))
     # copy the submission script
     tmp_script = copyfile(result.project.script.name, join_path(temp_dir, basename(result.project.script.name)))
     # copy the submission
@@ -98,8 +98,8 @@ def get_relevant_submissions(person, project):
             return (person.submissions().filter(project=project).latest(), )
         elif project.submission_type == Project.ALL:
             return tuple(person.submissions().filter(project=project))
-        elif project.submission_type == Project.MULTIPLE:
-            return tuple() # FIXME not implemented
+        # FIXME deal with other submission types
+        return tuple()
     except Submission.DoesNotExist:
         return tuple()
 

@@ -1,6 +1,4 @@
 from collections import namedtuple
-from mimetypes import guess_type
-from os.path import basename, getsize
 
 import django_rq
 from django.contrib.auth.decorators import login_required
@@ -10,7 +8,7 @@ from django.http import HttpResponseRedirect, FileResponse
 from django.shortcuts import render, get_object_or_404
 
 from .forms import SubmissionUploadForm
-from .models import Course, Enrollment, Person, Assignment, Project, Submission, Upload, Result, ProjectDependency, StudentDependency
+from .models import Course, Enrollment, Person, Assignment, Project, Submission, Upload, Result, ProjectDependency
 from .dispatcher import enqueue_submission_dispatch
 
 
@@ -164,8 +162,6 @@ def project_submit_handler(request, **kwargs):
             student=context['person'],
         )
         submission.save()
-        # TODO handle multiple files per submission
-        project_files = context['project'].files
         for file_field, project_file in zip(context['project'].file_fields, context['project'].files):
             if file_field in request.FILES:
                 Upload(
