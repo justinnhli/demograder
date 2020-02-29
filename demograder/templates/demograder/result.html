@@ -56,14 +56,11 @@
 <ul>
     {% for dependency in result.resultdependency_set.all %}
     {% for upload in dependency.producer.upload_set.all %}
-    {% if is_instructor %}
     <li>
         <a href="{% url 'display' upload.id %}"><code>{{ upload.project_file.filename }}</code></a>
+        {% if is_instructor %}
         (from <a href="{% url 'submission' upload.submission.id %}">{{ upload.submission.student.full_name }}'s submission</a>)
-    </li>
-    {% else %}
-    <li>
-        <a href="{% url 'download' upload.id %}"><code>{{ upload.project_file.filename }}</code></a>
+        {% endif %}
     </li>
     {% endif %}
     {% endfor %}
