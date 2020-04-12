@@ -61,8 +61,8 @@ def evaluate_submission(result_id):
             old_cwd = getcwd()
             chdir(temp_dir)
             completed_process = run_process(cmd, stderr=PIPE, stdout=PIPE, check=False)
-            stdout = completed_process.stdout.decode('utf-8')
-            stderr = completed_process.stderr.decode('utf-8')
+            stdout = completed_process.stdout.decode('utf-8')[:2**16]
+            stderr = completed_process.stderr.decode('utf-8')[:2**16]
             return_code = completed_process.returncode
             if return_code == -9: # from timeout
                 stderr += '\n\n'
