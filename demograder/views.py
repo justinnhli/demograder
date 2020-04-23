@@ -156,7 +156,7 @@ def project_submit_handler(request, **kwargs):
     if context['person'].may_submit(context['project']) != 'yes':
         return HttpResponseRedirect(reverse('project', kwargs=kwargs))
     form = SubmissionUploadForm(request.POST, request.FILES, project=context['project'])
-    if form.is_valid():
+    if form.is_valid() and bool(request.FILES):
         submission = Submission(
             project=context['project'],
             student=context['person'],
