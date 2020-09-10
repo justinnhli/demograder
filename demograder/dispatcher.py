@@ -34,8 +34,12 @@ def recursive_chmod(path):
 def prepare_files(result, temp_dir, timeout):
     # copy dglib library
     copyfile(DGLIB, join_path(temp_dir, basename(DGLIB)))
-    # copy the submission script
-    tmp_script = copyfile(result.project.script.name, join_path(temp_dir, basename(result.project.script.name)))
+    # copy the submission script manually, to avoid line ending issues
+    tmp_script = join_path(temp_dir, basename(result.project.script.name))
+    with open(result.project.script.name) as in_fd:
+        with open(tmp_script, 'w') as out_fd:
+            for line in in_fd:
+                out_fd.write(line)
     # copy the submission
     tmp_uploads = []
     for upload in result.submission.uploads():
