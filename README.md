@@ -30,6 +30,10 @@ Demograder uses an all-Python stack:
 
 1. Copy/link the nginx configuration `nginx.conf` to `/etc/nginx/sites-enabled/`
 
+1. Allow the executing user can `sudo nobody` without a password. This can be done by modifying `/etc/sudoers`:
+
+                demograder ALL=(nobody) NOPASSWD: ALL
+
 1. Create `demograder/secrets.json`
 
 1. Set up django by running:
